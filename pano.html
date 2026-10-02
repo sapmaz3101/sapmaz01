@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Nöbet Panosu</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding: 12px; height: 100dvh; display: flex; flex-direction: column; }
+.sekme-icerik { display: none; flex: 1; min-height: 0; }
+.sekme-icerik.aktif { display: flex; flex-direction: column; }
+.panel { display: grid; grid-template-rows: auto 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
+.ust-baslik { background: #f8d7ce; padding: 12px 20px; display: grid; grid-template-columns: 260px repeat(4, 1fr); text-align: center; align-items: stretch; }
+.tarih-saat { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; padding: 6px 14px 6px 0; border-right: 2px solid #7a4a41; cursor: pointer; transition: background 0.2s; border-radius: 8px 0 0 8px; }
+.tarih-saat:hover { background: #f0c0b5; }
+.tarih-saat .saat { font-size: clamp(36px, 3.6vw, 64px); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
+.tarih-saat .tarih { font-size: clamp(16px, 1.5vw, 26px); font-weight: 600; color: #333; text-align: center; }
+.tarih-saat .ipucu { font-size: 10px; color: #666; margin-top: 2px; font-weight: 500; }
+.sutun { display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-right: 2px solid #7a4a41; }
+.ust-baslik .sutun:last-child { border-right: none; }
+.ust-baslik .sutun h2 { font-size: clamp(18px, 1.8vw, 30px); font-weight: 700; color: #111; margin-bottom: 8px; padding-bottom: 6px; width: 100%; border-bottom: 2px solid #7a4a41; }
+
+.bugun-yarin-yatay { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 2px; }
+.bugun-yarin-yatay .kutu { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; width: 100%; }
+.bugun-yarin-yatay .kutu.bugun { background: linear-gradient(135deg, #ffd97a 0%, #ffb84d 100%); border: 2.5px solid #b36b00; box-shadow: 0 4px 12px rgba(179, 107, 0, 0.35); padding: 14px 8px; order: 1; }
+.bugun-yarin-yatay .kutu.yarin { background: #ece9fa; border: 1.5px solid #a89ed0; opacity: 0.9; padding: 10px 6px; order: 2; }
+.bugun-yarin-yatay .etiket-mini { font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+.bugun-yarin-yatay .kutu.bugun .etiket-mini { color: #7a3d00; font-size: clamp(11px, 0.9vw, 15px); }
+.bugun-yarin-yatay .kutu.yarin .etiket-mini { color: #4a3d80; font-size: clamp(9px, 0.7vw, 12px); }
+.bugun-yarin-yatay .isim-bugun { font-size: clamp(14px, 1.3vw, 22px); color: #1a1a1a; font-weight: 800; text-align: center; line-height: 1.3; text-shadow: 0 1px 0 rgba(255,255,255,0.5); width: 100%; }
+.bugun-yarin-yatay .isim-yarin { font-size: clamp(11px, 0.9vw, 15px); color: #444; font-weight: 600; text-align: center; line-height: 1.3; width: 100%; }
+
+.yemekci-yanyana { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; width: 100%; }
+.yemekci-yanyana .kisi-chip { display: inline-block; font-weight: 800; white-space: nowrap; background: transparent; border: none; padding: 0; }
+.kutu.bugun .yemekci-yanyana .kisi-chip { color: #1a1a1a; font-size: clamp(14px, 1.3vw, 22px); text-shadow: 0 1px 0 rgba(255,255,255,0.5); }
+.kutu.yarin .yemekci-yanyana .kisi-chip { color: #444; font-size: clamp(11px, 0.9vw, 15px); }
+
+.orta { display: grid; grid-template-columns: 1.1fr 1fr; gap: 12px; min-height: 0; }
+.ders-tablo { background: #a8e6e0; border-radius: 24px; padding: 10px; display: grid; grid-template-columns: 22% 26% 26% 26%; grid-template-rows: 30% 35% 35%; gap: 2px; min-height: 0; }
+.ders-tablo .hucre { border: 1.5px solid #222; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; font-weight: 500; font-size: clamp(12px, 1vw, 17px); }
+.ders-tablo .bos { border: none; background: transparent; }
+.ders-tablo .baslik-hucre { font-weight: bold; }
+
+.hadis-kutu { background: #a8e6e0; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; min-height: 0; }
+.hadis-kutu .hadis-baslik { text-align: center; font-size: clamp(14px, 1.2vw, 20px); font-weight: 600; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.hadis-yenile-btn { font-size: 11px; padding: 3px 8px; cursor: pointer; background: #7a4a41; color: #fff; border: none; border-radius: 4px; font-weight: 700; }
+.hadis-yenile-btn:hover { background: #5d3830; }
+
+.hadis-kutu .hadis-metin {
+  color: #222;
+  line-height: 1.4;
+  font-style: italic;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 4px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.hadis-kutu .hadis-metin .hadis-text { font-size: clamp(11px, 0.95vw, 16px); width: 100%; line-height: 1.4; }
+.hadis-kutu .hadis-metin .hadis-text.uzun { font-size: clamp(10px, 0.8vw, 14px); line-height: 1.3; }
+.hadis-kutu .hadis-metin .hadis-text.cok-uzun { font-size: clamp(9px, 0.7vw, 12px); line-height: 1.25; }
+.hadis-kutu .hadis-metin .hadis-text.cok-cok-uzun { font-size: clamp(8px, 0.6vw, 11px); line-height: 1.2; }
+.hadis-kutu .hadis-metin .hadis-kaynak { font-size: 0.75em; color: #555; margin-top: 6px; }
+
+.alt { display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px; min-height: 0; }
+
+.program-kutu { background: #a8e6e0; border-radius: 24px; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: hidden; }
+.program-kutu .program-baslik { text-align: center; font-size: clamp(14px, 1.2vw, 20px); font-weight: 700; color: #0d3d3a; padding-bottom: 6px; border-bottom: 1.5px solid #2a6b66; flex-shrink: 0; }
+
+.aktif-program {
+  background: linear-gradient(135deg, #ffd97a 0%, #ffb84d 100%);
+  border: 2px solid #b36b00;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 3px 10px rgba(179, 107, 0, 0.35);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.aktif-program .aktif-etiket { font-size: clamp(9px, 0.7vw, 12px); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #7a3d00; display: block; margin-bottom: 2px; }
+.aktif-program .aktif-ad { font-size: clamp(14px, 1.3vw, 22px); font-weight: 800; color: #1a1a1a; }
+.aktif-program .aktif-hucre { text-align: center; font-size: clamp(11px, 0.95vw, 15px); font-weight: 700; color: #1a1a1a; }
+.aktif-program .aktif-hucre .kucuk-etiket { display: block; font-size: 9px; font-weight: 700; color: #7a3d00; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.aktif-program .geri-sayim {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: clamp(14px, 1.2vw, 20px);
+  font-weight: 900;
+  color: #7a3d00;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sonraki-programlar { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; min-height: 0; }
+
+.sonraki-satir {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  background: #d4f5f1;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  box-shadow: inset 3px 0 0 #2a6b66;
+  font-size: clamp(10px, 0.85vw, 13px);
+}
+.sonraki-satir .ad { font-weight: 700; color: #111; }
+.sonraki-satir .hucre { text-align: center; color: #333; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sonraki-bos { text-align: center; color: #666; font-style: italic; font-size: 12px; padding: 12px; }
+
+.haftalik-program {
+  background: #2b2b2b;
+  border-radius: 8px;
+  padding: 6px;
+  overflow: auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 0;
+}
+
+.hp-tablo {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: clamp(6px, 0.55vw, 10px);
+  table-layout: fixed;
+}
+
+.hp-tablo th,
+.hp-tablo td {
+  border: 1px solid #333;
+  padding: 1px 2px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp-tablo thead th { background: #cfcfcf; font-weight: bold; }
+.hp-tablo thead tr:first-child th { background: #e0e0e0; font-size: 1.15em; letter-spacing: 1px; }
+.hp-tablo thead tr:nth-child(2) th { background: #d9d9d9; }
+.hp-tablo thead tr:nth-child(3) th.sinif-baslik { background: #ff5b5b; color: #fff; font-weight: 700; }
+.hp-tablo .saat { background: #dcdcdc; font-weight: bold; font-size: 0.95em; }
+
+.turuncu { background: #f4a460; }
+.sari    { background: #f0e68c; }
+.yesil   { background: #90ee90; }
+.mavi    { background: #87ceeb; }
+.pembe   { background: #ffb6c1; }
+.mor     { background: #dda0dd; }
+.bos     { background: #fff; }
+
+.listeler-sekme { background: #f8d7ce; border-radius: 12px; padding: 20px; overflow-y: auto; flex: 1; min-height: 0; }
+.listeler-sekme h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; padding-bottom: 10px; border-bottom: 2px solid #7a4a41; }
+.aciklama { font-size: 13px; color: #555; margin-bottom: 16px; line-height: 1.5; }
+.bilgi-not { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 10px 14px; border-radius: 6px; font-size: 13px; color: #0d47a1; margin-bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.bilgi-not input[type="date"] { padding: 4px 8px; font-size: 13px; border: 1px solid #1976d2; border-radius: 4px; font-family: inherit; }
+.liste-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+.liste-kart { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: flex; flex-direction: column; }
+.kart-baslik { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #ddd; }
+.kart-baslik h3 { font-size: 16px; font-weight: 700; }
+.kart-baslik .sayi { background: #7a4a41; color: #fff; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+.liste { max-height: 180px; overflow-y: auto; margin-bottom: 10px; }
+.kisi-satir { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 14px; }
+.kisi-satir .sira { background: #eee; color: #555; font-weight: 700; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.kisi-satir.siradaki { background: #fff3cd; border-left: 4px solid #ffc107; font-weight: 700; }
+.kisi-satir.siradaki .sira { background: #ffc107; color: #111; }
+.kisi-satir .isim { flex: 1; }
+.kisi-satir .sil-btn { background: transparent; border: none; color: #c62828; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+.kisi-satir .sil-btn:hover { background: #ffebee; }
+.ekle-satir { display: flex; gap: 6px; }
+.ekle-satir input { flex: 1; padding: 7px 10px; font-size: 14px; border: 1.5px solid #aaa; border-radius: 6px; font-family: inherit; }
+.ekle-satir input:focus { outline: none; border-color: #7a4a41; }
+.ekle-satir button { padding: 7px 14px; font-size: 14px; font-weight: 600; border: none; border-radius: 6px; background: #2e7d32; color: #fff; cursor: pointer; }
+.ekle-satir button:hover { background: #1b5e20; }
+
+.ders-sekme-baslik { display: flex; gap: 8px; margin-bottom: 14px; }
+.ders-sekme-baslik button { flex: 1; padding: 10px 12px; font-size: 15px; font-weight: 700; border: 2px solid #7a4a41; border-radius: 8px; background: #fff; color: #7a4a41; cursor: pointer; transition: all 0.15s; }
+.ders-sekme-baslik button.aktif { background: #7a4a41; color: #fff; box-shadow: 0 2px 8px rgba(122, 74, 65, 0.35); }
+.ders-sekme-baslik button:hover:not(.aktif) { background: #f8d7ce; }
+
+.ders-panel { display: none; }
+.ders-panel.aktif { display: block; }
+
+.program-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 6px; margin-bottom: 10px; }
+.ders-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 6px; margin-bottom: 10px; }
+.ders-form input, .program-form input { padding: 7px 8px; font-size: 13px; border: 1.5px solid #aaa; border-radius: 6px; font-family: inherit; width: 100%; }
+.ders-form select { padding: 7px 8px; font-size: 13px; border: 1.5px solid #aaa; border-radius: 6px; font-family: inherit; width: 100%; background: #fff; }
+.ders-form input:focus, .program-form input:focus, .ders-form select:focus { outline: none; border-color: #7a4a41; }
+.ders-form button, .program-form button { padding: 7px 12px; font-size: 13px; font-weight: 700; border: none; border-radius: 6px; background: #2e7d32; color: #fff; cursor: pointer; white-space: nowrap; }
+.ders-form button:hover, .program-form button:hover { background: #1b5e20; }
+.ders-form label, .program-form label { font-size: 10px; font-weight: 700; color: #555; text-transform: uppercase; }
+.ders-form .alan, .program-form .alan { display: flex; flex-direction: column; gap: 2px; }
+
+.program-liste-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 30px; gap: 6px; align-items: center; padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+.ders-liste-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 30px; gap: 6px; align-items: center; padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+.program-liste-satir .saat-aralik, .ders-liste-satir .saat-aralik { color: #666; font-variant-numeric: tabular-nums; }
+.program-liste-satir .sil-btn, .ders-liste-satir .sil-btn { background: transparent; border: none; color: #c62828; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+.program-liste-satir .sil-btn:hover, .ders-liste-satir .sil-btn:hover { background: #ffebee; }
+.program-baslik-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 30px; gap: 6px; padding: 6px 8px; background: #f0f0f0; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #555; border-radius: 4px; margin-bottom: 4px; }
+.ders-baslik-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 30px; gap: 6px; padding: 6px 8px; background: #f0f0f0; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #555; border-radius: 4px; margin-bottom: 4px; }
+
+.ayar-footer { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+.ayar-footer label { font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px; }
+.ayar-footer textarea { width: 100%; font-family: inherit; font-size: 14px; padding: 8px 10px; border: 1.5px solid #aaa; border-radius: 6px; resize: vertical; min-height: 70px; }
+.ayar-footer textarea:focus { outline: none; border-color: #7a4a41; }
+.bildirim { margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; display: none; }
+.bildirim.goster { display: block; background: #c8e6c9; color: #1b5e20; }
+.geri-btn { background: #7a4a41; color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); margin-bottom: 12px; align-self: flex-start; }
+.geri-btn:hover { background: #5d3830; }
+
+.giris-ekrani { position: fixed; inset: 0; background: linear-gradient(135deg, #d32f2f 0%, #7a1f1f 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+.giris-ekrani.gizli { display: none; }
+.giris-kart { background: #fff; border-radius: 16px; padding: 36px 32px 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.45); text-align: center; }
+.giris-kart h1 { font-size: 24px; font-weight: 800; color: #d32f2f; margin-bottom: 6px; }
+.giris-kart .alt-baslik { font-size: 13px; color: #777; margin-bottom: 24px; letter-spacing: 1px; text-transform: uppercase; }
+.giris-kart .form-alan { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; text-align: left; }
+.giris-kart label { font-size: 12px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
+.giris-kart input { width: 100%; padding: 12px 14px; font-size: 15px; border: 2px solid #ddd; border-radius: 10px; font-family: inherit; transition: border-color 0.2s; }
+.giris-kart input:focus { outline: none; border-color: #d32f2f; }
+.giris-kart button { width: 100%; padding: 13px; font-size: 16px; font-weight: 800; letter-spacing: 1px; border: none; border-radius: 10px; background: #d32f2f; color: #fff; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+.giris-kart button:hover { background: #b71c1c; }
+.giris-kart button:active { transform: scale(0.98); }
+.giris-hata { display: none; margin-top: 14px; padding: 10px 12px; background: #ffebee; color: #b71c1c; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.giris-hata.goster { display: block; }
+.giris-ikon { font-size: 44px; margin-bottom: 10px; }
+
+.senkron-durum {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.3s;
+}
+.senkron-durum.ok { color: #2e7d32; }
+.senkron-durum.yukleniyor { color: #f57c00; }
+.senkron-durum.hata { color: #c62828; }
+.senkron-durum .nokta {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+</style>
+</head>
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div class="giris-ekrani" id="girisEkrani">
+  <div class="giris-kart">
+    <div class="giris-ikon">🕌</div>
+    <h1>Köprülü Yurdu</h1>
+    <div class="alt-baslik">Nöbet Panosu Girişi</div>
+
+    <div class="form-alan">
+      <div>
+        <label for="girisKullanici">Kullanıcı Adı</label>
+        <input type="text" id="girisKullanici" placeholder="Kullanıcı adınızı girin" autocomplete="username">
+      </div>
+      <div>
+        <label for="girisSifre">Şifre</label>
+        <input type="password" id="girisSifre" placeholder="Şifrenizi girin" autocomplete="current-password">
+      </div>
+    </div>
+
+    <button id="girisBtn">GİRİŞ YAP</button>
+    <div class="giris-hata" id="girisHata">❌ Kullanıcı adı veya şifre hatalı!</div>
+  </div>
+</div>
+
+<!-- SENKRON DURUM GÖSTERGESİ -->
+<div class="senkron-durum yukleniyor" id="senkronDurum">
+  <span class="nokta"></span>
+  <span id="senkronYazi">Bağlanıyor...</span>
+</div>
+
+<div class="sekme-icerik aktif" id="sekme-panel">
+  <div class="panel">
+    <div class="ust-baslik">
+      <div class="tarih-saat" id="saatTikla" title="Nöbet Listelerini aç">
+        <div class="saat" id="canliSaat">--:--:--</div>
+        <div class="tarih" id="canliTarih">--</div>
+        <div class="ipucu">👥 Listeler için tıkla</div>
+      </div>
+      <div class="sutun">
+        <h2>İMAM</h2>
+        <div class="bugun-yarin-yatay">
+          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterImam">-</span></div>
+          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterImamYarin">-</span></div>
+        </div>
+      </div>
+      <div class="sutun">
+        <h2>MÜEZZİN</h2>
+        <div class="bugun-yarin-yatay">
+          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterMuezzin">-</span></div>
+          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterMuezzinYarin">-</span></div>
+        </div>
+      </div>
+      <div class="sutun">
+        <h2>ÇAYCI</h2>
+        <div class="bugun-yarin-yatay">
+          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterCayci">-</span></div>
+          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterCayciYarin">-</span></div>
+        </div>
+      </div>
+      <div class="sutun">
+        <h2>YEMEKÇİLER</h2>
+        <div class="bugun-yarin-yatay">
+          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterYemekciler">-</span></div>
+          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterYemekcilerYarin">-</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="orta">
+      <div class="ders-tablo">
+        <div class="hucre bos"></div>
+        <div class="hucre baslik-hucre">SAY 1</div>
+        <div class="hucre baslik-hucre">SAY 2</div>
+        <div class="hucre baslik-hucre">EA</div>
+        <div class="hucre">ŞUANKİ DERS</div>
+        <div class="hucre" id="suankiSay1">-</div>
+        <div class="hucre" id="suankiSay2">-</div>
+        <div class="hucre" id="suankiEA">-</div>
+        <div class="hucre">GELECEK DERS</div>
+        <div class="hucre" id="gelecekSay1">-</div>
+        <div class="hucre" id="gelecekSay2">-</div>
+        <div class="hucre" id="gelecekEA">-</div>
+      </div>
+      <div class="hadis-kutu">
+        <div class="hadis-baslik">
+          GÜNÜN HADİS-İ ŞERİFİ
+          <button class="hadis-yenile-btn" id="hadisYenileBtn" title="Yenile">🔄</button>
+        </div>
+        <div class="hadis-metin" id="gosterHadis"></div>
+      </div>
+    </div>
+
+    <div class="alt">
+      <div class="program-kutu">
+        <div class="program-baslik">📋 PROGRAM BİLGİLERİ</div>
+        <div class="aktif-program" id="aktifProgramKutu">
+          <div>
+            <span class="aktif-etiket">▶ ŞU ANKİ</span>
+            <span class="aktif-ad" id="aktifProgramAd">Program yok</span>
+          </div>
+          <div class="aktif-hucre"><span class="kucuk-etiket">Başlangıç</span><span id="aktifProgramBas">--:--</span></div>
+          <div class="aktif-hucre"><span class="kucuk-etiket">Bitiş</span><span id="aktifProgramBit">--:--</span></div>
+          <div class="aktif-hucre"><span class="kucuk-etiket">Sonraki Programa</span><span class="geri-sayim" id="aktifProgramKalan">--:--:--</span></div>
+        </div>
+        <div class="sonraki-programlar" id="sonrakiProgramlar">
+          <div class="sonraki-bos">Sonraki program yok</div>
+        </div>
+      </div>
+
+      <div class="haftalik-program">
+        <table class="hp-tablo">
+          <thead>
+            <tr>
+              <th rowspan="2">Saat</th>
+              <th colspan="3">PAZARTESİ</th>
+              <th colspan="3">SALI</th>
+              <th colspan="3">ÇARŞAMBA</th>
+              <th colspan="3">PERŞEMBE</th>
+              <th colspan="3">CUMA</th>
+            </tr>
+            <tr>
+              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="saat">08:00-08:40</td>
+              <td class="mavi">MAT-2</td><td class="bos"></td><td class="pembe">MAT-1</td>
+              <td class="turuncu">FİZİK</td><td class="yesil">GEOMETRİ</td><td class="bos"></td>
+              <td class="yesil">BİYOLOJİ</td><td class="bos"></td><td class="mavi">MAT-2</td>
+              <td class="yesil">KİMYA</td><td class="yesil">TÜRKÇE</td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="mavi">TARİH</td>
+            </tr>
+            <tr>
+              <td class="saat">08:50-09:30</td>
+              <td class="bos"></td><td class="mavi">MAT-2</td><td class="mavi">MAT-1</td>
+              <td class="turuncu">FİZİK</td><td class="yesil">GEOMETRİ</td><td class="bos"></td>
+              <td class="yesil">BİYOLOJİ</td><td class="mavi">MAT-2</td><td class="bos"></td>
+              <td class="yesil">KİMYA</td><td class="yesil">TÜRKÇE</td><td class="sari">COĞRAFYA</td>
+              <td class="bos"></td><td class="bos"></td><td class="mavi">TARİH</td>
+            </tr>
+            <tr>
+              <td class="saat">09:40-10:20</td>
+              <td class="mavi">MAT-1</td><td class="mavi">MAT-2</td><td class="bos"></td>
+              <td class="turuncu">FİZİK</td><td class="bos"></td><td class="yesil">GEOMETRİ</td>
+              <td class="mavi">MAT-2</td><td class="yesil">BİYOLOJİ</td><td class="bos"></td>
+              <td class="yesil">TÜRKÇE</td><td class="yesil">KİMYA</td><td class="sari">COĞRAFYA</td>
+              <td class="mavi">TARİH</td><td class="bos"></td><td class="bos"></td>
+            </tr>
+            <tr>
+              <td class="saat">10:30-11:10</td>
+              <td class="mavi">MAT-1</td><td class="bos"></td><td class="mavi">MAT-2</td>
+              <td class="bos"></td><td class="turuncu">FİZİK</td><td class="yesil">GEOMETRİ</td>
+              <td class="mavi">MAT-2</td><td class="yesil">BİYOLOJİ</td><td class="mavi">MAT-1</td>
+              <td class="yesil">TÜRKÇE</td><td class="yesil">KİMYA</td><td class="sari">COĞRAFYA</td>
+              <td class="mavi">TARİH</td><td class="bos"></td><td class="bos"></td>
+            </tr>
+            <tr>
+              <td class="saat">11:20-12:00</td>
+              <td class="bos"></td><td class="mavi">MAT-1</td><td class="mavi">MAT-2</td>
+              <td class="yesil">GEOMETRİ</td><td class="turuncu">FİZİK</td><td class="bos"></td>
+              <td class="yesil">BİYOLOJİ</td><td class="mavi">MAT-1</td><td class="bos"></td>
+              <td class="yesil">KİMYA</td><td class="sari">COĞRAFYA</td><td class="yesil">TÜRKÇE</td>
+              <td class="bos"></td><td class="mavi">TARİH</td><td class="bos"></td>
+            </tr>
+            <tr>
+              <td class="saat">12:10-12:50</td>
+              <td class="bos"></td><td class="mavi">MAT-1</td><td class="bos"></td>
+              <td class="yesil">GEOMETRİ</td><td class="turuncu">FİZİK</td><td class="bos"></td>
+              <td class="bos"></td><td class="mavi">MAT-1</td><td class="yesil">BİYOLOJİ</td>
+              <td class="sari">COĞRAFYA</td><td class="yesil">KİMYA</td><td class="bos"></td>
+              <td class="yesil">TÜRKÇE</td><td class="bos"></td><td class="mavi">TARİH</td>
+            </tr>
+            <tr>
+              <td class="saat">14:00-14:40</td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="yesil">EDEBİYAT</td><td class="bos"></td>
+            </tr>
+            <tr>
+              <td class="saat">14:50-15:30</td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="bos"></td><td class="bos"></td>
+              <td class="bos"></td><td class="yesil">EDEBİYAT</td><td class="bos"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sekme-icerik" id="sekme-listeler">
+  <div class="listeler-sekme">
+    <button class="geri-btn" id="geriBtn">← Panele Dön</button>
+    <h2>👥 Nöbet Listeleri</h2>
+    <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff3cd; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> <b style="color:#c62828;">Hafta sonu (Cumartesi/Pazar) nöbet değişmez; Cuma günkü kişi devam eder.</b></p>
+
+    <div class="bilgi-not">
+      📅 <b>Başlangıç tarihi:</b>
+      <input type="date" id="inpBaslangic">
+      <span>— bu tarihte listenin 1. kişisi nöbetçi olur. (Hafta içi bir gün seçin.)</span>
+    </div>
+
+    <div class="liste-grid">
+      <div class="liste-kart">
+        <div class="kart-baslik"><h3>İMAM</h3><span class="sayi" id="sayi-imam">0</span></div>
+        <div class="liste" id="liste-imam"></div>
+        <div class="ekle-satir"><input type="text" id="yeni-imam" placeholder="Yeni isim..."><button data-ekle="imam">+ Ekle</button></div>
+      </div>
+      <div class="liste-kart">
+        <div class="kart-baslik"><h3>MÜEZZİN</h3><span class="sayi" id="sayi-muezzin">0</span></div>
+        <div class="liste" id="liste-muezzin"></div>
+        <div class="ekle-satir"><input type="text" id="yeni-muezzin" placeholder="Yeni isim..."><button data-ekle="muezzin">+ Ekle</button></div>
+      </div>
+      <div class="liste-kart">
+        <div class="kart-baslik"><h3>ÇAYCI</h3><span class="sayi" id="sayi-cayci">0</span></div>
+        <div class="liste" id="liste-cayci"></div>
+        <div class="ekle-satir"><input type="text" id="yeni-cayci" placeholder="Yeni isim..."><button data-ekle="cayci">+ Ekle</button></div>
+      </div>
+      <div class="liste-kart">
+        <div class="kart-baslik"><h3>YEMEKÇİLER (2'li grup)</h3><span class="sayi" id="sayi-yemekciler">0</span></div>
+        <div class="liste" id="liste-yemekciler"></div>
+        <div class="ekle-satir"><input type="text" id="yeni-yemekciler" placeholder="Yeni isim..."><button data-ekle="yemekciler">+ Ekle</button></div>
+      </div>
+    </div>
+
+    <div class="liste-kart" style="margin-bottom:20px;">
+      <div class="kart-baslik"><h3>📋 GENEL PROGRAMLAR (Namaz, Yemek, Etüt...)</h3><span class="sayi" id="sayi-programlar">0</span></div>
+      <p style="font-size:12px; color:#555; margin-bottom:12px;">
+        Ders dışı programları buraya ekle. Panel otomatik olarak <b>şu anki programı</b> ve <b>sonraki programları</b> gösterir.
+      </p>
+
+      <div class="program-form">
+        <div class="alan"><label>Program Adı</label><input type="text" id="programAd" placeholder="Örn: Öğle Namazı"></div>
+        <div class="alan"><label>Başlangıç</label><input type="time" id="programBas"></div>
+        <div class="alan"><label>Bitiş</label><input type="time" id="programBit"></div>
+        <div class="alan"><label>&nbsp;</label><button id="programEkleBtn">+ Ekle</button></div>
+      </div>
+
+      <div class="program-baslik-satir">
+        <span>Program Adı</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+      </div>
+      <div id="programListesi"></div>
+    </div>
+
+    <div class="liste-kart" style="margin-bottom:20px;">
+      <div class="kart-baslik"><h3>📚 DERS PROGRAMLARI</h3></div>
+      <p style="font-size:12px; color:#555; margin-bottom:14px;">
+        Her sınıf için <b>ayrı ayrı</b> ders ekle. Her derse bir <b>gün</b> seç. Panel, sadece o günün derslerini gösterir. Hafta sonu ders gösterilmez.
+      </p>
+
+      <div class="ders-sekme-baslik">
+        <button class="ders-sekme-btn aktif" data-sinif="say1">SAY 1</button>
+        <button class="ders-sekme-btn" data-sinif="say2">SAY 2</button>
+        <button class="ders-sekme-btn" data-sinif="ea">EA</button>
+      </div>
+
+      <div class="ders-panel aktif" id="panel-say1">
+        <div class="ders-form">
+          <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-say1" placeholder="Örn: MAT-2"></div>
+          <div class="alan"><label>Gün</label>
+            <select id="dersGun-say1">
+              <option value="1">Pazartesi</option>
+              <option value="2">Salı</option>
+              <option value="3">Çarşamba</option>
+              <option value="4">Perşembe</option>
+              <option value="5">Cuma</option>
+            </select>
+          </div>
+          <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-say1"></div>
+          <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-say1"></div>
+          <div class="alan"><label>&nbsp;</label><button data-ders-ekle="say1">+ Ekle</button></div>
+        </div>
+        <div class="ders-baslik-satir">
+          <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+        </div>
+        <div id="dersListesi-say1"></div>
+      </div>
+
+      <div class="ders-panel" id="panel-say2">
+        <div class="ders-form">
+          <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-say2" placeholder="Örn: MAT-2"></div>
+          <div class="alan"><label>Gün</label>
+            <select id="dersGun-say2">
+              <option value="1">Pazartesi</option>
+              <option value="2">Salı</option>
+              <option value="3">Çarşamba</option>
+              <option value="4">Perşembe</option>
+              <option value="5">Cuma</option>
+            </select>
+          </div>
+          <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-say2"></div>
+          <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-say2"></div>
+          <div class="alan"><label>&nbsp;</label><button data-ders-ekle="say2">+ Ekle</button></div>
+        </div>
+        <div class="ders-baslik-satir">
+          <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+        </div>
+        <div id="dersListesi-say2"></div>
+      </div>
+
+      <div class="ders-panel" id="panel-ea">
+        <div class="ders-form">
+          <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-ea" placeholder="Örn: GEOMETRİ"></div>
+          <div class="alan"><label>Gün</label>
+            <select id="dersGun-ea">
+              <option value="1">Pazartesi</option>
+              <option value="2">Salı</option>
+              <option value="3">Çarşamba</option>
+              <option value="4">Perşembe</option>
+              <option value="5">Cuma</option>
+            </select>
+          </div>
+          <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-ea"></div>
+          <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-ea"></div>
+          <div class="alan"><label>&nbsp;</label><button data-ders-ekle="ea">+ Ekle</button></div>
+        </div>
+        <div class="ders-baslik-satir">
+          <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+        </div>
+        <div id="dersListesi-ea"></div>
+      </div>
+    </div>
+
+    <div class="ayar-footer">
+      <label for="inpHadis">Günün Hadis-i Şerifi (son satır kaynak olur)</label>
+      <textarea id="inpHadis"></textarea>
+      <div class="bildirim" id="bildirim"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAyzP8dblCHiukUsUSfwqlRTZL3LBMFqUY",
+  authDomain: "program-d035f.firebaseapp.com",
+  projectId: "program-d035f",
+  storageBucket: "program-d035f.firebasestorage.app",
+  messagingSenderId: "3033295736",
+  appId: "1:3033295736:web:b011133c21dbe935edf68d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const BELGE_REF = doc(db, "nobetPanosu", "veriler");
+
+// Global fonksiyonlar için
+window.__firebaseHazir = false;
+window.__firestoreSet = null;
+
+// Firestore'dan gelen veriyi uygula
+function veriyiUygula(yeniVeri) {
+  if (!yeniVeri) return;
+  veri = yeniVeri;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+  saatGuncelle();
+  if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
+    listeleriGuncelle();
+  }
+}
+
+// Firestore'a kaydet
+async function firestoreKaydet() {
+  try {
+    senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
+    await setDoc(BELGE_REF, veri);
+    senkronDurumGuncelle('ok', 'Kaydedildi ✓');
+    setTimeout(() => senkronDurumGuncelle('ok', 'Senkron'), 1500);
+  } catch (e) {
+    console.error('Kaydetme hatası:', e);
+    senkronDurumGuncelle('hata', 'Kayıt hatası!');
+  }
+}
+
+// Senkron durum göstergesi
+function senkronDurumGuncelle(durum, yazi) {
+  const el = document.getElementById('senkronDurum');
+  const yaziEl = document.getElementById('senkronYazi');
+  if (!el || !yaziEl) return;
+  el.className = 'senkron-durum ' + durum;
+  yaziEl.textContent = yazi;
+}
+
+// Firestore'u başlat
+async function firestoreBaslat() {
+  try {
+    senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
+    
+    // İlk yükleme + gerçek zamanlı dinleme
+    onSnapshot(BELGE_REF, (docSnap) => {
+      if (docSnap.exists()) {
+        const uzakVeri = docSnap.data();
+        veriyiUygula(uzakVeri);
+        senkronDurumGuncelle('ok', 'Senkron ✓');
+      } else {
+        // İlk defa açılıyor - mevcut veriyi (veya varsayılanı) yükle
+        setDoc(BELGE_REF, veri).then(() => {
+          senkronDurumGuncelle('ok', 'Senkron ✓');
+        }).catch(e => {
+          console.error('İlk yükleme hatası:', e);
+          senkronDurumGuncelle('hata', 'Bağlantı hatası!');
+        });
+      }
+    }, (hata) => {
+      console.error('Firestore hatası:', hata);
+      senkronDurumGuncelle('hata', 'Bağlantı yok!');
+    });
+
+    window.__firebaseHazir = true;
+    window.__firestoreSet = firestoreKaydet;
+  } catch (e) {
+    console.error('Firebase başlatma hatası:', e);
+    senkronDurumGuncelle('hata', 'Bağlantı hatası!');
+  }
+}
+
+// firestoreBaslat'ı global yap ki aşağıdaki kod çağırabilsin
+window.__firestoreBaslat = firestoreBaslat;
+</script>
+
+<script>
+/* ================== GİRİŞ BİLGİLERİ ================== */
+const GIRIS_BILGILERI = {
+  kullanici: "admin",
+  sifre: "1234"
+};
+
+(function girisKontrol() {
+  const girisEkrani = document.getElementById('girisEkrani');
+  const kullaniciInput = document.getElementById('girisKullanici');
+  const sifreInput = document.getElementById('girisSifre');
+  const girisBtn = document.getElementById('girisBtn');
+  const hataEl = document.getElementById('girisHata');
+
+  if (sessionStorage.getItem('nobetGiris') === 'ok') {
+    girisEkrani.classList.add('gizli');
+    return;
+  }
+
+  function girisYap() {
+    const k = kullaniciInput.value.trim();
+    const s = sifreInput.value;
+
+    if (k === GIRIS_BILGILERI.kullanici && s === GIRIS_BILGILERI.sifre) {
+      sessionStorage.setItem('nobetGiris', 'ok');
+      hataEl.classList.remove('goster');
+      girisEkrani.classList.add('gizli');
+    } else {
+      hataEl.classList.add('goster');
+      sifreInput.value = '';
+      sifreInput.focus();
+      const kart = document.querySelector('.giris-kart');
+      kart.style.transition = 'transform 0.08s';
+      let yon = 1;
+      let sayac = 0;
+      const salla = setInterval(() => {
+        kart.style.transform = 'translateX(' + (8 * yon) + 'px)';
+        yon = -yon;
+        sayac++;
+        if (sayac >= 6) {
+          clearInterval(salla);
+          kart.style.transform = 'translateX(0)';
+        }
+      }, 60);
+    }
+  }
+
+  girisBtn.addEventListener('click', girisYap);
+  sifreInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') girisYap();
+  });
+  kullaniciInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sifreInput.focus();
+  });
+
+  kullaniciInput.focus();
+})();
+/* ===================================================== */
+
+const STORAGE_KEY = "nobetSistemV6";
+const VARSAYILAN = {
+  baslangicTarihi: new Date().toISOString().slice(0, 10),
+  imam:         ["Ahmet Yılmaz", "Mehmet Demir", "Mustafa Çelik"],
+  muezzin:    ["Ali Kaya", "Hasan Şahin", "Osman Aydın"],
+  cayci:      ["Bahadır Sapmaz", "Ramazan Koç", "İbrahim Doğan"],
+  yemekciler: ["Yusuf Aslan", "Ömer Faruk", "Murat Koç", "Hüseyin Ak"],
+  hadis:      '"Sizin en hayırlınız, Kur\'an\'ı öğrenen ve öğretendir."\n(Buhârî)',
+  hadisGun:   "",
+  dersSay1:   [],
+  dersSay2:   [],
+  dersEA:     [],
+  programlar: []
+};
+
+let veri = yukle();
+
+function yukle() {
+  try {
+    const k = localStorage.getItem(STORAGE_KEY);
+    if (!k) return JSON.parse(JSON.stringify(VARSAYILAN));
+    const p = JSON.parse(k);
+    return {
+      baslangicTarihi: p.baslangicTarihi || VARSAYILAN.baslangicTarihi,
+      imam:         Array.isArray(p.imam) ? p.imam : [...VARSAYILAN.imam],
+      muezzin:    Array.isArray(p.muezzin) ? p.muezzin : [...VARSAYILAN.muezzin],
+      cayci:      Array.isArray(p.cayci) ? p.cayci : [...VARSAYILAN.cayci],
+      yemekciler: Array.isArray(p.yemekciler) ? p.yemekciler : [...VARSAYILAN.yemekciler],
+      hadis:      typeof p.hadis === "string" ? p.hadis : VARSAYILAN.hadis,
+      hadisGun:   typeof p.hadisGun === "string" ? p.hadisGun : "",
+      dersSay1:   Array.isArray(p.dersSay1) ? p.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+      dersSay2:   Array.isArray(p.dersSay2) ? p.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+      dersEA:     Array.isArray(p.dersEA)   ? p.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
+      programlar: Array.isArray(p.programlar) ? p.programlar : []
+    };
+  } catch (e) {
+    return JSON.parse(JSON.stringify(VARSAYILAN));
+  }
+}
+
+function kaydet() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+  // Firebase'e de kaydet (varsa)
+  if (typeof window.__firestoreSet === 'function') {
+    window.__firestoreSet();
+  }
+}
+
+function saatToDk(s) {
+  if (!s) return null;
+  const p = s.split(':');
+  return Number(p[0]) * 60 + Number(p[1]);
+}
+
+const GUN_ADLARI = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+function gunAdi(n) { return GUN_ADLARI[Number(n)] || '?'; }
+
+function haftaSonuMu(tarih) {
+  const g = tarih.getDay();
+  return g === 0 || g === 6;
+}
+
+function isGunuTarihi(tarih) {
+  const d = new Date(tarih);
+  while (haftaSonuMu(d)) {
+    d.setDate(d.getDate() - 1);
+  }
+  return d;
+}
+
+function isGunuFarki(baslangicDate, hedefDate) {
+  if (hedefDate < baslangicDate) return 0;
+  let sayac = 0;
+  const d = new Date(baslangicDate);
+  while (d < hedefDate) {
+    const gun = d.getDay();
+    if (gun !== 0 && gun !== 6) sayac++;
+    d.setDate(d.getDate() + 1);
+  }
+  return sayac;
+}
+
+function siradakiIndex(liste, offsetGun) {
+  if (!liste || liste.length === 0) return -1;
+
+  const parcalar = veri.baslangicTarihi.split("-");
+  const y = Number(parcalar[0]), m = Number(parcalar[1]), d = Number(parcalar[2]);
+  let baslangic = new Date(y, m - 1, d);
+  baslangic = isGunuTarihi(baslangic);
+
+  const n = new Date();
+  const bugun = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  bugun.setDate(bugun.getDate() + (offsetGun || 0));
+
+  const hedef = isGunuTarihi(bugun);
+  const gun = isGunuFarki(baslangic, hedef);
+  return gun % liste.length;
+}
+
+function yemekciGrupIndeksleri(liste, offsetGun) {
+  if (!liste || liste.length === 0) return [];
+
+  const parcalar = veri.baslangicTarihi.split("-");
+  const y = Number(parcalar[0]), m = Number(parcalar[1]), d = Number(parcalar[2]);
+  let baslangic = new Date(y, m - 1, d);
+  baslangic = isGunuTarihi(baslangic);
+
+  const n = new Date();
+  const bugun = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  bugun.setDate(bugun.getDate() + (offsetGun || 0));
+
+  const hedef = isGunuTarihi(bugun);
+  const gun = isGunuFarki(baslangic, hedef);
+
+  const grupSayisi = Math.ceil(liste.length / 2);
+  const grup = gun % grupSayisi;
+  const start = grup * 2;
+  const sonuc = [];
+  if (liste[start] !== undefined) sonuc.push(start);
+  if (liste[start + 1] !== undefined) sonuc.push(start + 1);
+  return sonuc;
+}
+
+function dersBulSinif(liste) {
+  const simdi = new Date();
+  const bugunGun = simdi.getDay();
+
+  if (bugunGun === 0 || bugunGun === 6) {
+    return { suanki: null, gelecek: null };
+  }
+
+  const dk = simdi.getHours() * 60 + simdi.getMinutes();
+
+  const dersler = (liste || [])
+    .filter(function(d) { return Number(d.gun) === bugunGun; })
+    .slice()
+    .sort(function(a, b) { return saatToDk(a.bas) - saatToDk(b.bas); });
+
+  let suanki = null, gelecek = null;
+  for (let i = 0; i < dersler.length; i++) {
+    const d = dersler[i];
+    const bas = saatToDk(d.bas);
+    const bit = saatToDk(d.bit);
+    if (bas !== null && bit !== null) {
+      if (dk >= bas && dk < bit) { suanki = d; }
+      if (dk < bas && !gelecek) { gelecek = d; }
+    }
+  }
+  return { suanki: suanki, gelecek: gelecek };
+}
+
+function programBul(adetSonraki) {
+  const simdi = new Date();
+  const dk = simdi.getHours() * 60 + simdi.getMinutes();
+  const liste = (veri.programlar || []).slice().sort(function(a, b) {
+    return saatToDk(a.bas) - saatToDk(b.bas);
+  });
+
+  let suanki = null;
+  const sonrakiler = [];
+
+  for (let i = 0; i < liste.length; i++) {
+    const p = liste[i];
+    const bas = saatToDk(p.bas);
+    const bit = saatToDk(p.bit);
+    if (bas !== null && bit !== null) {
+      if (dk >= bas && dk < bit) {
+        suanki = p;
+      }
+    }
+  }
+
+  const suankiBit = suanki ? saatToDk(suanki.bit) : dk;
+  for (let i = 0; i < liste.length; i++) {
+    const p = liste[i];
+    const bas = saatToDk(p.bas);
+    if (bas !== null && bas >= suankiBit && (!suanki || p.id !== suanki.id)) {
+      sonrakiler.push(p);
+    }
+    if (sonrakiler.length >= adetSonraki) break;
+  }
+
+  let birSonraki = null;
+  if (sonrakiler.length > 0) {
+    birSonraki = sonrakiler[0];
+  }
+
+  return { suanki: suanki, sonrakiler: sonrakiler, birSonraki: birSonraki };
+}
+
+function geriSayimFormatla(hedefSaat) {
+  if (!hedefSaat) return '--:--:--';
+  const simdi = new Date();
+  const parcalar = hedefSaat.split(':');
+  const hedef = new Date();
+  hedef.setHours(Number(parcalar[0]), Number(parcalar[1]), 0, 0);
+
+  let fark = Math.floor((hedef - simdi) / 1000);
+  if (fark < 0) fark = 0;
+
+  const saat = Math.floor(fark / 3600);
+  const dakika = Math.floor((fark % 3600) / 60);
+  const saniye = fark % 60;
+
+  return pad2(saat) + ':' + pad2(dakika) + ':' + pad2(saniye);
+}
+
+function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function hadisHtmlOlustur(metin) {
+  if (!metin) metin = '';
+  const satirlar = metin.split('\n').map(s => s.trim()).filter(Boolean);
+  let kaynak = '';
+  let govde = metin;
+  if (satirlar.length > 1 && /^[\(\[]/.test(satirlar[satirlar.length - 1])) {
+    kaynak = satirlar.pop();
+    govde = satirlar.join(' ');
+  }
+
+  const uzunluk = govde.length;
+  let boyutSinif = '';
+  if (uzunluk > 500) boyutSinif = ' cok-cok-uzun';
+  else if (uzunluk > 350) boyutSinif = ' cok-uzun';
+  else if (uzunluk > 200) boyutSinif = ' uzun';
+
+  return '<span class="hadis-text' + boyutSinif + '">' + escapeHtml(govde) + '</span>' +
+    (kaynak ? '<span class="hadis-kaynak">' + escapeHtml(kaynak) + '</span>' : '');
+}
+
+function saatGuncelle() {
+  const simdi = new Date();
+  const saatStr = pad2(simdi.getHours()) + ':' + pad2(simdi.getMinutes()) + ':' + pad2(simdi.getSeconds());
+  const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+  const aylar = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+  const tarihStr = simdi.getDate() + ' ' + aylar[simdi.getMonth()] + ' ' + simdi.getFullYear() + ' ' + gunler[simdi.getDay()];
+
+  const elSaat = document.getElementById('canliSaat');
+  const elTarih = document.getElementById('canliTarih');
+  if (elSaat) elSaat.textContent = saatStr;
+  if (elTarih) {
+    const hs = haftaSonuMu(simdi);
+    elTarih.textContent = tarihStr + (hs ? '  (Hafta Sonu)' : '');
+  }
+
+  const idxImamBugun = siradakiIndex(veri.imam, 0);
+  const idxImamYarin = siradakiIndex(veri.imam, 1);
+  document.getElementById('gosterImam').textContent = idxImamBugun >= 0 ? veri.imam[idxImamBugun] : '-';
+  document.getElementById('gosterImamYarin').textContent = idxImamYarin >= 0 ? veri.imam[idxImamYarin] : '-';
+
+  const idxMuezzinBugun = siradakiIndex(veri.muezzin, 0);
+  const idxMuezzinYarin = siradakiIndex(veri.muezzin, 1);
+  document.getElementById('gosterMuezzin').textContent = idxMuezzinBugun >= 0 ? veri.muezzin[idxMuezzinBugun] : '-';
+  document.getElementById('gosterMuezzinYarin').textContent = idxMuezzinYarin >= 0 ? veri.muezzin[idxMuezzinYarin] : '-';
+
+  const idxCayciBugun = siradakiIndex(veri.cayci, 0);
+  const idxCayciYarin = siradakiIndex(veri.cayci, 1);
+  document.getElementById('gosterCayci').textContent = idxCayciBugun >= 0 ? veri.cayci[idxCayciBugun] : '-';
+  document.getElementById('gosterCayciYarin').textContent = idxCayciYarin >= 0 ? veri.cayci[idxCayciYarin] : '-';
+
+  const yemekciBugun = yemekciGrupIndeksleri(veri.yemekciler, 0).map(i => veri.yemekciler[i]);
+  const yemekciYarin = yemekciGrupIndeksleri(veri.yemekciler, 1).map(i => veri.yemekciler[i]);
+  document.getElementById('gosterYemekciler').innerHTML = yemekciBugun.length > 0 ? yemekciBugun.map(isim => '<span class="kisi-chip">' + escapeHtml(isim) + '</span>').join(' &bull; ') : '-';
+  document.getElementById('gosterYemekcilerYarin').innerHTML = yemekciYarin.length > 0 ? yemekciYarin.map(isim => '<span class="kisi-chip">' + escapeHtml(isim) + '</span>').join(' &bull; ') : '-';
+
+  const dSay1 = dersBulSinif(veri.dersSay1);
+  document.getElementById('suankiSay1').textContent = dSay1.suanki ? dSay1.suanki.ad : '-';
+  document.getElementById('gelecekSay1').textContent = dSay1.gelecek ? dSay1.gelecek.ad : '-';
+
+  const dSay2 = dersBulSinif(veri.dersSay2);
+  document.getElementById('suankiSay2').textContent = dSay2.suanki ? dSay2.suanki.ad : '-';
+  document.getElementById('gelecekSay2').textContent = dSay2.gelecek ? dSay2.gelecek.ad : '-';
+
+  const dEA = dersBulSinif(veri.dersEA);
+  document.getElementById('suankiEA').textContent = dEA.suanki ? dEA.suanki.ad : '-';
+  document.getElementById('gelecekEA').textContent = dEA.gelecek ? dEA.gelecek.ad : '-';
+
+  const prog = programBul(4);
+  const kutuAd = document.getElementById('aktifProgramAd');
+  const kutuBas = document.getElementById('aktifProgramBas');
+  const kutuBit = document.getElementById('aktifProgramBit');
+  const kutuKalan = document.getElementById('aktifProgramKalan');
+
+  if (prog.suanki) {
+    kutuAd.textContent = prog.suanki.ad;
+    kutuBas.textContent = prog.suanki.bas;
+    kutuBit.textContent = prog.suanki.bit;
+    kutuKalan.textContent = geriSayimFormatla(prog.suanki.bit);
+  } else if (prog.birSonraki) {
+    kutuAd.textContent = 'Bekleniyor (' + prog.birSonraki.ad + ' öncesi)';
+    kutuBas.textContent = '--:--';
+    kutuBit.textContent = prog.birSonraki.bas;
+    kutuKalan.textContent = geriSayimFormatla(prog.birSonraki.bas);
+  } else {
+    kutuAd.textContent = 'Program yok';
+    kutuBas.textContent = '--:--';
+    kutuBit.textContent = '--:--';
+    kutuKalan.textContent = '--:--:--';
+  }
+
+  const sonrakilerEl = document.getElementById('sonrakiProgramlar');
+  if (prog.sonrakiler.length > 0) {
+    let html = '';
+    prog.sonrakiler.forEach(function(p) {
+      html += '<div class="sonraki-satir">' +
+        '<span class="ad">' + escapeHtml(p.ad) + '</span>' +
+        '<span class="hucre">' + escapeHtml(p.bas) + '</span>' +
+        '<span class="hucre">' + escapeHtml(p.bit) + '</span>' +
+        '<span></span>' +
+      '</div>';
+    });
+    sonrakilerEl.innerHTML = html;
+  } else {
+    sonrakilerEl.innerHTML = '<div class="sonraki-bos">Sonraki program yok</div>';
+  }
+}
+
+document.getElementById('saatTikla').addEventListener('click', function() {
+  document.getElementById('sekme-panel').classList.remove('aktif');
+  document.getElementById('sekme-listeler').classList.add('aktif');
+  listeleriGuncelle();
+});
+
+document.getElementById('geriBtn').addEventListener('click', function() {
+  document.getElementById('sekme-listeler').classList.remove('aktif');
+  document.getElementById('sekme-panel').classList.add('aktif');
+});
+
+document.querySelectorAll('.ders-sekme-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.ders-sekme-btn').forEach(b => b.classList.remove('aktif'));
+    document.querySelectorAll('.ders-panel').forEach(p => p.classList.remove('aktif'));
+    btn.classList.add('aktif');
+    document.getElementById('panel-' + btn.getAttribute('data-sinif')).classList.add('aktif');
+  });
+});
+
+document.getElementById('inpBaslangic').addEventListener('change', function(e) {
+  if (!e.target.value) {
+    e.target.value = veri.baslangicTarihi;
+    return;
+  }
+  veri.baslangicTarihi = e.target.value;
+  kaydet();
+  bildirimGoster('Başlangıç tarihi güncellendi.');
+});
+
+function listeleriGuncelle() {
+  document.getElementById('inpBaslangic').value = veri.baslangicTarihi;
+  listeCiz('imam', veri.imam);
+  listeCiz('muezzin', veri.muezzin);
+  listeCiz('cayci', veri.cayci);
+  listeCiz('yemekciler', veri.yemekciler);
+  programListesiCiz();
+  dersListesiCiz('say1', veri.dersSay1);
+  dersListesiCiz('say2', veri.dersSay2);
+  dersListesiCiz('ea', veri.dersEA);
+  document.getElementById('inpHadis').value = veri.hadis;
+  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
+}
+
+function listeCiz(tur, liste) {
+  const container = document.getElementById('liste-' + tur);
+  document.getElementById('sayi-' + tur).textContent = liste.length;
+  const siradakiIdx = siradakiIndex(liste, 0);
+  let html = '';
+  liste.forEach(function(isim, i) {
+    const siradaMi = (i === siradakiIdx);
+    html += '<div class="kisi-satir' + (siradaMi ? ' siradaki' : '') + '">' +
+      '<span class="sira">' + (i + 1) + '</span>' +
+      '<span class="isim">' + escapeHtml(isim) + '</span>' +
+      '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+window.kisiSil = function(tur, index) {
+  veri[tur].splice(index, 1);
+  kaydet();
+  listeleriGuncelle();
+};
+
+document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const tur = btn.getAttribute('data-ekle');
+    const input = document.getElementById('yeni-' + tur);
+    const isim = input.value.trim();
+    if (isim) {
+      veri[tur].push(isim);
+      input.value = '';
+      kaydet();
+      listeleriGuncelle();
+    }
+  });
+});
+
+function programListesiCiz() {
+  const container = document.getElementById('programListesi');
+  document.getElementById('sayi-programlar').textContent = veri.programlar.length;
+  let html = '';
+  veri.programlar.forEach(function(p, i) {
+    html += '<div class="program-liste-satir">' +
+      '<span>' + escapeHtml(p.ad) + '</span>' +
+      '<span class="saat-aralik">' + escapeHtml(p.bas) + '</span>' +
+      '<span class="saat-aralik">' + escapeHtml(p.bit) + '</span>' +
+      '<button class="sil-btn" onclick="programSil(' + i + ')">&times;</button>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+document.getElementById('programEkleBtn').addEventListener('click', function() {
+  const ad = document.getElementById('programAd').value.trim();
+  const bas = document.getElementById('programBas').value;
+  const bit = document.getElementById('programBit').value;
+  if (ad && bas && bit) {
+    veri.programlar.push({ id: Date.now().toString(), ad: ad, bas: bas, bit: bit });
+    document.getElementById('programAd').value = '';
+    document.getElementById('programBas').value = '';
+    document.getElementById('programBit').value = '';
+    kaydet();
+    programListesiCiz();
+  }
+});
+
+window.programSil = function(i) {
+  veri.programlar.splice(i, 1);
+  kaydet();
+  programListesiCiz();
+};
+
+function dersListesiCiz(sinif, liste) {
+  const container = document.getElementById('dersListesi-' + sinif);
+
+  const sirali = (liste || []).slice().sort(function(a, b) {
+    const gA = Number(a.gun) || 0, gB = Number(b.gun) || 0;
+    if (gA !== gB) return gA - gB;
+    return saatToDk(a.bas) - saatToDk(b.bas);
+  });
+
+  let html = '';
+  sirali.forEach(function(d) {
+    const orijinalIndex = liste.indexOf(d);
+    html += '<div class="ders-liste-satir">' +
+      '<span>' + escapeHtml(d.ad) + '</span>' +
+      '<span class="saat-aralik">' + escapeHtml(gunAdi(d.gun)) + '</span>' +
+      '<span class="saat-aralik">' + escapeHtml(d.bas) + '</span>' +
+      '<span class="saat-aralik">' + escapeHtml(d.bit) + '</span>' +
+      '<button class="sil-btn" onclick="dersSil(\'' + sinif + '\', ' + orijinalIndex + ')">&times;</button>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+document.querySelectorAll('[data-ders-ekle]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const sinif = btn.getAttribute('data-ders-ekle');
+    const ad  = document.getElementById('dersAd-' + sinif).value.trim();
+    const gun = document.getElementById('dersGun-' + sinif).value;
+    const bas = document.getElementById('dersBas-' + sinif).value;
+    const bit = document.getElementById('dersBit-' + sinif).value;
+
+    if (ad && bas && bit && gun) {
+      const key = sinif === 'say1' ? 'dersSay1'
+                : sinif === 'say2' ? 'dersSay2'
+                : 'dersEA';
+      veri[key].push({ ad: ad, gun: Number(gun), bas: bas, bit: bit });
+
+      document.getElementById('dersAd-' + sinif).value = '';
+      document.getElementById('dersBas-' + sinif).value = '';
+      document.getElementById('dersBit-' + sinif).value = '';
+      kaydet();
+      dersListesiCiz(sinif, veri[key]);
+    }
+  });
+});
+
+window.dersSil = function(sinif, i) {
+  const key = sinif === 'say1' ? 'dersSay1' : (sinif === 'say2' ? 'dersSay2' : 'dersEA');
+  veri[key].splice(i, 1);
+  kaydet();
+  dersListesiCiz(sinif, veri[key]);
+};
+
+document.getElementById('inpHadis').addEventListener('input', function(e) {
+  veri.hadis = e.target.value;
+  kaydet();
+  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
+});
+
+document.getElementById('hadisYenileBtn').addEventListener('click', function() {
+  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
+});
+
+function bildirimGoster(mesaj) {
+  const b = document.getElementById('bildirim');
+  b.textContent = mesaj;
+  b.classList.add('goster');
+  setTimeout(() => b.classList.remove('goster'), 2500);
+}
+
+(function varsayilanGunSec() {
+  const bugunGun = new Date().getDay();
+  if (bugunGun >= 1 && bugunGun <= 5) {
+    ['say1', 'say2', 'ea'].forEach(function(s) {
+      const el = document.getElementById('dersGun-' + s);
+      if (el) el.value = String(bugunGun);
+    });
+  }
+})();
+
+setInterval(saatGuncelle, 1000);
+saatGuncelle();
+
+// Firebase başlat
+if (typeof window.__firestoreBaslat === 'function') {
+  window.__firestoreBaslat();
+}
+</script>
+</body>
+</html>
