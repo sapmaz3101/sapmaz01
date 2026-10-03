@@ -219,7 +219,88 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .geri-btn { background: #7a4a41; color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); margin-bottom: 12px; align-self: flex-start; }
 .geri-btn:hover { background: #5d3830; }
 
-/* ===== GİRİŞ EKRANI (İstanbul Boğazı arka planlı) ===== */
+/* ===== KULLANICI ADI VE ŞİFRE DEĞİŞTİRME ===== */
+.sifre-degistir-kart {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.sifre-degistir-kart .kart-baslik {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #ddd;
+}
+.sifre-degistir-kart .kart-baslik h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #7a4a41;
+}
+.sifre-degistir-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.sifre-degistir-form .alan {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sifre-degistir-form label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sifre-degistir-form input {
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 1.5px solid #aaa;
+  border-radius: 6px;
+  font-family: inherit;
+  width: 100%;
+}
+.sifre-degistir-form input:focus {
+  outline: none;
+  border-color: #7a4a41;
+}
+.sifre-degistir-form .tam-genislik {
+  grid-column: 1 / -1;
+}
+.sifre-degistir-kart .kaydet-btn {
+  width: 100%;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  background: #d32f2f;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 6px;
+}
+.sifre-degistir-kart .kaydet-btn:hover {
+  background: #b71c1c;
+}
+.sifre-degistir-bilgi {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  border-left: 3px solid #7a4a41;
+}
+
+/* ===== GİRİŞ EKRANI ===== */
 .giris-ekrani {
   position: fixed;
   inset: 0;
@@ -653,6 +734,40 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
       </div>
     </div>
 
+    <!-- KULLANICI ADI VE ŞİFRE DEĞİŞTİRME -->
+    <div class="sifre-degistir-kart">
+      <div class="kart-baslik">
+        <h3>🔐 Kullanıcı Adı ve Şifre Değiştir</h3>
+      </div>
+      <div class="sifre-degistir-form">
+        <div class="alan">
+          <label for="mevcutKullanici">Mevcut Kullanıcı Adı</label>
+          <input type="text" id="mevcutKullanici" placeholder="Mevcut kullanıcı adı" autocomplete="off">
+        </div>
+        <div class="alan">
+          <label for="mevcutSifre">Mevcut Şifre</label>
+          <input type="password" id="mevcutSifre" placeholder="Mevcut şifre" autocomplete="off">
+        </div>
+        <div class="alan">
+          <label for="yeniKullanici">Yeni Kullanıcı Adı</label>
+          <input type="text" id="yeniKullanici" placeholder="Yeni kullanıcı adı" autocomplete="off">
+        </div>
+        <div class="alan">
+          <label for="yeniSifre">Yeni Şifre</label>
+          <input type="password" id="yeniSifre" placeholder="Yeni şifre" autocomplete="off">
+        </div>
+        <div class="alan tam-genislik">
+          <label for="yeniSifreTekrar">Yeni Şifre (Tekrar)</label>
+          <input type="password" id="yeniSifreTekrar" placeholder="Yeni şifreyi tekrar girin" autocomplete="off">
+        </div>
+      </div>
+      <button class="kaydet-btn" id="sifreDegistirBtn">BİLGİLERİ GÜNCELLE</button>
+      <div class="sifre-degistir-bilgi">
+        ℹ️ <b>Not:</b> Değiştirdiğiniz kullanıcı adı ve şifre, <b>tarayıcınızda</b> saklanır. Farklı bir cihazdan giriş yaparken <b>eski bilgileri</b> kullanmanız gerekir.
+      </div>
+      <div class="bildirim" id="sifreBildirim"></div>
+    </div>
+
     <div class="ayar-footer">
       <label for="inpHadis">Günün Hadis-i Şerifi (son satır kaynak olur)</label>
       <textarea id="inpHadis"></textarea>
@@ -747,10 +862,32 @@ window.__firestoreBaslat = firestoreBaslat;
 
 <script>
 /* ================== GİRİŞ BİLGİLERİ ================== */
-const GIRIS_BILGILERI = {
+// Varsayılan giriş bilgileri
+const GIRIS_VARSAYILAN = {
   kullanici: "KÖPRÜLÜ",
   sifre: "köprülü1453"
 };
+
+// LocalStorage'dan kayıtlı giriş bilgilerini yükle
+function girisBilgileriniYukle() {
+  try {
+    const kayitli = localStorage.getItem('nobetGirisBilgileri');
+    if (kayitli) {
+      const p = JSON.parse(kayitli);
+      if (p.kullanici && p.sifre) return p;
+    }
+  } catch(e) {}
+  return { ...GIRIS_VARSAYILAN };
+}
+
+// Giriş bilgilerini kaydet
+function girisBilgileriniKaydet(bilgiler) {
+  try {
+    localStorage.setItem('nobetGirisBilgileri', JSON.stringify(bilgiler));
+  } catch(e) {}
+}
+
+let GIRIS_BILGILERI = girisBilgileriniYukle();
 
 (function girisKontrol() {
   const girisEkrani = document.getElementById('girisEkrani');
@@ -1300,6 +1437,75 @@ document.getElementById('inpHadis').addEventListener('input', function(e) {
 
 document.getElementById('hadisYenileBtn').addEventListener('click', function() {
   document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
+});
+
+// ===== KULLANICI ADI VE ŞİFRE DEĞİŞTİRME =====
+document.getElementById('sifreDegistirBtn').addEventListener('click', function() {
+  const mevcutK = document.getElementById('mevcutKullanici').value.trim();
+  const mevcutS = document.getElementById('mevcutSifre').value;
+  const yeniK = document.getElementById('yeniKullanici').value.trim();
+  const yeniS = document.getElementById('yeniSifre').value;
+  const yeniSTekrar = document.getElementById('yeniSifreTekrar').value;
+  const bildirim = document.getElementById('sifreBildirim');
+
+  // Boş alan kontrolü
+  if (!mevcutK || !mevcutS || !yeniK || !yeniS || !yeniSTekrar) {
+    bildirim.textContent = '❌ Lütfen tüm alanları doldurun!';
+    bildirim.style.background = '#ffebee';
+    bildirim.style.color = '#b71c1c';
+    bildirim.classList.add('goster');
+    setTimeout(() => bildirim.classList.remove('goster'), 3000);
+    return;
+  }
+
+  // Mevcut bilgiler doğru mu?
+  if (mevcutK !== GIRIS_BILGILERI.kullanici || mevcutS !== GIRIS_BILGILERI.sifre) {
+    bildirim.textContent = '❌ Mevcut kullanıcı adı veya şifre hatalı!';
+    bildirim.style.background = '#ffebee';
+    bildirim.style.color = '#b71c1c';
+    bildirim.classList.add('goster');
+    setTimeout(() => bildirim.classList.remove('goster'), 3000);
+    return;
+  }
+
+  // Yeni şifreler aynı mı?
+  if (yeniS !== yeniSTekrar) {
+    bildirim.textContent = '❌ Yeni şifreler birbiriyle uyuşmuyor!';
+    bildirim.style.background = '#ffebee';
+    bildirim.style.color = '#b71c1c';
+    bildirim.classList.add('goster');
+    setTimeout(() => bildirim.classList.remove('goster'), 3000);
+    return;
+  }
+
+  // Yeni şifre en az 4 karakter mi?
+  if (yeniS.length < 4) {
+    bildirim.textContent = '❌ Yeni şifre en az 4 karakter olmalı!';
+    bildirim.style.background = '#ffebee';
+    bildirim.style.color = '#b71c1c';
+    bildirim.classList.add('goster');
+    setTimeout(() => bildirim.classList.remove('goster'), 3000);
+    return;
+  }
+
+  // Başarılı - yeni bilgileri kaydet
+  GIRIS_BILGILERI.kullanici = yeniK;
+  GIRIS_BILGILERI.sifre = yeniS;
+  girisBilgileriniKaydet(GIRIS_BILGILERI);
+
+  // Formu temizle
+  document.getElementById('mevcutKullanici').value = '';
+  document.getElementById('mevcutSifre').value = '';
+  document.getElementById('yeniKullanici').value = '';
+  document.getElementById('yeniSifre').value = '';
+  document.getElementById('yeniSifreTekrar').value = '';
+
+  // Başarı mesajı
+  bildirim.textContent = '✅ Kullanıcı adı ve şifre başarıyla güncellendi!';
+  bildirim.style.background = '#c8e6c9';
+  bildirim.style.color = '#1b5e20';
+  bildirim.classList.add('goster');
+  setTimeout(() => bildirim.classList.remove('goster'), 4000);
 });
 
 function bildirimGoster(mesaj) {
