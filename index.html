@@ -219,22 +219,74 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .geri-btn { background: #7a4a41; color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); margin-bottom: 12px; align-self: flex-start; }
 .geri-btn:hover { background: #5d3830; }
 
-.giris-ekrani { position: fixed; inset: 0; background: linear-gradient(135deg, #d32f2f 0%, #7a1f1f 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+/* ===== GİRİŞ EKRANI (Doğa resmi arka planlı) ===== */
+.giris-ekrani {
+  position: fixed;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1920&q=80') center center / cover no-repeat fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
 .giris-ekrani.gizli { display: none; }
-.giris-kart { background: #fff; border-radius: 16px; padding: 36px 32px 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.45); text-align: center; }
-.giris-kart h1 { font-size: 24px; font-weight: 800; color: #d32f2f; margin-bottom: 6px; }
-.giris-kart .alt-baslik { font-size: 13px; color: #777; margin-bottom: 24px; letter-spacing: 1px; text-transform: uppercase; }
+.giris-ekrani::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.15) 100%);
+  z-index: 0;
+}
+.giris-kart {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px 36px 32px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+.giris-kart h1 { font-size: 26px; font-weight: 800; color: #d32f2f; margin-bottom: 6px; letter-spacing: -0.5px; }
+.giris-kart .alt-baslik { font-size: 13px; color: #777; margin-bottom: 28px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
 .giris-kart .form-alan { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; text-align: left; }
 .giris-kart label { font-size: 12px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
-.giris-kart input { width: 100%; padding: 12px 14px; font-size: 15px; border: 2px solid #ddd; border-radius: 10px; font-family: inherit; transition: border-color 0.2s; }
+.giris-kart input { width: 100%; padding: 12px 14px; font-size: 15px; border: 2px solid #ddd; border-radius: 10px; font-family: inherit; transition: border-color 0.2s; background: #fff; }
 .giris-kart input:focus { outline: none; border-color: #d32f2f; }
 .giris-kart button { width: 100%; padding: 13px; font-size: 16px; font-weight: 800; letter-spacing: 1px; border: none; border-radius: 10px; background: #d32f2f; color: #fff; cursor: pointer; transition: background 0.2s, transform 0.1s; }
 .giris-kart button:hover { background: #b71c1c; }
 .giris-kart button:active { transform: scale(0.98); }
 .giris-hata { display: none; margin-top: 14px; padding: 10px 12px; background: #ffebee; color: #b71c1c; border-radius: 8px; font-size: 13px; font-weight: 700; }
 .giris-hata.goster { display: block; }
-.giris-ikon { font-size: 44px; margin-bottom: 10px; }
 
+.giris-ikon {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+.giris-logo {
+  max-width: 220px;
+  max-height: 220px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.15));
+  transition: transform 0.3s ease;
+}
+.giris-logo:hover {
+  transform: scale(1.03);
+}
+
+/* ===== SENKRON DURUM GÖSTERGESİ ===== */
 .senkron-durum {
   position: fixed;
   bottom: 20px;
@@ -270,7 +322,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 <!-- GİRİŞ EKRANI -->
 <div class="giris-ekrani" id="girisEkrani">
   <div class="giris-kart">
-    <div class="giris-ikon">🕌</div>
+    <div class="giris-ikon">
+      <img src="logo.png" alt="Köprülü Erkek Öğrenci Yurdu" class="giris-logo">
+    </div>
     <h1>Köprülü Yurdu</h1>
     <div class="alt-baslik">Nöbet Panosu Girişi</div>
 
@@ -625,11 +679,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const BELGE_REF = doc(db, "program", "veriler");
 
-// Global fonksiyonlar için
 window.__firebaseHazir = false;
 window.__firestoreSet = null;
 
-// Firestore'dan gelen veriyi uygula
 function veriyiUygula(yeniVeri) {
   if (!yeniVeri) return;
   veri = yeniVeri;
@@ -640,7 +692,6 @@ function veriyiUygula(yeniVeri) {
   }
 }
 
-// Firestore'a kaydet
 async function firestoreKaydet() {
   try {
     senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
@@ -653,7 +704,6 @@ async function firestoreKaydet() {
   }
 }
 
-// Senkron durum göstergesi
 function senkronDurumGuncelle(durum, yazi) {
   const el = document.getElementById('senkronDurum');
   const yaziEl = document.getElementById('senkronYazi');
@@ -662,19 +712,16 @@ function senkronDurumGuncelle(durum, yazi) {
   yaziEl.textContent = yazi;
 }
 
-// Firestore'u başlat
 async function firestoreBaslat() {
   try {
     senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
     
-    // İlk yükleme + gerçek zamanlı dinleme
     onSnapshot(BELGE_REF, (docSnap) => {
       if (docSnap.exists()) {
         const uzakVeri = docSnap.data();
         veriyiUygula(uzakVeri);
         senkronDurumGuncelle('ok', 'Senkron ✓');
       } else {
-        // İlk defa açılıyor - mevcut veriyi (veya varsayılanı) yükle
         setDoc(BELGE_REF, veri).then(() => {
           senkronDurumGuncelle('ok', 'Senkron ✓');
         }).catch(e => {
@@ -695,7 +742,6 @@ async function firestoreBaslat() {
   }
 }
 
-// firestoreBaslat'ı global yap ki aşağıdaki kod çağırabilsin
 window.__firestoreBaslat = firestoreBaslat;
 </script>
 
@@ -756,7 +802,6 @@ const GIRIS_BILGILERI = {
 
   kullaniciInput.focus();
 })();
-/* ===================================================== */
 
 const STORAGE_KEY = "nobetSistemV6";
 const VARSAYILAN = {
@@ -800,7 +845,6 @@ function yukle() {
 
 function kaydet() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
-  // Firebase'e de kaydet (varsa)
   if (typeof window.__firestoreSet === 'function') {
     window.__firestoreSet();
   }
@@ -1278,7 +1322,6 @@ function bildirimGoster(mesaj) {
 setInterval(saatGuncelle, 1000);
 saatGuncelle();
 
-// Firebase başlat
 if (typeof window.__firestoreBaslat === 'function') {
   window.__firestoreBaslat();
 }
