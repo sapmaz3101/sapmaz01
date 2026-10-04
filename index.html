@@ -682,11 +682,10 @@ const BELGE_REF = doc(db, "program", "veriler");
 window.__firebaseHazir = false;
 window.__firestoreSet = null;
 window.__firestoreBaslat = null;
-
 window.__veriyiUygula = null;
 window.__temizVeriOlustur = null;
 
-// Fonksiyonları dışarıya aç — ana script bunları kullanacak
+// Ana script'in atayacağı fonksiyonlar
 window.__setVeriUygula = function(fn) { window.__veriyiUygula = fn; };
 window.__setTemizVeriOlustur = function(fn) { window.__temizVeriOlustur = fn; };
 
@@ -715,37 +714,39 @@ async function firestoreKaydet() {
   }
 }
 
-async function firestoreBaslat() {
+function firestoreBaslat() {
+  // Ana script hazır değilse 50 ms sonra tekrar dene
+  if (typeof window.__temizVeriOlustur !== 'function' || typeof window.__veriyiUygula !== 'function') {
+    setTimeout(firestoreBaslat, 50);
+    return;
+  }
+
   try {
     senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
-    
+
     onSnapshot(BELGE_REF, (docSnap) => {
       if (docSnap.exists()) {
         const uzakVeri = docSnap.data();
         if (!uzakVeri || Object.keys(uzakVeri).length === 0) {
           // Belge var ama boş — varsayılanları yaz
-          if (window.__temizVeriOlustur) {
-            setDoc(BELGE_REF, window.__temizVeriOlustur()).then(() => {
-              senkronDurumGuncelle('ok', 'Senkron ✓');
-            }).catch(e => {
-              console.error('Boş belge doldurma hatası:', e);
-              senkronDurumGuncelle('hata', 'Kayıt hatası!');
-            });
-          }
+          setDoc(BELGE_REF, window.__temizVeriOlustur()).then(() => {
+            senkronDurumGuncelle('ok', 'Senkron ✓');
+          }).catch(e => {
+            console.error('Boş belge doldurma hatası:', e);
+            senkronDurumGuncelle('hata', 'Kayıt hatası!');
+          });
         } else {
-          if (window.__veriyiUygula) window.__veriyiUygula(uzakVeri);
+          window.__veriyiUygula(uzakVeri);
           senkronDurumGuncelle('ok', 'Senkron ✓');
         }
       } else {
         // Belge yok — oluştur
-        if (window.__temizVeriOlustur) {
-          setDoc(BELGE_REF, window.__temizVeriOlustur()).then(() => {
-            senkronDurumGuncelle('ok', 'Senkron ✓');
-          }).catch(e => {
-            console.error('İlk yükleme hatası:', e);
-            senkronDurumGuncelle('hata', 'Bağlantı hatası!');
-          });
-        }
+        setDoc(BELGE_REF, window.__temizVeriOlustur()).then(() => {
+          senkronDurumGuncelle('ok', 'Senkron ✓');
+        }).catch(e => {
+          console.error('İlk yükleme hatası:', e);
+          senkronDurumGuncelle('hata', 'Bağlantı hatası!');
+        });
       }
     }, (hata) => {
       console.error('Firestore hatası:', hata);
@@ -755,9 +756,6 @@ async function firestoreBaslat() {
     window.__firebaseHazir = true;
     window.__firestoreSet = firestoreKaydet;
     window.__firestoreBaslat = firestoreBaslat;
-
-    // Ana script'e haber ver: Firebase hazır!
-    window.dispatchEvent(new Event('firebase-hazir'));
   } catch (e) {
     console.error('Firebase başlatma hatası:', e);
     senkronDurumGuncelle('hata', 'Bağlantı hatası!');
@@ -765,6 +763,7 @@ async function firestoreBaslat() {
 }
 
 // Modül yüklenir yüklenmez başlatmayı dene
+// Ana script hazır olana kadar bekleyecek
 firestoreBaslat();
 </script>
 
@@ -941,6 +940,7 @@ function temizVeriOlustur() {
 }
 
 // Modül script'inin çağırabilmesi için dışarıya aç
+// ÖNEMLİ: Bu satırlar firestoreBaslat()'ın onSnapshot kurmasından önce çalışmalı
 window.__setVeriUygula(veriyiUygula);
 window.__setTemizVeriOlustur(temizVeriOlustur);
 
@@ -1588,20 +1588,11 @@ function bildirimGoster(mesaj) {
 })();
 
 otomatikAlanlariFirebaseBagla();
- setInterval(saatGuncelle, 1000);
+
+setInterval(saatGuncelle, 1000);
 saatGuncelle();
 
-// ===== FIREBASE BAŞLATMA =====
-// Modül script'in yüklenmesini bekle, sonra Firebase'i başlat
-(function firebaseBaslatmayiBekle() {
-  if (typeof window.__firestoreBaslat === 'function' && typeof window.__firebaseHazir !== 'undefined') {
-    // Modül hazır, başlatma zaten otomatik yapıldı
-    console.log('✅ Firebase modülü hazır');
-  } else {
-    // 100 ms sonra tekrar dene
-    setTimeout(firebaseBaslatmayiBekle, 100);
-  }
-})();
+console.log('✅ Ana uygulama kodu yüklendi. Firebase fonksiyonları hazır.');
 </script>
 
 </body>
