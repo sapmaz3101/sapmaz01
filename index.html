@@ -1588,9 +1588,20 @@ function bildirimGoster(mesaj) {
 })();
 
 otomatikAlanlariFirebaseBagla();
-
-setInterval(saatGuncelle, 1000);
+ setInterval(saatGuncelle, 1000);
 saatGuncelle();
+
+// ===== FIREBASE BAŞLATMA =====
+// Modül script'in yüklenmesini bekle, sonra Firebase'i başlat
+(function firebaseBaslatmayiBekle() {
+  if (typeof window.__firestoreBaslat === 'function' && typeof window.__firebaseHazir !== 'undefined') {
+    // Modül hazır, başlatma zaten otomatik yapıldı
+    console.log('✅ Firebase modülü hazır');
+  } else {
+    // 100 ms sonra tekrar dene
+    setTimeout(firebaseBaslatmayiBekle, 100);
+  }
+})();
 </script>
 
 </body>
