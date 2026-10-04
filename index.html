@@ -220,119 +220,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .geri-btn:hover { background: #5d3830; }
 
 /* ===== KULLANICI ADI VE ŞİFRE DEĞİŞTİRME ===== */
-.sifre-degistir-kart {
-  background: #fff;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.08);
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.sifre-degistir-kart .kart-baslik {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1.5px solid #ddd;
-}
-.sifre-degistir-kart .kart-baslik h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: #7a4a41;
-}
-.sifre-degistir-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.sifre-degistir-form .alan {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.sifre-degistir-form label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.sifre-degistir-form input {
-  padding: 9px 12px;
-  font-size: 14px;
-  border: 1.5px solid #aaa;
-  border-radius: 6px;
-  font-family: inherit;
-  width: 100%;
-}
-.sifre-degistir-form input:focus {
-  outline: none;
-  border-color: #7a4a41;
-}
-.sifre-degistir-form .tam-genislik {
-  grid-column: 1 / -1;
-}
-.sifre-degistir-kart .kaydet-btn {
-  width: 100%;
-  padding: 11px;
-  font-size: 14px;
-  font-weight: 700;
-  border: none;
-  border-radius: 6px;
-  background: #d32f2f;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 6px;
-}
-.sifre-degistir-kart .kaydet-btn:hover {
-  background: #b71c1c;
-}
-.sifre-degistir-bilgi {
-  font-size: 12px;
-  color: #666;
-  margin-top: 10px;
-  padding: 8px 10px;
-  background: #f5f5f5;
-  border-radius: 6px;
-  border-left: 3px solid #7a4a41;
-}
+.sifre-degistir-kart { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.08); margin-top: 20px; margin-bottom: 20px; }
+.sifre-degistir-kart .kart-baslik { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1.5px solid #ddd; }
+.sifre-degistir-kart .kart-baslik h3 { font-size: 16px; font-weight: 700; color: #7a4a41; }
+.sifre-degistir-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.sifre-degistir-form .alan { display: flex; flex-direction: column; gap: 4px; }
+.sifre-degistir-form label { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+.sifre-degistir-form input { padding: 9px 12px; font-size: 14px; border: 1.5px solid #aaa; border-radius: 6px; font-family: inherit; width: 100%; }
+.sifre-degistir-form input:focus { outline: none; border-color: #7a4a41; }
+.sifre-degistir-form .tam-genislik { grid-column: 1 / -1; }
+.sifre-degistir-kart .kaydet-btn { width: 100%; padding: 11px; font-size: 14px; font-weight: 700; border: none; border-radius: 6px; background: #d32f2f; color: #fff; cursor: pointer; transition: background 0.2s; margin-top: 6px; }
+.sifre-degistir-kart .kaydet-btn:hover { background: #b71c1c; }
+.sifre-degistir-bilgi { font-size: 12px; color: #666; margin-top: 10px; padding: 8px 10px; background: #f5f5f5; border-radius: 6px; border-left: 3px solid #7a4a41; }
 
 /* ===== GİRİŞ EKRANI ===== */
-.giris-ekrani {
-  position: fixed;
-  inset: 0;
-  background: url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1920&q=80') center center / cover no-repeat fixed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
-}
+.giris-ekrani { position: fixed; inset: 0; background: url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1920&q=80') center center / cover no-repeat fixed; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
 .giris-ekrani.gizli { display: none; }
-.giris-ekrani::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.15) 100%);
-  z-index: 0;
-}
-.giris-kart {
-  position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
-  padding: 30px 40px 36px;
-  width: 100%;
-  max-width: 520px;
-  box-shadow: 0 25px 70px rgba(0,0,0,0.35);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  text-align: center;
-}
+.giris-ekrani::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.15) 100%); z-index: 0; }
+.giris-kart { position: relative; z-index: 1; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px 36px; width: 100%; max-width: 520px; box-shadow: 0 25px 70px rgba(0,0,0,0.35); border: 1px solid rgba(255, 255, 255, 0.6); text-align: center; }
 .giris-kart h1 { font-size: 28px; font-weight: 800; color: #d32f2f; margin-bottom: 6px; letter-spacing: -0.5px; }
 .giris-kart .alt-baslik { font-size: 13px; color: #777; margin-bottom: 28px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
 .giris-kart .form-alan { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; text-align: left; }
@@ -345,57 +250,17 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .giris-hata { display: none; margin-top: 14px; padding: 10px 12px; background: #ffebee; color: #b71c1c; border-radius: 8px; font-size: 13px; font-weight: 700; }
 .giris-hata.goster { display: block; }
 
-.giris-ikon {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-}
-.giris-logo {
-  max-width: 320px;
-  max-height: 320px;
-  width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.20));
-  transition: transform 0.3s ease;
-}
-.giris-logo:hover {
-  transform: scale(1.03);
-}
+.giris-ikon { margin-bottom: 20px; display: flex; justify-content: center; align-items: center; padding: 10px; }
+.giris-logo { max-width: 320px; max-height: 320px; width: 100%; height: auto; display: block; margin: 0 auto; object-fit: contain; filter: drop-shadow(0 10px 25px rgba(0,0,0,0.20)); transition: transform 0.3s ease; }
+.giris-logo:hover { transform: scale(1.03); }
 
 /* ===== SENKRON DURUM GÖSTERGESİ ===== */
-.senkron-durum {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #fff;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: opacity 0.3s;
-}
+.senkron-durum { position: fixed; bottom: 20px; right: 20px; background: #fff; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 3px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; gap: 6px; transition: opacity 0.3s; }
 .senkron-durum.ok { color: #2e7d32; }
 .senkron-durum.yukleniyor { color: #f57c00; }
 .senkron-durum.hata { color: #c62828; }
-.senkron-durum .nokta {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: currentColor;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
+.senkron-durum .nokta { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 </style>
 </head>
 <body>
@@ -776,18 +641,18 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
   </div>
 </div>
 
-<!-- FIREBASE SDK -->
+<!-- FIREBASE SDK (YENİ PROJE) -->
 <script type="module">
-import { initializeApp } from "https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAyzP8dblCHiukUsUSfwqlRTZL3LBMFqUY",
-  authDomain: "program-d035f.firebaseapp.com",
-  projectId: "program-d035f",
-  storageBucket: "program-d035f.firebasestorage.app",
-  messagingSenderId: "3033295736",
-  appId: "1:3033295736:web:b011133c21dbe935edf68d"
+  apiKey: "AIzaSyBu3szoegqzj2ucu7xumS8cTo5a_5-Fh-k",
+  authDomain: "program-86f50.firebaseapp.com",
+  projectId: "program-86f50",
+  storageBucket: "program-86f50.firebasestorage.app",
+  messagingSenderId: "802221984747",
+  appId: "1:802221984747:web:54566d980cbc0c9a16e7ae"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -862,13 +727,11 @@ window.__firestoreBaslat = firestoreBaslat;
 
 <script>
 /* ================== GİRİŞ BİLGİLERİ ================== */
-// Varsayılan giriş bilgileri
 const GIRIS_VARSAYILAN = {
   kullanici: "KÖPRÜLÜ",
   sifre: "köprülü1453"
 };
 
-// LocalStorage'dan kayıtlı giriş bilgilerini yükle
 function girisBilgileriniYukle() {
   try {
     const kayitli = localStorage.getItem('nobetGirisBilgileri');
@@ -880,7 +743,6 @@ function girisBilgileriniYukle() {
   return { ...GIRIS_VARSAYILAN };
 }
 
-// Giriş bilgilerini kaydet
 function girisBilgileriniKaydet(bilgiler) {
   try {
     localStorage.setItem('nobetGirisBilgileri', JSON.stringify(bilgiler));
@@ -1448,7 +1310,6 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
   const yeniSTekrar = document.getElementById('yeniSifreTekrar').value;
   const bildirim = document.getElementById('sifreBildirim');
 
-  // Boş alan kontrolü
   if (!mevcutK || !mevcutS || !yeniK || !yeniS || !yeniSTekrar) {
     bildirim.textContent = '❌ Lütfen tüm alanları doldurun!';
     bildirim.style.background = '#ffebee';
@@ -1458,7 +1319,6 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     return;
   }
 
-  // Mevcut bilgiler doğru mu?
   if (mevcutK !== GIRIS_BILGILERI.kullanici || mevcutS !== GIRIS_BILGILERI.sifre) {
     bildirim.textContent = '❌ Mevcut kullanıcı adı veya şifre hatalı!';
     bildirim.style.background = '#ffebee';
@@ -1468,7 +1328,6 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     return;
   }
 
-  // Yeni şifreler aynı mı?
   if (yeniS !== yeniSTekrar) {
     bildirim.textContent = '❌ Yeni şifreler birbiriyle uyuşmuyor!';
     bildirim.style.background = '#ffebee';
@@ -1478,7 +1337,6 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     return;
   }
 
-  // Yeni şifre en az 4 karakter mi?
   if (yeniS.length < 4) {
     bildirim.textContent = '❌ Yeni şifre en az 4 karakter olmalı!';
     bildirim.style.background = '#ffebee';
@@ -1488,19 +1346,16 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     return;
   }
 
-  // Başarılı - yeni bilgileri kaydet
   GIRIS_BILGILERI.kullanici = yeniK;
   GIRIS_BILGILERI.sifre = yeniS;
   girisBilgileriniKaydet(GIRIS_BILGILERI);
 
-  // Formu temizle
   document.getElementById('mevcutKullanici').value = '';
   document.getElementById('mevcutSifre').value = '';
   document.getElementById('yeniKullanici').value = '';
   document.getElementById('yeniSifre').value = '';
   document.getElementById('yeniSifreTekrar').value = '';
 
-  // Başarı mesajı
   bildirim.textContent = '✅ Kullanıcı adı ve şifre başarıyla güncellendi!';
   bildirim.style.background = '#c8e6c9';
   bildirim.style.color = '#1b5e20';
