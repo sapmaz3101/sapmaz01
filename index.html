@@ -277,7 +277,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 <div class="giris-ekrani" id="girisEkrani">
   <div class="giris-kart">
     <div class="giris-ikon">
-      <img src="logo.png" alt="Köprülü Erkek Öğrenci Yurdu" class="giris-logo" onerror="this.style.display='none'">
+      <img src="logo.png" alt="Köprülü Erkek Öğrenci Yurdu" class="giris-logo">
     </div>
     <h1>Köprülü Yurdu</h1>
     <div class="alt-baslik">Nöbet Panosu Girişi</div>
@@ -661,7 +661,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
   </div>
 </div>
 
-<!-- ========== 1. FIREBASE SDK (MODULE) ========== -->
+<!-- FIREBASE SDK (YENİ PROJE) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -681,31 +681,54 @@ const BELGE_REF = doc(db, "program", "veriler");
 
 window.__firebaseHazir = false;
 window.__firestoreSet = null;
-window.__firestoreBaslat = null;
-window.__veriyiUygula = null;
-window.__temizVeriOlustur = null;
 
-// Ana script'in atayacağı fonksiyonlar
-window.__setVeriUygula = function(fn) { window.__veriyiUygula = fn; };
-window.__setTemizVeriOlustur = function(fn) { window.__temizVeriOlustur = fn; };
-
-function senkronDurumGuncelle(durum, yazi) {
-  const el = document.getElementById('senkronDurum');
-  const yaziEl = document.getElementById('senkronYazi');
-  if (!el || !yaziEl) return;
-  el.className = 'senkron-durum ' + durum;
-  yaziEl.textContent = yazi;
+function veriyiUygula(yeniVeri) {
+  if (!yeniVeri) return;
+  // Eksik alanları varsayılanlarla doldur (undefined olmasın)
+  veri = {
+    baslangicTarihi: yeniVeri.baslangicTarihi || VARSAYILAN.baslangicTarihi,
+    imam:         Array.isArray(yeniVeri.imam) ? yeniVeri.imam : [...VARSAYILAN.imam],
+    muezzin:      Array.isArray(yeniVeri.muezzin) ? yeniVeri.muezzin : [...VARSAYILAN.muezzin],
+    cayci:        Array.isArray(yeniVeri.cayci) ? yeniVeri.cayci : [...VARSAYILAN.cayci],
+    yemekciler:   Array.isArray(yeniVeri.yemekciler) ? yeniVeri.yemekciler : [...VARSAYILAN.yemekciler],
+    hadis:        typeof yeniVeri.hadis === "string" ? yeniVeri.hadis : VARSAYILAN.hadis,
+    hadisGun:     typeof yeniVeri.hadisGun === "string" ? yeniVeri.hadisGun : "",
+    dersSay1:     Array.isArray(yeniVeri.dersSay1) ? yeniVeri.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+    dersSay2:     Array.isArray(yeniVeri.dersSay2) ? yeniVeri.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+    dersEA:       Array.isArray(yeniVeri.dersEA)   ? yeniVeri.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
+    programlar:   Array.isArray(yeniVeri.programlar) ? yeniVeri.programlar.map(p => ({
+      id: p.id || Date.now().toString() + Math.random(),
+      ad: p.ad || '',
+      gun: p.gun !== undefined ? String(p.gun) : '1',
+      bas: p.bas || '00:00',
+      bit: p.bit || '00:00'
+    })) : []
+  };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+  saatGuncelle();
+  if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
+    listeleriGuncelle();
+  }
 }
-window.__senkronDurumGuncelle = senkronDurumGuncelle;
+
+// undefined değerleri temizleyerek kaydet
+function temizVeriOlustur() {
+  const t = {};
+  Object.keys(veri).forEach(k => {
+    const v = veri[k];
+    if (v === undefined) {
+      t[k] = Array.isArray(v) ? [] : '';
+    } else {
+      t[k] = v;
+    }
+  });
+  return t;
+}
 
 async function firestoreKaydet() {
-  if (!window.__temizVeriOlustur) {
-    console.warn('Kaydetme fonksiyonu hazır değil.');
-    return;
-  }
   try {
     senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
-    await setDoc(BELGE_REF, window.__temizVeriOlustur());
+    await setDoc(BELGE_REF, temizVeriOlustur());
     senkronDurumGuncelle('ok', 'Kaydedildi ✓');
     setTimeout(() => senkronDurumGuncelle('ok', 'Senkron'), 1500);
   } catch (e) {
@@ -714,34 +737,25 @@ async function firestoreKaydet() {
   }
 }
 
-function firestoreBaslat() {
-  // Ana script hazır değilse 50 ms sonra tekrar dene
-  if (typeof window.__temizVeriOlustur !== 'function' || typeof window.__veriyiUygula !== 'function') {
-    setTimeout(firestoreBaslat, 50);
-    return;
-  }
+function senkronDurumGuncelle(durum, yazi) {
+  const el = document.getElementById('senkronDurum');
+  const yaziEl = document.getElementById('senkronYazi');
+  if (!el || !yaziEl) return;
+  el.className = 'senkron-durum ' + durum;
+  yaziEl.textContent = yazi;
+}
 
+async function firestoreBaslat() {
   try {
     senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
-
+    
     onSnapshot(BELGE_REF, (docSnap) => {
       if (docSnap.exists()) {
         const uzakVeri = docSnap.data();
-        if (!uzakVeri || Object.keys(uzakVeri).length === 0) {
-          // Belge var ama boş — varsayılanları yaz
-          setDoc(BELGE_REF, window.__temizVeriOlustur()).then(() => {
-            senkronDurumGuncelle('ok', 'Senkron ✓');
-          }).catch(e => {
-            console.error('Boş belge doldurma hatası:', e);
-            senkronDurumGuncelle('hata', 'Kayıt hatası!');
-          });
-        } else {
-          window.__veriyiUygula(uzakVeri);
-          senkronDurumGuncelle('ok', 'Senkron ✓');
-        }
+        veriyiUygula(uzakVeri);
+        senkronDurumGuncelle('ok', 'Senkron ✓');
       } else {
-        // Belge yok — oluştur
-        setDoc(BELGE_REF, window.__temizVeriOlustur()).then(() => {
+        setDoc(BELGE_REF, temizVeriOlustur()).then(() => {
           senkronDurumGuncelle('ok', 'Senkron ✓');
         }).catch(e => {
           console.error('İlk yükleme hatası:', e);
@@ -755,19 +769,15 @@ function firestoreBaslat() {
 
     window.__firebaseHazir = true;
     window.__firestoreSet = firestoreKaydet;
-    window.__firestoreBaslat = firestoreBaslat;
   } catch (e) {
     console.error('Firebase başlatma hatası:', e);
     senkronDurumGuncelle('hata', 'Bağlantı hatası!');
   }
 }
 
-// Modül yüklenir yüklenmez başlatmayı dene
-// Ana script hazır olana kadar bekleyecek
-firestoreBaslat();
+window.__firestoreBaslat = firestoreBaslat;
 </script>
 
-<!-- ========== 2. ANA UYGULAMA KODU ========== -->
 <script>
 /* ================== GİRİŞ BİLGİLERİ ================== */
 const GIRIS_VARSAYILAN = {
@@ -857,8 +867,7 @@ const VARSAYILAN = {
   dersSay1:     [],
   dersSay2:     [],
   dersEA:       [],
-  programlar:   [],
-  formAlanlari: {}
+  programlar:   []
 };
 
 let veri = yukle();
@@ -885,130 +894,11 @@ function yukle() {
         gun: pr.gun !== undefined ? String(pr.gun) : '1',
         bas: pr.bas || '00:00',
         bit: pr.bit || '00:00'
-      })) : [],
-      formAlanlari: p.formAlanlari && typeof p.formAlanlari === 'object' ? p.formAlanlari : {}
+      })) : []
     };
   } catch (e) {
     return JSON.parse(JSON.stringify(VARSAYILAN));
   }
-}
-
-/* =========================================================
-   FIREBASE ENTEGRASYON FONKSİYONLARI
-   ========================================================= */
-
-function veriyiUygula(yeniVeri) {
-  if (!yeniVeri) return;
-  veri = {
-    baslangicTarihi: yeniVeri.baslangicTarihi || VARSAYILAN.baslangicTarihi,
-    imam:         Array.isArray(yeniVeri.imam) ? yeniVeri.imam : [...VARSAYILAN.imam],
-    muezzin:      Array.isArray(yeniVeri.muezzin) ? yeniVeri.muezzin : [...VARSAYILAN.muezzin],
-    cayci:        Array.isArray(yeniVeri.cayci) ? yeniVeri.cayci : [...VARSAYILAN.cayci],
-    yemekciler:   Array.isArray(yeniVeri.yemekciler) ? yeniVeri.yemekciler : [...VARSAYILAN.yemekciler],
-    hadis:        typeof yeniVeri.hadis === "string" ? yeniVeri.hadis : VARSAYILAN.hadis,
-    hadisGun:     typeof yeniVeri.hadisGun === "string" ? yeniVeri.hadisGun : "",
-    dersSay1:     Array.isArray(yeniVeri.dersSay1) ? yeniVeri.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
-    dersSay2:     Array.isArray(yeniVeri.dersSay2) ? yeniVeri.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
-    dersEA:       Array.isArray(yeniVeri.dersEA)   ? yeniVeri.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
-    programlar:   Array.isArray(yeniVeri.programlar) ? yeniVeri.programlar.map(p => ({
-      id: p.id || Date.now().toString() + Math.random(),
-      ad: p.ad || '',
-      gun: p.gun !== undefined ? String(p.gun) : '1',
-      bas: p.bas || '00:00',
-      bit: p.bit || '00:00'
-    })) : [],
-    formAlanlari: yeniVeri.formAlanlari && typeof yeniVeri.formAlanlari === 'object' ? yeniVeri.formAlanlari : {}
-  };
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
-  saatGuncelle();
-  if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
-    listeleriGuncelle();
-  }
-}
-
-function temizVeriOlustur() {
-  const t = {};
-  Object.keys(veri).forEach(k => {
-    const v = veri[k];
-    if (v === undefined) {
-      t[k] = Array.isArray(v) ? [] : '';
-    } else {
-      t[k] = v;
-    }
-  });
-  return t;
-}
-
-// Modül script'inin çağırabilmesi için dışarıya aç
-// ÖNEMLİ: Bu satırlar firestoreBaslat()'ın onSnapshot kurmasından önce çalışmalı
-window.__setVeriUygula(veriyiUygula);
-window.__setTemizVeriOlustur(temizVeriOlustur);
-
-/* =========================================================
-   TÜM FORM ALANLARINI OTOMATİK OLARAK FIREBASE'E KAYDET
-   ========================================================= */
-const FIREBASE_FORM_HARIC_IDS = new Set([
-  'girisKullanici', 'girisSifre',
-  'mevcutKullanici', 'mevcutSifre',
-  'yeniKullanici', 'yeniSifre', 'yeniSifreTekrar'
-]);
-
-let otomatikFirebaseTimer = null;
-
-function otomatikAlanAnahtari(el) {
-  return el.id || el.name || null;
-}
-
-function firebaseIcinAlanUygunMu(el) {
-  if (!el) return false;
-  if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) return false;
-  if (FIREBASE_FORM_HARIC_IDS.has(el.id)) return false;
-  if ((el.type || '').toLowerCase() === 'password') return false;
-  if (el.disabled) return false;
-  return !!otomatikAlanAnahtari(el);
-}
-
-function otomatikAlanDegeriniAl(el) {
-  if (el.type === 'checkbox' || el.type === 'radio') return el.checked;
-  return el.value;
-}
-
-function otomatikAlanDegeriniUygula(el, deger) {
-  if (el.type === 'checkbox' || el.type === 'radio') {
-    el.checked = Boolean(deger);
-  } else if (deger !== undefined && deger !== null) {
-    el.value = String(deger);
-  }
-}
-
-function otomatikAlanlariFirebaseBagla() {
-  const alanlar = document.querySelectorAll('input, textarea, select');
-  alanlar.forEach(function(el) {
-    if (!firebaseIcinAlanUygunMu(el)) return;
-    const anahtar = otomatikAlanAnahtari(el);
-
-    if (veri.formAlanlari && Object.prototype.hasOwnProperty.call(veri.formAlanlari, anahtar)) {
-      otomatikAlanDegeriniUygula(el, veri.formAlanlari[anahtar]);
-    }
-
-    const degisikligiKaydet = function() {
-      if (!veri.formAlanlari || typeof veri.formAlanlari !== 'object') {
-        veri.formAlanlari = {};
-      }
-      veri.formAlanlari[anahtar] = otomatikAlanDegeriniAl(el);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
-
-      clearTimeout(otomatikFirebaseTimer);
-      otomatikFirebaseTimer = setTimeout(function() {
-        if (typeof window.__firestoreSet === 'function') {
-          window.__firestoreSet();
-        }
-      }, 500);
-    };
-
-    el.addEventListener('input', degisikligiKaydet);
-    el.addEventListener('change', degisikligiKaydet);
-  });
 }
 
 function kaydet() {
@@ -1121,6 +1011,7 @@ function dersBulSinif(liste) {
   return { suanki: suanki, gelecek: gelecek };
 }
 
+// BUGÜNÜN PROGRAMLARINI bul (gün filtresi ile)
 function programBul(adetSonraki) {
   const simdi = new Date();
   const dk = simdi.getHours() * 60 + simdi.getMinutes();
@@ -1312,6 +1203,7 @@ document.querySelectorAll('.ders-sekme-btn').forEach(function(btn) {
   });
 });
 
+// ===== GENEL PROGRAMLAR GÜN SEKMELERİ =====
 let aktifProgramGun = '1';
 
 document.querySelectorAll('.gun-sekme-btn').forEach(function(btn) {
@@ -1320,6 +1212,7 @@ document.querySelectorAll('.gun-sekme-btn').forEach(function(btn) {
     btn.classList.add('aktif');
     aktifProgramGun = btn.getAttribute('data-gun');
     programListesiCiz();
+    // form temizle
     document.getElementById('programAd').value = '';
     document.getElementById('programBas').value = '';
     document.getElementById('programBit').value = '';
@@ -1386,8 +1279,10 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
   });
 });
 
+// Aktif güne göre program listesini çiz
 function programListesiCiz() {
   const container = document.getElementById('programListesi');
+  // Sayıları güncelle
   for (let g = 0; g <= 6; g++) {
     const el = document.getElementById('sayiGun-' + g);
     if (el) {
@@ -1396,6 +1291,7 @@ function programListesiCiz() {
   }
   document.getElementById('sayi-programlar').textContent = veri.programlar.length;
 
+  // Aktif güne ait programları filtrele
   const filtreli = veri.programlar
     .map((p, i) => ({ ...p, _orijinalIndex: i }))
     .filter(p => String(p.gun) === String(aktifProgramGun))
@@ -1445,6 +1341,7 @@ window.programSil = function(i) {
 
 function dersListesiCiz(sinif, liste) {
   const container = document.getElementById('dersListesi-' + sinif);
+
   const sirali = (liste || []).slice().sort(function(a, b) {
     const gA = Number(a.gun) || 0, gB = Number(b.gun) || 0;
     if (gA !== gB) return gA - gB;
@@ -1505,6 +1402,7 @@ document.getElementById('hadisYenileBtn').addEventListener('click', function() {
   document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
 });
 
+// ===== KULLANICI ADI VE ŞİFRE DEĞİŞTİRME =====
 document.getElementById('sifreDegistirBtn').addEventListener('click', function() {
   const mevcutK = document.getElementById('mevcutKullanici').value.trim();
   const mevcutS = document.getElementById('mevcutSifre').value;
@@ -1521,6 +1419,7 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     setTimeout(() => bildirim.classList.remove('goster'), 3000);
     return;
   }
+
   if (mevcutK !== GIRIS_BILGILERI.kullanici || mevcutS !== GIRIS_BILGILERI.sifre) {
     bildirim.textContent = '❌ Mevcut kullanıcı adı veya şifre hatalı!';
     bildirim.style.background = '#ffebee';
@@ -1529,6 +1428,7 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     setTimeout(() => bildirim.classList.remove('goster'), 3000);
     return;
   }
+
   if (yeniS !== yeniSTekrar) {
     bildirim.textContent = '❌ Yeni şifreler birbiriyle uyuşmuyor!';
     bildirim.style.background = '#ffebee';
@@ -1537,6 +1437,7 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
     setTimeout(() => bildirim.classList.remove('goster'), 3000);
     return;
   }
+
   if (yeniS.length < 4) {
     bildirim.textContent = '❌ Yeni şifre en az 4 karakter olmalı!';
     bildirim.style.background = '#ffebee';
@@ -1578,6 +1479,7 @@ function bildirimGoster(mesaj) {
       if (el) el.value = String(bugunGun);
     });
   }
+  // Genel programlar için varsayılan gün sekmesi: bugün (hafta sonu ise 1)
   const bugunGunStr = String(bugunGun);
   const btn = document.querySelector('.gun-sekme-btn[data-gun="' + bugunGunStr + '"]');
   if (btn) {
@@ -1587,13 +1489,12 @@ function bildirimGoster(mesaj) {
   }
 })();
 
-otomatikAlanlariFirebaseBagla();
-
 setInterval(saatGuncelle, 1000);
 saatGuncelle();
 
-console.log('✅ Ana uygulama kodu yüklendi. Firebase fonksiyonları hazır.');
+if (typeof window.__firestoreBaslat === 'function') {
+  window.__firestoreBaslat();
+}
 </script>
-
 </body>
 </html>
