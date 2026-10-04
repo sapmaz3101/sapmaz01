@@ -702,7 +702,8 @@ function veriyiUygula(yeniVeri) {
       gun: p.gun !== undefined ? String(p.gun) : '1',
       bas: p.bas || '00:00',
       bit: p.bit || '00:00'
-    })) : []
+    })) : [],
+    formAlanlari: yeniVeri.formAlanlari && typeof yeniVeri.formAlanlari === 'object' ? yeniVeri.formAlanlari : {}
   };
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
   saatGuncelle();
@@ -753,6 +754,8 @@ async function firestoreBaslat() {
       if (docSnap.exists()) {
         const uzakVeri = docSnap.data();
         veriyiUygula(uzakVeri);
+        otomatikAlanlariUygula();
+        firestoreIlkYuklemeTamam = true;
         senkronDurumGuncelle('ok', 'Senkron ✓');
       } else {
         setDoc(BELGE_REF, temizVeriOlustur()).then(() => {
@@ -867,7 +870,8 @@ const VARSAYILAN = {
   dersSay1:     [],
   dersSay2:     [],
   dersEA:       [],
-  programlar:   []
+  programlar:   [],
+  formAlanlari: {}
 };
 
 let veri = yukle();
@@ -894,11 +898,98 @@ function yukle() {
         gun: pr.gun !== undefined ? String(pr.gun) : '1',
         bas: pr.bas || '00:00',
         bit: pr.bit || '00:00'
-      })) : []
+      })) : [],
+      formAlanlari: p.formAlanlari && typeof p.formAlanlari === 'object' ? p.formAlanlari : {}
     };
   } catch (e) {
     return JSON.parse(JSON.stringify(VARSAYILAN));
   }
+}
+
+/* =========================================================
+   TÜM FORM ALANLARINI OTOMATİK OLARAK FIREBASE'E KAYDET
+   - Input / textarea / select alanlarını otomatik yakalar.
+   - Kullanıcı yazdıkça local veri güncellenir.
+   - 500 ms içinde başka değişiklik yoksa Firebase'e gönderilir.
+   - Şifre alanları güvenlik nedeniyle Firebase'e gönderilmez.
+   ========================================================= */
+const FIREBASE_FORM_HARIC_IDS = new Set([
+  'girisKullanici', 'girisSifre',
+  'mevcutKullanici', 'mevcutSifre',
+  'yeniKullanici', 'yeniSifre', 'yeniSifreTekrar'
+]);
+
+let otomatikFirebaseTimer = null;
+let firestoreIlkYuklemeTamam = false;
+
+function otomatikAlanAnahtari(el) {
+  return el.id || el.name || null;
+}
+
+function firebaseIcinAlanUygunMu(el) {
+  if (!el) return false;
+  if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) return false;
+  if (FIREBASE_FORM_HARIC_IDS.has(el.id)) return false;
+  if ((el.type || '').toLowerCase() === 'password') return false;
+  if (el.disabled) return false;
+  return !!otomatikAlanAnahtari(el);
+}
+
+function otomatikAlanDegeriniAl(el) {
+  if (el.type === 'checkbox' || el.type === 'radio') return el.checked;
+  return el.value;
+}
+
+function otomatikAlanDegeriniUygula(el, deger) {
+  if (el.type === 'checkbox' || el.type === 'radio') {
+    el.checked = Boolean(deger);
+  } else if (deger !== undefined && deger !== null) {
+    el.value = String(deger);
+  }
+}
+
+function otomatikAlanlariFirebaseBagla() {
+  const alanlar = document.querySelectorAll('input, textarea, select');
+
+  alanlar.forEach(function(el) {
+    if (!firebaseIcinAlanUygunMu(el)) return;
+    const anahtar = otomatikAlanAnahtari(el);
+
+    // Firebase'den daha önce gelmiş değer varsa forma uygula.
+    if (veri.formAlanlari && Object.prototype.hasOwnProperty.call(veri.formAlanlari, anahtar)) {
+      otomatikAlanDegeriniUygula(el, veri.formAlanlari[anahtar]);
+    }
+
+    const degisikligiKaydet = function() {
+      if (!veri.formAlanlari || typeof veri.formAlanlari !== 'object') {
+        veri.formAlanlari = {};
+      }
+      veri.formAlanlari[anahtar] = otomatikAlanDegeriniAl(el);
+
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+
+      clearTimeout(otomatikFirebaseTimer);
+      otomatikFirebaseTimer = setTimeout(function() {
+        if (typeof window.__firestoreSet === 'function') {
+          window.__firestoreSet();
+        }
+      }, 500);
+    };
+
+    el.addEventListener('input', degisikligiKaydet);
+    el.addEventListener('change', degisikligiKaydet);
+  });
+}
+
+function otomatikAlanlariUygula() {
+  if (!veri.formAlanlari || typeof veri.formAlanlari !== 'object') return;
+  document.querySelectorAll('input, textarea, select').forEach(function(el) {
+    if (!firebaseIcinAlanUygunMu(el)) return;
+    const anahtar = otomatikAlanAnahtari(el);
+    if (Object.prototype.hasOwnProperty.call(veri.formAlanlari, anahtar)) {
+      otomatikAlanDegeriniUygula(el, veri.formAlanlari[anahtar]);
+    }
+  });
 }
 
 function kaydet() {
@@ -1488,6 +1579,9 @@ function bildirimGoster(mesaj) {
     aktifProgramGun = bugunGunStr;
   }
 })();
+
+// Sayfadaki tüm normal form alanlarını otomatik Firebase senkronuna bağla.
+otomatikAlanlariFirebaseBagla();
 
 setInterval(saatGuncelle, 1000);
 saatGuncelle();
