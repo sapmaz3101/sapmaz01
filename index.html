@@ -661,161 +661,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
   </div>
 </div>
 
-<!-- FIREBASE SDK (YENİ PROJE) -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBu3szoegqzj2ucu7xumS8cTo5a_5-Fh-k",
-  authDomain: "program-86f50.firebaseapp.com",
-  projectId: "program-86f50",
-  storageBucket: "program-86f50.firebasestorage.app",
-  messagingSenderId: "802221984747",
-  appId: "1:802221984747:web:54566d980cbc0c9a16e7ae"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const BELGE_REF = doc(db, "program", "veriler");
-
-window.__firebaseHazir = false;
-window.__firestoreSet = null;
-
-// ✅ DÜZELTİLDİ: veri ve VARSAYILAN, ana script'te tanımlı (global)
-// modül tarafından bunlara erişebilmek için window üzerinden kontrol ediliyor
-function getVeri() {
-  return window.__veri || null;
-}
-function setVeri(v) {
-  window.__veri = v;
-  if (typeof window.__veriGuncelleCallback === 'function') {
-    window.__veriGuncelleCallback();
-  }
-}
-function getVarsayilan() {
-  return window.__VARSAYILAN || null;
-}
-function getStorageKey() {
-  return window.__STORAGE_KEY || "nobetSistemV7";
-}
-
-function veriyiUygula(yeniVeri) {
-  if (!yeniVeri) return;
-  const V = getVarsayilan();
-  if (!V) return;
-
-  const yeni = {
-    baslangicTarihi: yeniVeri.baslangicTarihi || V.baslangicTarihi,
-    imam:         Array.isArray(yeniVeri.imam) ? yeniVeri.imam : [...V.imam],
-    muezzin:      Array.isArray(yeniVeri.muezzin) ? yeniVeri.muezzin : [...V.muezzin],
-    cayci:        Array.isArray(yeniVeri.cayci) ? yeniVeri.cayci : [...V.cayci],
-    yemekciler:   Array.isArray(yeniVeri.yemekciler) ? yeniVeri.yemekciler : [...V.yemekciler],
-    hadis:        typeof yeniVeri.hadis === "string" ? yeniVeri.hadis : V.hadis,
-    hadisGun:     typeof yeniVeri.hadisGun === "string" ? yeniVeri.hadisGun : "",
-    dersSay1:     Array.isArray(yeniVeri.dersSay1) ? yeniVeri.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
-    dersSay2:     Array.isArray(yeniVeri.dersSay2) ? yeniVeri.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
-    dersEA:       Array.isArray(yeniVeri.dersEA)   ? yeniVeri.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
-    programlar:   Array.isArray(yeniVeri.programlar) ? yeniVeri.programlar.map(p => ({
-      id: p.id || Date.now().toString() + Math.random(),
-      ad: p.ad || '',
-      gun: p.gun !== undefined ? String(p.gun) : '1',
-      bas: p.bas || '00:00',
-      bit: p.bit || '00:00'
-    })) : []
-  };
-
-  setVeri(yeni);
-  try { localStorage.setItem(getStorageKey(), JSON.stringify(yeni)); } catch(e) {}
-  if (typeof window.saatGuncelle === 'function') window.saatGuncelle();
-  const listelerSekme = document.getElementById('sekme-listeler');
-  if (listelerSekme && listelerSekme.classList.contains('aktif')) {
-    if (typeof window.listeleriGuncelle === 'function') window.listeleriGuncelle();
-  }
-}
-
-// ✅ DÜZELTİLDİ: temizVeriOlustur artık doğru çalışıyor
-function temizVeriOlustur() {
-  const v = getVeri();
-  if (!v) return {};
-  const t = {};
-  Object.keys(v).forEach(k => {
-    const val = v[k];
-    if (val === undefined || val === null) {
-      // Değerin tipini varsayılan üzerinden belirle
-      const V = getVarsayilan();
-      const varsayilanDeger = V ? V[k] : undefined;
-      t[k] = Array.isArray(varsayilanDeger) ? [] : '';
-    } else {
-      t[k] = val;
-    }
-  });
-  return t;
-}
-
-async function firestoreKaydet() {
-  try {
-    senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
-    await setDoc(BELGE_REF, temizVeriOlustur());
-    senkronDurumGuncelle('ok', 'Kaydedildi ✓');
-    setTimeout(() => senkronDurumGuncelle('ok', 'Senkron ✓'), 1500);
-  } catch (e) {
-    console.error('Kaydetme hatası:', e);
-    senkronDurumGuncelle('hata', 'Kayıt hatası!');
-  }
-}
-
-function senkronDurumGuncelle(durum, yazi) {
-  const el = document.getElementById('senkronDurum');
-  const yaziEl = document.getElementById('senkronYazi');
-  if (!el || !yaziEl) return;
-  el.className = 'senkron-durum ' + durum;
-  yaziEl.textContent = yazi;
-}
-
-let baslatildi = false;
-async function firestoreBaslat() {
-  if (baslatildi) return;
-  baslatildi = true;
-  window.__firestoreBasladi = true;
-
-  try {
-    senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
-
-    onSnapshot(BELGE_REF, (docSnap) => {
-      if (docSnap.exists()) {
-        const uzakVeri = docSnap.data();
-        veriyiUygula(uzakVeri);
-        senkronDurumGuncelle('ok', 'Senkron ✓');
-      } else {
-        setDoc(BELGE_REF, temizVeriOlustur()).then(() => {
-          senkronDurumGuncelle('ok', 'Senkron ✓');
-        }).catch(e => {
-          console.error('İlk yükleme hatası:', e);
-          senkronDurumGuncelle('hata', 'Bağlantı hatası!');
-        });
-      }
-    }, (hata) => {
-      console.error('Firestore hatası:', hata);
-      senkronDurumGuncelle('hata', 'Bağlantı yok!');
-    });
-
-    window.__firebaseHazir = true;
-    window.__firestoreSet = firestoreKaydet;
-  } catch (e) {
-    console.error('Firebase başlatma hatası:', e);
-    senkronDurumGuncelle('hata', 'Bağlantı hatası!');
-  }
-}
-
-// Global olarak dışa aktar
-window.__firestoreBaslat = firestoreBaslat;
-window.__temizVeriOlustur = temizVeriOlustur;
-window.__senkronDurumGuncelle = senkronDurumGuncelle;
-
-// ✅ DÜZELTİLDİ: Firebase hazır olduğunda custom event tetikle
-window.dispatchEvent(new Event('firebaseModulHazir'));
-</script>
+<!-- FIREBASE COMPAT (klasik script) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
 /* ================== GİRİŞ BİLGİLERİ ================== */
@@ -911,11 +759,6 @@ const VARSAYILAN = {
 
 let veri = yukle();
 
-// ✅ DÜZELTİLDİ: Modülün erişebilmesi için global olarak yayınla
-window.__veri = veri;
-window.__VARSAYILAN = VARSAYILAN;
-window.__STORAGE_KEY = STORAGE_KEY;
-
 function yukle() {
   try {
     const k = localStorage.getItem(STORAGE_KEY);
@@ -946,19 +789,11 @@ function yukle() {
 }
 
 function kaydet() {
-  // ✅ DÜZELTİLDİ: Önce window.__veri'yi güncelle, sonra Firebase'e gönder
-  window.__veri = veri;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
   if (typeof window.__firestoreSet === 'function') {
     window.__firestoreSet();
   }
 }
-
-// ✅ DÜZELTİLDİ: Modülün veri güncellemesi sonrası çağıracağı callback
-window.__veriGuncelleCallback = function() {
-  veri = window.__veri;
-  if (typeof saatGuncelle === 'function') saatGuncelle();
-};
 
 function saatToDk(s) {
   if (!s) return null;
@@ -1234,9 +1069,6 @@ function saatGuncelle() {
   }
 }
 
-// ✅ DÜZELTİLDİ: saatGuncelle'yi modülün çağırabilmesi için global yayınla
-window.saatGuncelle = saatGuncelle;
-
 document.getElementById('saatTikla').addEventListener('click', function() {
   document.getElementById('sekme-panel').classList.remove('aktif');
   document.getElementById('sekme-listeler').classList.add('aktif');
@@ -1295,9 +1127,6 @@ function listeleriGuncelle() {
   document.getElementById('inpHadis').value = veri.hadis;
   document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
 }
-
-// ✅ DÜZELTİLDİ: modülün erişebilmesi için global yayınla
-window.listeleriGuncelle = listeleriGuncelle;
 
 function listeCiz(tur, liste) {
   const container = document.getElementById('liste-' + tur);
@@ -1544,31 +1373,116 @@ function bildirimGoster(mesaj) {
 setInterval(saatGuncelle, 1000);
 saatGuncelle();
 
-// ✅ DÜZELTİLDİ: Firebase başlatma - 3 katmanlı güvenlik
-function firebaseBaslatmayiDene() {
-  if (window.__firebaseHazir && typeof window.__firestoreBaslat === 'function' && !window.__firestoreBasladi) {
-    window.__firestoreBaslat();
-    return true;
-  }
-  return false;
+/* ================== FIREBASE (COMPAT MODU) ================== */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBu3szoegqzj2ucu7xumS8cTo5a_5-Fh-k",
+  authDomain: "program-86f50.firebaseapp.com",
+  projectId: "program-86f50",
+  storageBucket: "program-86f50.firebasestorage.app",
+  messagingSenderId: "802221984747",
+  appId: "1:802221984747:web:54566d980cbc0c9a16e7ae"
+};
+
+let firebaseDb = null;
+let firebaseBelgeRef = null;
+
+function senkronDurumGuncelle(durum, yazi) {
+  const el = document.getElementById('senkronDurum');
+  const yaziEl = document.getElementById('senkronYazi');
+  if (!el || !yaziEl) return;
+  el.className = 'senkron-durum ' + durum;
+  yaziEl.textContent = yazi;
 }
 
-// 1) Modül hazır olduğunda tetiklenen event
-window.addEventListener('firebaseModulHazir', firebaseBaslatmayiDene);
+function temizVeriOlustur() {
+  const t = {};
+  Object.keys(veri).forEach(function(k) {
+    const v = veri[k];
+    if (v === undefined || v === null) {
+      t[k] = Array.isArray(VARSAYILAN[k]) ? [] : '';
+    } else {
+      t[k] = v;
+    }
+  });
+  return t;
+}
 
-// 2) Modül zaten yüklenmişse hemen dene
-firebaseBaslatmayiDene();
-
-// 3) Güvenlik: 1 saniye sonra hala başlamadıysa tekrar dene
-setTimeout(firebaseBaslatmayiDene, 1000);
-
-// 4) Son çare: 3 saniye sonra hala başlamadıysa uyar
-setTimeout(function() {
-  if (!window.__firestoreBasladi) {
-    console.warn('Firebase başlatılamadı! Modül yüklenmemiş olabilir.');
-    senkronDurumGuncelle('hata', 'Bağlantı kurulamadı!');
+async function firestoreKaydet() {
+  if (!firebaseBelgeRef) return;
+  try {
+    senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
+    await firebaseBelgeRef.set(temizVeriOlustur());
+    senkronDurumGuncelle('ok', 'Kaydedildi ✓');
+    setTimeout(function() { senkronDurumGuncelle('ok', 'Senkron ✓'); }, 1500);
+  } catch (e) {
+    console.error('Kaydetme hatası:', e);
+    senkronDurumGuncelle('hata', 'Kayıt hatası!');
   }
-}, 3000);
+}
+
+window.__firestoreSet = firestoreKaydet;
+
+function firebaseBaslat() {
+  try {
+    senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    firebaseDb = firebase.firestore();
+    firebaseBelgeRef = firebaseDb.collection('program').doc('veriler');
+
+    firebaseBelgeRef.onSnapshot(function(docSnap) {
+      if (docSnap.exists) {
+        const uzakVeri = docSnap.data();
+        veri = {
+          baslangicTarihi: uzakVeri.baslangicTarihi || VARSAYILAN.baslangicTarihi,
+          imam:         Array.isArray(uzakVeri.imam) ? uzakVeri.imam : [...VARSAYILAN.imam],
+          muezzin:      Array.isArray(uzakVeri.muezzin) ? uzakVeri.muezzin : [...VARSAYILAN.muezzin],
+          cayci:        Array.isArray(uzakVeri.cayci) ? uzakVeri.cayci : [...VARSAYILAN.cayci],
+          yemekciler:   Array.isArray(uzakVeri.yemekciler) ? uzakVeri.yemekciler : [...VARSAYILAN.yemekciler],
+          hadis:        typeof uzakVeri.hadis === "string" ? uzakVeri.hadis : VARSAYILAN.hadis,
+          hadisGun:     typeof uzakVeri.hadisGun === "string" ? uzakVeri.hadisGun : "",
+          dersSay1:     Array.isArray(uzakVeri.dersSay1) ? uzakVeri.dersSay1.map(function(d) { return { ...d, gun: d.gun || 1 }; }) : [],
+          dersSay2:     Array.isArray(uzakVeri.dersSay2) ? uzakVeri.dersSay2.map(function(d) { return { ...d, gun: d.gun || 1 }; }) : [],
+          dersEA:       Array.isArray(uzakVeri.dersEA)   ? uzakVeri.dersEA.map(function(d) { return { ...d, gun: d.gun || 1 }; })   : [],
+          programlar:   Array.isArray(uzakVeri.programlar) ? uzakVeri.programlar.map(function(p) {
+            return {
+              id: p.id || Date.now().toString() + Math.random(),
+              ad: p.ad || '',
+              gun: p.gun !== undefined ? String(p.gun) : '1',
+              bas: p.bas || '00:00',
+              bit: p.bit || '00:00'
+            };
+          }) : []
+        };
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+        saatGuncelle();
+        if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
+          listeleriGuncelle();
+        }
+        senkronDurumGuncelle('ok', 'Senkron ✓');
+      } else {
+        firebaseBelgeRef.set(temizVeriOlustur()).then(function() {
+          senkronDurumGuncelle('ok', 'Senkron ✓');
+        }).catch(function(e) {
+          console.error('İlk yükleme hatası:', e);
+          senkronDurumGuncelle('hata', 'Bağlantı hatası!');
+        });
+      }
+    }, function(hata) {
+      console.error('Firestore hatası:', hata);
+      senkronDurumGuncelle('hata', 'Bağlantı yok!');
+    });
+  } catch (e) {
+    console.error('Firebase başlatma hatası:', e);
+    senkronDurumGuncelle('hata', 'Bağlantı hatası!');
+  }
+}
+
+window.addEventListener('load', function() {
+  setTimeout(firebaseBaslat, 100);
+});
 </script>
 </body>
 </html>
