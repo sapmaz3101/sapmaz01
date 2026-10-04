@@ -682,16 +682,36 @@ const BELGE_REF = doc(db, "program", "veriler");
 window.__firebaseHazir = false;
 window.__firestoreSet = null;
 
+// ✅ DÜZELTİLDİ: veri ve VARSAYILAN, ana script'te tanımlı (global)
+// modül tarafından bunlara erişebilmek için window üzerinden kontrol ediliyor
+function getVeri() {
+  return window.__veri || null;
+}
+function setVeri(v) {
+  window.__veri = v;
+  if (typeof window.__veriGuncelleCallback === 'function') {
+    window.__veriGuncelleCallback();
+  }
+}
+function getVarsayilan() {
+  return window.__VARSAYILAN || null;
+}
+function getStorageKey() {
+  return window.__STORAGE_KEY || "nobetSistemV7";
+}
+
 function veriyiUygula(yeniVeri) {
   if (!yeniVeri) return;
-  // Eksik alanları varsayılanlarla doldur (undefined olmasın)
-  veri = {
-    baslangicTarihi: yeniVeri.baslangicTarihi || VARSAYILAN.baslangicTarihi,
-    imam:         Array.isArray(yeniVeri.imam) ? yeniVeri.imam : [...VARSAYILAN.imam],
-    muezzin:      Array.isArray(yeniVeri.muezzin) ? yeniVeri.muezzin : [...VARSAYILAN.muezzin],
-    cayci:        Array.isArray(yeniVeri.cayci) ? yeniVeri.cayci : [...VARSAYILAN.cayci],
-    yemekciler:   Array.isArray(yeniVeri.yemekciler) ? yeniVeri.yemekciler : [...VARSAYILAN.yemekciler],
-    hadis:        typeof yeniVeri.hadis === "string" ? yeniVeri.hadis : VARSAYILAN.hadis,
+  const V = getVarsayilan();
+  if (!V) return;
+
+  const yeni = {
+    baslangicTarihi: yeniVeri.baslangicTarihi || V.baslangicTarihi,
+    imam:         Array.isArray(yeniVeri.imam) ? yeniVeri.imam : [...V.imam],
+    muezzin:      Array.isArray(yeniVeri.muezzin) ? yeniVeri.muezzin : [...V.muezzin],
+    cayci:        Array.isArray(yeniVeri.cayci) ? yeniVeri.cayci : [...V.cayci],
+    yemekciler:   Array.isArray(yeniVeri.yemekciler) ? yeniVeri.yemekciler : [...V.yemekciler],
+    hadis:        typeof yeniVeri.hadis === "string" ? yeniVeri.hadis : V.hadis,
     hadisGun:     typeof yeniVeri.hadisGun === "string" ? yeniVeri.hadisGun : "",
     dersSay1:     Array.isArray(yeniVeri.dersSay1) ? yeniVeri.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
     dersSay2:     Array.isArray(yeniVeri.dersSay2) ? yeniVeri.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
@@ -704,22 +724,30 @@ function veriyiUygula(yeniVeri) {
       bit: p.bit || '00:00'
     })) : []
   };
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
-  saatGuncelle();
-  if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
-    listeleriGuncelle();
+
+  setVeri(yeni);
+  try { localStorage.setItem(getStorageKey(), JSON.stringify(yeni)); } catch(e) {}
+  if (typeof window.saatGuncelle === 'function') window.saatGuncelle();
+  const listelerSekme = document.getElementById('sekme-listeler');
+  if (listelerSekme && listelerSekme.classList.contains('aktif')) {
+    if (typeof window.listeleriGuncelle === 'function') window.listeleriGuncelle();
   }
 }
 
-// undefined değerleri temizleyerek kaydet
+// ✅ DÜZELTİLDİ: temizVeriOlustur artık doğru çalışıyor
 function temizVeriOlustur() {
+  const v = getVeri();
+  if (!v) return {};
   const t = {};
-  Object.keys(veri).forEach(k => {
-    const v = veri[k];
-    if (v === undefined) {
-      t[k] = Array.isArray(v) ? [] : '';
+  Object.keys(v).forEach(k => {
+    const val = v[k];
+    if (val === undefined || val === null) {
+      // Değerin tipini varsayılan üzerinden belirle
+      const V = getVarsayilan();
+      const varsayilanDeger = V ? V[k] : undefined;
+      t[k] = Array.isArray(varsayilanDeger) ? [] : '';
     } else {
-      t[k] = v;
+      t[k] = val;
     }
   });
   return t;
@@ -730,7 +758,7 @@ async function firestoreKaydet() {
     senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
     await setDoc(BELGE_REF, temizVeriOlustur());
     senkronDurumGuncelle('ok', 'Kaydedildi ✓');
-    setTimeout(() => senkronDurumGuncelle('ok', 'Senkron'), 1500);
+    setTimeout(() => senkronDurumGuncelle('ok', 'Senkron ✓'), 1500);
   } catch (e) {
     console.error('Kaydetme hatası:', e);
     senkronDurumGuncelle('hata', 'Kayıt hatası!');
@@ -745,10 +773,15 @@ function senkronDurumGuncelle(durum, yazi) {
   yaziEl.textContent = yazi;
 }
 
+let baslatildi = false;
 async function firestoreBaslat() {
+  if (baslatildi) return;
+  baslatildi = true;
+  window.__firestoreBasladi = true;
+
   try {
     senkronDurumGuncelle('yukleniyor', 'Bağlanıyor...');
-    
+
     onSnapshot(BELGE_REF, (docSnap) => {
       if (docSnap.exists()) {
         const uzakVeri = docSnap.data();
@@ -775,7 +808,13 @@ async function firestoreBaslat() {
   }
 }
 
+// Global olarak dışa aktar
 window.__firestoreBaslat = firestoreBaslat;
+window.__temizVeriOlustur = temizVeriOlustur;
+window.__senkronDurumGuncelle = senkronDurumGuncelle;
+
+// ✅ DÜZELTİLDİ: Firebase hazır olduğunda custom event tetikle
+window.dispatchEvent(new Event('firebaseModulHazir'));
 </script>
 
 <script>
@@ -872,6 +911,11 @@ const VARSAYILAN = {
 
 let veri = yukle();
 
+// ✅ DÜZELTİLDİ: Modülün erişebilmesi için global olarak yayınla
+window.__veri = veri;
+window.__VARSAYILAN = VARSAYILAN;
+window.__STORAGE_KEY = STORAGE_KEY;
+
 function yukle() {
   try {
     const k = localStorage.getItem(STORAGE_KEY);
@@ -902,11 +946,19 @@ function yukle() {
 }
 
 function kaydet() {
+  // ✅ DÜZELTİLDİ: Önce window.__veri'yi güncelle, sonra Firebase'e gönder
+  window.__veri = veri;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
   if (typeof window.__firestoreSet === 'function') {
     window.__firestoreSet();
   }
 }
+
+// ✅ DÜZELTİLDİ: Modülün veri güncellemesi sonrası çağıracağı callback
+window.__veriGuncelleCallback = function() {
+  veri = window.__veri;
+  if (typeof saatGuncelle === 'function') saatGuncelle();
+};
 
 function saatToDk(s) {
   if (!s) return null;
@@ -1011,7 +1063,6 @@ function dersBulSinif(liste) {
   return { suanki: suanki, gelecek: gelecek };
 }
 
-// BUGÜNÜN PROGRAMLARINI bul (gün filtresi ile)
 function programBul(adetSonraki) {
   const simdi = new Date();
   const dk = simdi.getHours() * 60 + simdi.getMinutes();
@@ -1183,6 +1234,9 @@ function saatGuncelle() {
   }
 }
 
+// ✅ DÜZELTİLDİ: saatGuncelle'yi modülün çağırabilmesi için global yayınla
+window.saatGuncelle = saatGuncelle;
+
 document.getElementById('saatTikla').addEventListener('click', function() {
   document.getElementById('sekme-panel').classList.remove('aktif');
   document.getElementById('sekme-listeler').classList.add('aktif');
@@ -1212,7 +1266,6 @@ document.querySelectorAll('.gun-sekme-btn').forEach(function(btn) {
     btn.classList.add('aktif');
     aktifProgramGun = btn.getAttribute('data-gun');
     programListesiCiz();
-    // form temizle
     document.getElementById('programAd').value = '';
     document.getElementById('programBas').value = '';
     document.getElementById('programBit').value = '';
@@ -1242,6 +1295,9 @@ function listeleriGuncelle() {
   document.getElementById('inpHadis').value = veri.hadis;
   document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
 }
+
+// ✅ DÜZELTİLDİ: modülün erişebilmesi için global yayınla
+window.listeleriGuncelle = listeleriGuncelle;
 
 function listeCiz(tur, liste) {
   const container = document.getElementById('liste-' + tur);
@@ -1279,10 +1335,8 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
   });
 });
 
-// Aktif güne göre program listesini çiz
 function programListesiCiz() {
   const container = document.getElementById('programListesi');
-  // Sayıları güncelle
   for (let g = 0; g <= 6; g++) {
     const el = document.getElementById('sayiGun-' + g);
     if (el) {
@@ -1291,7 +1345,6 @@ function programListesiCiz() {
   }
   document.getElementById('sayi-programlar').textContent = veri.programlar.length;
 
-  // Aktif güne ait programları filtrele
   const filtreli = veri.programlar
     .map((p, i) => ({ ...p, _orijinalIndex: i }))
     .filter(p => String(p.gun) === String(aktifProgramGun))
@@ -1479,7 +1532,6 @@ function bildirimGoster(mesaj) {
       if (el) el.value = String(bugunGun);
     });
   }
-  // Genel programlar için varsayılan gün sekmesi: bugün (hafta sonu ise 1)
   const bugunGunStr = String(bugunGun);
   const btn = document.querySelector('.gun-sekme-btn[data-gun="' + bugunGunStr + '"]');
   if (btn) {
@@ -1492,9 +1544,31 @@ function bildirimGoster(mesaj) {
 setInterval(saatGuncelle, 1000);
 saatGuncelle();
 
-if (typeof window.__firestoreBaslat === 'function') {
-  window.__firestoreBaslat();
+// ✅ DÜZELTİLDİ: Firebase başlatma - 3 katmanlı güvenlik
+function firebaseBaslatmayiDene() {
+  if (window.__firebaseHazir && typeof window.__firestoreBaslat === 'function' && !window.__firestoreBasladi) {
+    window.__firestoreBaslat();
+    return true;
+  }
+  return false;
 }
+
+// 1) Modül hazır olduğunda tetiklenen event
+window.addEventListener('firebaseModulHazir', firebaseBaslatmayiDene);
+
+// 2) Modül zaten yüklenmişse hemen dene
+firebaseBaslatmayiDene();
+
+// 3) Güvenlik: 1 saniye sonra hala başlamadıysa tekrar dene
+setTimeout(firebaseBaslatmayiDene, 1000);
+
+// 4) Son çare: 3 saniye sonra hala başlamadıysa uyar
+setTimeout(function() {
+  if (!window.__firestoreBasladi) {
+    console.warn('Firebase başlatılamadı! Modül yüklenmemiş olabilir.');
+    senkronDurumGuncelle('hata', 'Bağlantı kurulamadı!');
+  }
+}, 3000);
 </script>
 </body>
 </html>
