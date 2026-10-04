@@ -192,6 +192,14 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .ders-panel { display: none; }
 .ders-panel.aktif { display: block; }
 
+/* GÜN SEKMELERİ (Genel Programlar için) */
+.gun-sekme-baslik { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+.gun-sekme-baslik button { flex: 1; min-width: 80px; padding: 8px 6px; font-size: 13px; font-weight: 700; border: 2px solid #7a4a41; border-radius: 6px; background: #fff; color: #7a4a41; cursor: pointer; transition: all 0.15s; }
+.gun-sekme-baslik button.aktif { background: #7a4a41; color: #fff; box-shadow: 0 2px 6px rgba(122, 74, 65, 0.35); }
+.gun-sekme-baslik button:hover:not(.aktif) { background: #f8d7ce; }
+.gun-sekme-baslik button .sayi-mini { display: inline-block; background: rgba(0,0,0,0.15); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
+.gun-sekme-baslik button.aktif .sayi-mini { background: rgba(255,255,255,0.3); }
+
 .program-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 6px; margin-bottom: 10px; }
 .ders-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 6px; margin-bottom: 10px; }
 .ders-form input, .program-form input { padding: 7px 8px; font-size: 13px; border: 1.5px solid #aaa; border-radius: 6px; font-family: inherit; width: 100%; }
@@ -501,11 +509,23 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
       </div>
     </div>
 
+    <!-- GENEL PROGRAMLAR - GÜN SEKMELİ -->
     <div class="liste-kart" style="margin-bottom:20px;">
       <div class="kart-baslik"><h3>📋 GENEL PROGRAMLAR (Namaz, Yemek, Etüt...)</h3><span class="sayi" id="sayi-programlar">0</span></div>
       <p style="font-size:12px; color:#555; margin-bottom:12px;">
-        Ders dışı programları buraya ekle. Panel otomatik olarak <b>şu anki programı</b> ve <b>sonraki programları</b> gösterir.
+        Her günün programını <b>ayrı ayrı</b> ekleyin. Gün sekmelerinden birini seçip o güne ait programları düzenleyin. Panel otomatik olarak <b>o günün</b> şu anki ve sonraki programlarını gösterir.
       </p>
+
+      <!-- GÜN SEKMELERİ -->
+      <div class="gun-sekme-baslik" id="gunSekmeleri">
+        <button class="gun-sekme-btn aktif" data-gun="1">Pazartesi <span class="sayi-mini" id="sayiGun-1">0</span></button>
+        <button class="gun-sekme-btn" data-gun="2">Salı <span class="sayi-mini" id="sayiGun-2">0</span></button>
+        <button class="gun-sekme-btn" data-gun="3">Çarşamba <span class="sayi-mini" id="sayiGun-3">0</span></button>
+        <button class="gun-sekme-btn" data-gun="4">Perşembe <span class="sayi-mini" id="sayiGun-4">0</span></button>
+        <button class="gun-sekme-btn" data-gun="5">Cuma <span class="sayi-mini" id="sayiGun-5">0</span></button>
+        <button class="gun-sekme-btn" data-gun="6">Cumartesi <span class="sayi-mini" id="sayiGun-6">0</span></button>
+        <button class="gun-sekme-btn" data-gun="0">Pazar <span class="sayi-mini" id="sayiGun-0">0</span></button>
+      </div>
 
       <div class="program-form">
         <div class="alan"><label>Program Adı</label><input type="text" id="programAd" placeholder="Örn: Öğle Namazı"></div>
@@ -664,7 +684,26 @@ window.__firestoreSet = null;
 
 function veriyiUygula(yeniVeri) {
   if (!yeniVeri) return;
-  veri = yeniVeri;
+  // Eksik alanları varsayılanlarla doldur (undefined olmasın)
+  veri = {
+    baslangicTarihi: yeniVeri.baslangicTarihi || VARSAYILAN.baslangicTarihi,
+    imam:         Array.isArray(yeniVeri.imam) ? yeniVeri.imam : [...VARSAYILAN.imam],
+    muezzin:      Array.isArray(yeniVeri.muezzin) ? yeniVeri.muezzin : [...VARSAYILAN.muezzin],
+    cayci:        Array.isArray(yeniVeri.cayci) ? yeniVeri.cayci : [...VARSAYILAN.cayci],
+    yemekciler:   Array.isArray(yeniVeri.yemekciler) ? yeniVeri.yemekciler : [...VARSAYILAN.yemekciler],
+    hadis:        typeof yeniVeri.hadis === "string" ? yeniVeri.hadis : VARSAYILAN.hadis,
+    hadisGun:     typeof yeniVeri.hadisGun === "string" ? yeniVeri.hadisGun : "",
+    dersSay1:     Array.isArray(yeniVeri.dersSay1) ? yeniVeri.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+    dersSay2:     Array.isArray(yeniVeri.dersSay2) ? yeniVeri.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+    dersEA:       Array.isArray(yeniVeri.dersEA)   ? yeniVeri.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
+    programlar:   Array.isArray(yeniVeri.programlar) ? yeniVeri.programlar.map(p => ({
+      id: p.id || Date.now().toString() + Math.random(),
+      ad: p.ad || '',
+      gun: p.gun !== undefined ? String(p.gun) : '1',
+      bas: p.bas || '00:00',
+      bit: p.bit || '00:00'
+    })) : []
+  };
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
   saatGuncelle();
   if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
@@ -672,10 +711,24 @@ function veriyiUygula(yeniVeri) {
   }
 }
 
+// undefined değerleri temizleyerek kaydet
+function temizVeriOlustur() {
+  const t = {};
+  Object.keys(veri).forEach(k => {
+    const v = veri[k];
+    if (v === undefined) {
+      t[k] = Array.isArray(v) ? [] : '';
+    } else {
+      t[k] = v;
+    }
+  });
+  return t;
+}
+
 async function firestoreKaydet() {
   try {
     senkronDurumGuncelle('yukleniyor', 'Kaydediliyor...');
-    await setDoc(BELGE_REF, veri);
+    await setDoc(BELGE_REF, temizVeriOlustur());
     senkronDurumGuncelle('ok', 'Kaydedildi ✓');
     setTimeout(() => senkronDurumGuncelle('ok', 'Senkron'), 1500);
   } catch (e) {
@@ -702,7 +755,7 @@ async function firestoreBaslat() {
         veriyiUygula(uzakVeri);
         senkronDurumGuncelle('ok', 'Senkron ✓');
       } else {
-        setDoc(BELGE_REF, veri).then(() => {
+        setDoc(BELGE_REF, temizVeriOlustur()).then(() => {
           senkronDurumGuncelle('ok', 'Senkron ✓');
         }).catch(e => {
           console.error('İlk yükleme hatası:', e);
@@ -802,19 +855,19 @@ let GIRIS_BILGILERI = girisBilgileriniYukle();
   kullaniciInput.focus();
 })();
 
-const STORAGE_KEY = "nobetSistemV6";
+const STORAGE_KEY = "nobetSistemV7";
 const VARSAYILAN = {
   baslangicTarihi: new Date().toISOString().slice(0, 10),
   imam:         ["Ahmet Yılmaz", "Mehmet Demir", "Mustafa Çelik"],
-  muezzin:    ["Ali Kaya", "Hasan Şahin", "Osman Aydın"],
-  cayci:      ["Bahadır Sapmaz", "Ramazan Koç", "İbrahim Doğan"],
-  yemekciler: ["Yusuf Aslan", "Ömer Faruk", "Murat Koç", "Hüseyin Ak"],
-  hadis:      '"Sizin en hayırlınız, Kur\'an\'ı öğrenen ve öğretendir."\n(Buhârî)',
-  hadisGun:   "",
-  dersSay1:   [],
-  dersSay2:   [],
-  dersEA:     [],
-  programlar: []
+  muezzin:      ["Ali Kaya", "Hasan Şahin", "Osman Aydın"],
+  cayci:        ["Bahadır Sapmaz", "Ramazan Koç", "İbrahim Doğan"],
+  yemekciler:   ["Yusuf Aslan", "Ömer Faruk", "Murat Koç", "Hüseyin Ak"],
+  hadis:        '"Sizin en hayırlınız, Kur\'an\'ı öğrenen ve öğretendir."\n(Buhârî)',
+  hadisGun:     "",
+  dersSay1:     [],
+  dersSay2:     [],
+  dersEA:       [],
+  programlar:   []
 };
 
 let veri = yukle();
@@ -827,15 +880,21 @@ function yukle() {
     return {
       baslangicTarihi: p.baslangicTarihi || VARSAYILAN.baslangicTarihi,
       imam:         Array.isArray(p.imam) ? p.imam : [...VARSAYILAN.imam],
-      muezzin:    Array.isArray(p.muezzin) ? p.muezzin : [...VARSAYILAN.muezzin],
-      cayci:      Array.isArray(p.cayci) ? p.cayci : [...VARSAYILAN.cayci],
-      yemekciler: Array.isArray(p.yemekciler) ? p.yemekciler : [...VARSAYILAN.yemekciler],
-      hadis:      typeof p.hadis === "string" ? p.hadis : VARSAYILAN.hadis,
-      hadisGun:   typeof p.hadisGun === "string" ? p.hadisGun : "",
-      dersSay1:   Array.isArray(p.dersSay1) ? p.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
-      dersSay2:   Array.isArray(p.dersSay2) ? p.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
-      dersEA:     Array.isArray(p.dersEA)   ? p.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
-      programlar: Array.isArray(p.programlar) ? p.programlar : []
+      muezzin:      Array.isArray(p.muezzin) ? p.muezzin : [...VARSAYILAN.muezzin],
+      cayci:        Array.isArray(p.cayci) ? p.cayci : [...VARSAYILAN.cayci],
+      yemekciler:   Array.isArray(p.yemekciler) ? p.yemekciler : [...VARSAYILAN.yemekciler],
+      hadis:        typeof p.hadis === "string" ? p.hadis : VARSAYILAN.hadis,
+      hadisGun:     typeof p.hadisGun === "string" ? p.hadisGun : "",
+      dersSay1:     Array.isArray(p.dersSay1) ? p.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+      dersSay2:     Array.isArray(p.dersSay2) ? p.dersSay2.map(d => ({ ...d, gun: d.gun || 1 })) : [],
+      dersEA:       Array.isArray(p.dersEA)   ? p.dersEA.map(d => ({ ...d, gun: d.gun || 1 }))   : [],
+      programlar:   Array.isArray(p.programlar) ? p.programlar.map(pr => ({
+        id: pr.id || Date.now().toString() + Math.random(),
+        ad: pr.ad || '',
+        gun: pr.gun !== undefined ? String(pr.gun) : '1',
+        bas: pr.bas || '00:00',
+        bit: pr.bit || '00:00'
+      })) : []
     };
   } catch (e) {
     return JSON.parse(JSON.stringify(VARSAYILAN));
@@ -952,12 +1011,16 @@ function dersBulSinif(liste) {
   return { suanki: suanki, gelecek: gelecek };
 }
 
+// BUGÜNÜN PROGRAMLARINI bul (gün filtresi ile)
 function programBul(adetSonraki) {
   const simdi = new Date();
   const dk = simdi.getHours() * 60 + simdi.getMinutes();
-  const liste = (veri.programlar || []).slice().sort(function(a, b) {
-    return saatToDk(a.bas) - saatToDk(b.bas);
-  });
+  const bugunGun = String(simdi.getDay());
+
+  const liste = (veri.programlar || [])
+    .filter(function(p) { return String(p.gun) === bugunGun; })
+    .slice()
+    .sort(function(a, b) { return saatToDk(a.bas) - saatToDk(b.bas); });
 
   let suanki = null;
   const sonrakiler = [];
@@ -967,9 +1030,7 @@ function programBul(adetSonraki) {
     const bas = saatToDk(p.bas);
     const bit = saatToDk(p.bit);
     if (bas !== null && bit !== null) {
-      if (dk >= bas && dk < bit) {
-        suanki = p;
-      }
+      if (dk >= bas && dk < bit) suanki = p;
     }
   }
 
@@ -983,12 +1044,11 @@ function programBul(adetSonraki) {
     if (sonrakiler.length >= adetSonraki) break;
   }
 
-  let birSonraki = null;
-  if (sonrakiler.length > 0) {
-    birSonraki = sonrakiler[0];
-  }
-
-  return { suanki: suanki, sonrakiler: sonrakiler, birSonraki: birSonraki };
+  return {
+    suanki: suanki,
+    sonrakiler: sonrakiler,
+    birSonraki: sonrakiler.length > 0 ? sonrakiler[0] : null
+  };
 }
 
 function geriSayimFormatla(hedefSaat) {
@@ -1143,6 +1203,22 @@ document.querySelectorAll('.ders-sekme-btn').forEach(function(btn) {
   });
 });
 
+// ===== GENEL PROGRAMLAR GÜN SEKMELERİ =====
+let aktifProgramGun = '1';
+
+document.querySelectorAll('.gun-sekme-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.gun-sekme-btn').forEach(b => b.classList.remove('aktif'));
+    btn.classList.add('aktif');
+    aktifProgramGun = btn.getAttribute('data-gun');
+    programListesiCiz();
+    // form temizle
+    document.getElementById('programAd').value = '';
+    document.getElementById('programBas').value = '';
+    document.getElementById('programBit').value = '';
+  });
+});
+
 document.getElementById('inpBaslangic').addEventListener('change', function(e) {
   if (!e.target.value) {
     e.target.value = veri.baslangicTarihi;
@@ -1203,27 +1279,52 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
   });
 });
 
+// Aktif güne göre program listesini çiz
 function programListesiCiz() {
   const container = document.getElementById('programListesi');
+  // Sayıları güncelle
+  for (let g = 0; g <= 6; g++) {
+    const el = document.getElementById('sayiGun-' + g);
+    if (el) {
+      el.textContent = (veri.programlar || []).filter(p => String(p.gun) === String(g)).length;
+    }
+  }
   document.getElementById('sayi-programlar').textContent = veri.programlar.length;
+
+  // Aktif güne ait programları filtrele
+  const filtreli = veri.programlar
+    .map((p, i) => ({ ...p, _orijinalIndex: i }))
+    .filter(p => String(p.gun) === String(aktifProgramGun))
+    .sort((a, b) => saatToDk(a.bas) - saatToDk(b.bas));
+
   let html = '';
-  veri.programlar.forEach(function(p, i) {
-    html += '<div class="program-liste-satir">' +
-      '<span>' + escapeHtml(p.ad) + '</span>' +
-      '<span class="saat-aralik">' + escapeHtml(p.bas) + '</span>' +
-      '<span class="saat-aralik">' + escapeHtml(p.bit) + '</span>' +
-      '<button class="sil-btn" onclick="programSil(' + i + ')">&times;</button>' +
-    '</div>';
-  });
+  if (filtreli.length === 0) {
+    html = '<div style="text-align:center; color:#888; font-style:italic; padding:14px; font-size:13px;">Bu gün için program eklenmemiş.</div>';
+  } else {
+    filtreli.forEach(function(p) {
+      html += '<div class="program-liste-satir">' +
+        '<span>' + escapeHtml(p.ad) + '</span>' +
+        '<span class="saat-aralik">' + escapeHtml(p.bas) + '</span>' +
+        '<span class="saat-aralik">' + escapeHtml(p.bit) + '</span>' +
+        '<button class="sil-btn" onclick="programSil(' + p._orijinalIndex + ')">&times;</button>' +
+      '</div>';
+    });
+  }
   container.innerHTML = html;
 }
 
 document.getElementById('programEkleBtn').addEventListener('click', function() {
-  const ad = document.getElementById('programAd').value.trim();
+  const ad  = document.getElementById('programAd').value.trim();
   const bas = document.getElementById('programBas').value;
   const bit = document.getElementById('programBit').value;
   if (ad && bas && bit) {
-    veri.programlar.push({ id: Date.now().toString(), ad: ad, bas: bas, bit: bit });
+    veri.programlar.push({
+      id: Date.now().toString(),
+      ad: ad,
+      gun: aktifProgramGun,
+      bas: bas,
+      bit: bit
+    });
     document.getElementById('programAd').value = '';
     document.getElementById('programBas').value = '';
     document.getElementById('programBit').value = '';
@@ -1377,6 +1478,14 @@ function bildirimGoster(mesaj) {
       const el = document.getElementById('dersGun-' + s);
       if (el) el.value = String(bugunGun);
     });
+  }
+  // Genel programlar için varsayılan gün sekmesi: bugün (hafta sonu ise 1)
+  const bugunGunStr = String(bugunGun);
+  const btn = document.querySelector('.gun-sekme-btn[data-gun="' + bugunGunStr + '"]');
+  if (btn) {
+    document.querySelectorAll('.gun-sekme-btn').forEach(b => b.classList.remove('aktif'));
+    btn.classList.add('aktif');
+    aktifProgramGun = bugunGunStr;
   }
 })();
 
