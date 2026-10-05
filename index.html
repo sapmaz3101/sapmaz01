@@ -6,7 +6,7 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding: 12px; height: 100dvh; display: flex; flex-direction: column; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #3f8afa; padding: 12px; height: 100dvh; display: flex; flex-direction: column; -webkit-tap-highlight-color: transparent; }
 .sekme-icerik { display: none; flex: 1; min-height: 0; }
 .sekme-icerik.aktif { display: flex; flex-direction: column; }
 .panel { display: grid; grid-template-rows: auto 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
@@ -36,7 +36,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .kutu.yarin .yemekci-yanyana .kisi-chip { color: #444; font-size: clamp(11px, 0.9vw, 15px); }
 
 .orta { display: grid; grid-template-columns: 1.1fr 1fr; gap: 12px; min-height: 0; }
-.ders-tablo { background: #a8e6e0; border-radius: 24px; padding: 10px; display: grid; grid-template-columns: 22% 26% 26% 26%; grid-template-rows: 30% 35% 35%; gap: 2px; min-height: 0; }
+.ders-tablo { background: #a8e6d1; border-radius: 24px; padding: 10px; display: grid; grid-template-columns: 22% 26% 26% 26%; grid-template-rows: 30% 35% 35%; gap: 2px; min-height: 0; }
 .ders-tablo .hucre {
   border: 1.5px solid #222;
   display: flex;
@@ -152,6 +152,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
 .ekle-satir input:focus { outline: none; border-color: #7a4a41; }
 .ekle-satir button { padding: 7px 14px; font-size: 14px; font-weight: 600; border: none; border-radius: 6px; background: #2e7d32; color: #fff; cursor: pointer; }
 .ekle-satir button:hover { background: #1b5e20; }
+
+.hadis-liste-kart { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: flex; flex-direction: column; margin-bottom: 20px; }
+.hadis-liste-kart .kart-baslik { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #ddd; }
+.hadis-liste-kart .kart-baslik h3 { font-size: 16px; font-weight: 700; }
+.hadis-liste-kart .kart-baslik .sayi { background: #7a4a41; color: #fff; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+.hadis-liste { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
+.hadis-satir { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+.hadis-satir .sira { background: #eee; color: #555; font-weight: 700; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.hadis-satir.siradaki { background: #fff3cd; border-left: 4px solid #ffc107; font-weight: 700; }
+.hadis-satir.siradaki .sira { background: #ffc107; color: #111; }
+.hadis-satir .metin { flex: 1; white-space: pre-wrap; line-height: 1.4; }
+.hadis-satir .sil-btn { background: transparent; border: none; color: #c62828; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+.hadis-satir .sil-btn:hover { background: #ffebee; }
+.hadis-ekle-form { display: flex; flex-direction: column; gap: 6px; }
+.hadis-ekle-form textarea { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid #aaa; border-radius: 6px; font-family: inherit; resize: vertical; min-height: 70px; }
+.hadis-ekle-form textarea:focus { outline: none; border-color: #7a4a41; }
+.hadis-ekle-form button { padding: 8px 14px; font-size: 14px; font-weight: 600; border: none; border-radius: 6px; background: #2e7d32; color: #fff; cursor: pointer; align-self: flex-end; }
+.hadis-ekle-form button:hover { background: #1b5e20; }
 
 .ders-sekme-baslik { display: flex; gap: 8px; margin-bottom: 14px; }
 .ders-sekme-baslik button { flex: 1; padding: 10px 12px; font-size: 15px; font-weight: 700; border: 2px solid #7a4a41; border-radius: 8px; background: #fff; color: #7a4a41; cursor: pointer; transition: all 0.15s; }
@@ -410,6 +428,23 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
       </div>
     </div>
 
+    <!-- ================== HADİS LİSTESİ ================== -->
+    <div class="hadis-liste-kart">
+      <div class="kart-baslik">
+        <h3>📖 GÜNÜN HADİS-İ ŞERİFİ LİSTESİ</h3>
+        <span class="sayi" id="sayi-hadisListesi">0</span>
+      </div>
+      <p style="font-size:12px; color:#555; margin-bottom:10px;">
+        Her gün sıradaki hadis otomatik olarak panele yansır. Sıradaki hadis <span style="background:#fff3cd; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır.
+      </p>
+      <div class="hadis-liste" id="liste-hadisListesi"></div>
+      <div class="hadis-ekle-form">
+        <textarea id="yeni-hadis" placeholder="Hadis metnini yazın...&#10;Son satıra kaynak yazabilirsiniz. Örn: (Buhârî)"></textarea>
+        <button data-ekle-hadis>+ Hadis Ekle</button>
+      </div>
+    </div>
+    <!-- ================== /HADİS LİSTESİ ================== -->
+
     <div class="liste-kart" style="margin-bottom:20px;">
       <div class="kart-baslik"><h3>📋 GENEL PROGRAMLAR (Namaz, Yemek, Etüt...)</h3><span class="sayi" id="sayi-programlar">0</span></div>
       <p style="font-size:12px; color:#555; margin-bottom:12px;">
@@ -560,11 +595,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #d32f2f; padding
       <div class="bildirim" id="sifreBildirim"></div>
     </div>
 
-    <div class="ayar-footer">
-      <label for="inpHadis">Günün Hadis-i Şerifi (son satır kaynak olur)</label>
-      <textarea id="inpHadis"></textarea>
-      <div class="bildirim" id="bildirim"></div>
-    </div>
   </div>
 </div>
 
@@ -666,13 +696,25 @@ const HP_VARSAYILAN = {
 };
 
 /* ================== VERİ KATMANI ================== */
-const STORAGE_KEY = "nobetSistemV9";
+const STORAGE_KEY = "nobetSistemV10";
 const VARSAYILAN = {
   baslangicTarihi: new Date().toISOString().slice(0, 10),
   imam:         ["Ahmet Yılmaz", "Mehmet Demir", "Mustafa Çelik"],
   muezzin:      ["Ali Kaya", "Hasan Şahin", "Osman Aydın"],
   cayci:        ["Bahadır Sapmaz", "Ramazan Koç", "İbrahim Doğan"],
   yemekciler:   ["Yusuf Aslan", "Ömer Faruk", "Murat Koç", "Hüseyin Ak"],
+  hadisListesi: [
+    '"Sizin en hayırlınız, Kur\'an\'ı öğrenen ve öğretendir."\n(Buhârî)',
+    '"Müslüman, dilinden ve elinden Müslümanların emin olduğu kimsedir."\n(Buhârî, Müslim)',
+    '"Hiçbiriniz kendisi için istediğini kardeşi için de istemedikçe (gerçek anlamda) iman etmiş olmaz."\n(Buhârî, Müslim)',
+    '"Kolaylaştırınız, zorlaştırmayınız; müjdeleyiniz, nefret ettirmeyiniz."\n(Buhârî, Müslim)',
+    '"Allah\'a ve ahiret gününe inanan ya hayır söylesin ya da sussun."\n(Buhârî, Müslim)',
+    '"Kuvvetli kimse, güreşte rakibini yenen değil, öfke anında kendisine hâkim olandır."\n(Buhârî, Müslim)',
+    '"Merhamet edenlere Rahman merhamet eder. Yerdekilere merhamet edin ki, göktekiler de size merhamet etsin."\n(Tirmizî)',
+    '"Komşusu aç iken tok yatan bizden değildir."\n(Beyhakî)',
+    '"İnsanlara merhamet etmeyene Allah da merhamet etmez."\n(Buhârî, Müslim)',
+    '"Bir kimse, kendisi için sevdiğini kardeşi için de sevmedikçe iman etmiş olmaz."\n(Buhârî, Müslim)'
+  ],
   hadis:        '"Sizin en hayırlınız, Kur\'an\'ı öğrenen ve öğretendir."\n(Buhârî)',
   hadisGun:     "",
   dersSay1:     [],
@@ -699,6 +741,7 @@ function yukle() {
       muezzin:      Array.isArray(p.muezzin) ? p.muezzin : [...VARSAYILAN.muezzin],
       cayci:        Array.isArray(p.cayci) ? p.cayci : [...VARSAYILAN.cayci],
       yemekciler:   Array.isArray(p.yemekciler) ? p.yemekciler : [...VARSAYILAN.yemekciler],
+      hadisListesi: Array.isArray(p.hadisListesi) && p.hadisListesi.length > 0 ? p.hadisListesi : [...VARSAYILAN.hadisListesi],
       hadis:        typeof p.hadis === "string" ? p.hadis : VARSAYILAN.hadis,
       hadisGun:     typeof p.hadisGun === "string" ? p.hadisGun : "",
       dersSay1:     Array.isArray(p.dersSay1) ? p.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
@@ -1110,13 +1153,17 @@ function saatGuncelle() {
   document.getElementById('gosterYemekciler').innerHTML = yemekciBugun.length > 0 ? yemekciBugun.map(isim => '<span class="kisi-chip">' + escapeHtml(isim) + '</span>').join(' &bull; ') : '-';
   document.getElementById('gosterYemekcilerYarin').innerHTML = yemekciYarin.length > 0 ? yemekciYarin.map(isim => '<span class="kisi-chip">' + escapeHtml(isim) + '</span>').join(' &bull; ') : '-';
 
+  /* ===== GÜNÜN HADİSİ (LİSTEDEN) ===== */
+  const idxHadis = siradakiIndex(veri.hadisListesi, 0);
+  const gununHadisi = idxHadis >= 0 && veri.hadisListesi[idxHadis] ? veri.hadisListesi[idxHadis] : (veri.hadis || '');
+  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(gununHadisi);
+
   /* ===== ŞUANKİ VE GELECEK DERSLERİ RENKLİ GÖSTER ===== */
   const bugunGun = new Date().getDay();
 
   function dersHucreGuncelle(elemanId, dersObj) {
     const el = document.getElementById(elemanId);
     if (!el) return;
-    // Sadece hedef hücreye renk sınıfı ekle, "hucre" sınıfını koru
     el.className = 'hucre';
     if (dersObj && dersObj.ad) {
       el.textContent = dersObj.ad;
@@ -1230,12 +1277,11 @@ function listeleriGuncelle() {
   listeCiz('muezzin', veri.muezzin);
   listeCiz('cayci', veri.cayci);
   listeCiz('yemekciler', veri.yemekciler);
+  hadisListesiCiz();
   programListesiCiz();
   dersListesiCiz('say1', veri.dersSay1);
   dersListesiCiz('say2', veri.dersSay2);
   dersListesiCiz('ea', veri.dersEA);
-  document.getElementById('inpHadis').value = veri.hadis;
-  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
   hpGridCiz();
 }
 
@@ -1275,6 +1321,47 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
   });
 });
 
+/* ===== HADİS LİSTESİ ===== */
+function hadisListesiCiz() {
+  const container = document.getElementById('liste-hadisListesi');
+  if (!container) return;
+  const sayiEl = document.getElementById('sayi-hadisListesi');
+  if (sayiEl) sayiEl.textContent = veri.hadisListesi.length;
+
+  const siradakiIdx = siradakiIndex(veri.hadisListesi, 0);
+  let html = '';
+  veri.hadisListesi.forEach(function(hadis, i) {
+    const siradaMi = (i === siradakiIdx);
+    const kisa = hadis.length > 120 ? hadis.substring(0, 120) + '…' : hadis;
+    html += '<div class="hadis-satir' + (siradaMi ? ' siradaki' : '') + '">' +
+      '<span class="sira">' + (i + 1) + '</span>' +
+      '<span class="metin">' + escapeHtml(kisa) + '</span>' +
+      '<button class="sil-btn" onclick="hadisSil(' + i + ')">&times;</button>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+window.hadisSil = function(index) {
+  veri.hadisListesi.splice(index, 1);
+  kaydet();
+  hadisListesiCiz();
+  saatGuncelle();
+};
+
+document.querySelector('[data-ekle-hadis]').addEventListener('click', function() {
+  const textarea = document.getElementById('yeni-hadis');
+  const hadis = textarea.value.trim();
+  if (hadis) {
+    veri.hadisListesi.push(hadis);
+    textarea.value = '';
+    kaydet();
+    hadisListesiCiz();
+    saatGuncelle();
+  }
+});
+
+/* ===== PROGRAM LİSTESİ ===== */
 function programListesiCiz() {
   const container = document.getElementById('programListesi');
   for (let g = 0; g <= 6; g++) {
@@ -1371,14 +1458,8 @@ window.dersSil = function(sinif, i) {
   dersListesiCiz(sinif, veri[key]);
 };
 
-document.getElementById('inpHadis').addEventListener('input', function(e) {
-  veri.hadis = e.target.value;
-  kaydet();
-  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
-});
-
 document.getElementById('hadisYenileBtn').addEventListener('click', function() {
-  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(veri.hadis);
+  saatGuncelle();
 });
 
 document.getElementById('sifreDegistirBtn').addEventListener('click', function() {
@@ -1485,6 +1566,7 @@ function temizVeriOlustur() {
     }
   });
   if (!t.haftalikProgram) t.haftalikProgram = JSON.parse(JSON.stringify(HP_VARSAYILAN));
+  if (!t.hadisListesi || t.hadisListesi.length === 0) t.hadisListesi = [...VARSAYILAN.hadisListesi];
   return t;
 }
 
@@ -1519,6 +1601,7 @@ function firebaseBaslat() {
           muezzin:      Array.isArray(uzakVeri.muezzin) ? uzakVeri.muezzin : [...VARSAYILAN.muezzin],
           cayci:        Array.isArray(uzakVeri.cayci) ? uzakVeri.cayci : [...VARSAYILAN.cayci],
           yemekciler:   Array.isArray(uzakVeri.yemekciler) ? uzakVeri.yemekciler : [...VARSAYILAN.yemekciler],
+          hadisListesi: Array.isArray(uzakVeri.hadisListesi) && uzakVeri.hadisListesi.length > 0 ? uzakVeri.hadisListesi : [...VARSAYILAN.hadisListesi],
           hadis:        typeof uzakVeri.hadis === "string" ? uzakVeri.hadis : VARSAYILAN.hadis,
           hadisGun:     typeof uzakVeri.hadisGun === "string" ? uzakVeri.hadisGun : "",
           dersSay1:     Array.isArray(uzakVeri.dersSay1) ? uzakVeri.dersSay1.map(d => ({ ...d, gun: d.gun || 1 })) : [],
@@ -1540,6 +1623,7 @@ function firebaseBaslat() {
         hpAnaTabloyuCiz();
         if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
           hpGridCiz();
+          hadisListesiCiz();
         }
         senkronDurumGuncelle('ok', 'Senkron ✓');
       } else {
