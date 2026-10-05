@@ -55,15 +55,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #3f8afa; padding
 .ders-tablo .bos { border: none; background: transparent; }
 
 .hadis-kutu { background: #a8e6e0; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; min-height: 0; }
-.hadis-kutu .hadis-baslik { text-align: center; font-size: clamp(14px, 1.2vw, 20px); font-weight: 600; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.hadis-kutu .hadis-baslik { text-align: center; font-size: clamp(16px, 1.4vw, 22px); font-weight: 700; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
 .hadis-yenile-btn { font-size: 11px; padding: 3px 8px; cursor: pointer; background: #7a4a41; color: #fff; border: none; border-radius: 4px; font-weight: 700; }
 .hadis-yenile-btn:hover { background: #5d3830; }
-.hadis-kutu .hadis-metin { color: #222; line-height: 1.4; font-style: italic; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; overflow: hidden; padding: 4px; width: 100%; word-wrap: break-word; overflow-wrap: break-word; }
-.hadis-kutu .hadis-metin .hadis-text { font-size: clamp(11px, 0.95vw, 16px); width: 100%; line-height: 1.4; }
-.hadis-kutu .hadis-metin .hadis-text.uzun { font-size: clamp(10px, 0.8vw, 14px); line-height: 1.3; }
-.hadis-kutu .hadis-metin .hadis-text.cok-uzun { font-size: clamp(9px, 0.7vw, 12px); line-height: 1.25; }
-.hadis-kutu .hadis-metin .hadis-text.cok-cok-uzun { font-size: clamp(8px, 0.6vw, 11px); line-height: 1.2; }
-.hadis-kutu .hadis-metin .hadis-kaynak { font-size: 0.75em; color: #555; margin-top: 6px; }
+.hadis-kutu .hadis-metin { color: #222; line-height: 1.5; font-style: italic; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; overflow: auto; padding: 8px; width: 100%; word-wrap: break-word; overflow-wrap: break-word; }
+.hadis-kutu .hadis-metin .hadis-text { font-size: clamp(18px, 1.7vw, 30px); width: 100%; line-height: 1.5; }
+.hadis-kutu .hadis-metin .hadis-text.uzun { font-size: clamp(16px, 1.4vw, 25px); line-height: 1.45; }
+.hadis-kutu .hadis-metin .hadis-text.cok-uzun { font-size: clamp(14px, 1.15vw, 20px); line-height: 1.4; }
+.hadis-kutu .hadis-metin .hadis-text.cok-cok-uzun { font-size: clamp(12px, 1vw, 17px); line-height: 1.35; }
+.hadis-kutu .hadis-metin .hadis-kaynak { font-size: 0.7em; color: #555; margin-top: 10px; font-weight: 600; font-style: normal; }
 
 .alt { display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px; min-height: 0; }
 
@@ -294,7 +294,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #3f8afa; padding
       <div class="tarih-saat" id="saatTikla" title="Nöbet Listelerini aç">
         <div class="saat" id="canliSaat">--:--:--</div>
         <div class="tarih" id="canliTarih">--</div>
-        <div class="ipucu">👥 Listeler için tıkla</div>
+      
       </div>
       <div class="sutun">
         <h2>İMAM</h2>
