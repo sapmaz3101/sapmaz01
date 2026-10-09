@@ -433,6 +433,139 @@ body {
 .ekle-satir button { padding: 7px 14px; font-size: 14px; font-weight: 700; border: none; border-radius: 6px; background: #2e7d32; color: #fff; cursor: pointer; }
 .ekle-satir button:hover { background: #1b5e20; }
 
+/* ===== YEMEKÇİ GRUP BAŞLIĞI ===== */
+.yemekci-grup-baslik {
+  font-size: 11px;
+  font-weight: 800;
+  color: #4a6fa5;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 8px 2px;
+  border-bottom: 1px dashed #c5d3e8;
+  margin-top: 6px;
+  background: #f5f8fc;
+}
+.yemekci-grup-baslik:first-child {
+  margin-top: 0;
+}
+.yemekci-grup-baslik.siradaki {
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  color: #7a3d00;
+  padding-left: 8px;
+}
+.yemekci-grup-baslik.kuyrukta {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  color: #e65100;
+  padding-left: 8px;
+}
+
+/* ===== HAFTA SONU NÖBET BUTONU ===== */
+.hafta-sonu-btn-kart {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 2px 6px rgba(30, 50, 90, 0.1);
+    border: 1px solid #e0e6ee;
+    margin-bottom: 20px;
+}
+.hafta-sonu-btn-kart .kart-baslik {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid #e0e6ee;
+}
+.hafta-sonu-btn-kart .kart-baslik h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a2942;
+}
+.hafta-sonu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #f5f8fc;
+    border-radius: 10px;
+    border: 2px solid #c5d3e8;
+    transition: all 0.2s;
+}
+.hafta-sonu-toggle.aktif {
+    background: #fff8e1;
+    border-color: #ffc107;
+}
+.hafta-sonu-toggle .aciklama-toggle {
+    flex: 1;
+    font-size: 13px;
+    color: #4a5b78;
+    line-height: 1.5;
+    margin: 0;
+}
+.hafta-sonu-toggle.aktif .aciklama-toggle {
+    color: #7a3d00;
+    font-weight: 600;
+}
+.hafta-sonu-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 32px;
+    flex-shrink: 0;
+}
+.hafta-sonu-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.hafta-sonu-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #c5d3e8;
+    border-radius: 32px;
+    transition: 0.3s;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.hafta-sonu-slider:before {
+    content: "";
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background: #fff;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.hafta-sonu-switch input:checked + .hafta-sonu-slider {
+    background: #ffc107;
+}
+.hafta-sonu-switch input:checked + .hafta-sonu-slider:before {
+    transform: translateX(28px);
+}
+.hafta-sonu-durum {
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.hafta-sonu-durum.kapali {
+    background: #e3f2fd;
+    color: #0d47a1;
+}
+.hafta-sonu-durum.acik {
+    background: #fff8e1;
+    color: #7a3d00;
+    border: 1px solid #ffc107;
+}
+
 .hadis-liste-kart { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(30, 50, 90, 0.1); border: 1px solid #e0e6ee; display: flex; flex-direction: column; margin-bottom: 20px; }
 .hadis-liste-kart .kart-baslik { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #e0e6ee; }
 .hadis-liste-kart .kart-baslik h3 { font-size: 16px; font-weight: 800; }
@@ -689,12 +822,32 @@ body {
   <div class="listeler-sekme">
     <button class="geri-btn" id="geriBtn">← Panele Dön</button>
     <h2>👥 Nöbet Listeleri</h2>
-    <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> <b style="color:#c62828;">Hafta sonu (Cumartesi/Pazar) nöbet değişmez; Cuma günkü kişi devam eder.</b></p>
+    <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> Çakışan gruplar <span style="background:#fff3e0; padding:2px 6px; border-left:4px solid #ff9800;">turuncu</span> ile kuyrukta gösterilir.</p>
 
     <div class="bilgi-not">
       📅 <b>Başlangıç tarihi:</b>
       <input type="date" id="inpBaslangic">
       <span>— bu tarihte listenin 1. kişisi nöbetçi olur. (Hafta içi bir gün seçin.)</span>
+    </div>
+
+    <!-- ===== HAFTA SONU NÖBETİ BUTONU ===== -->
+    <div class="hafta-sonu-btn-kart">
+        <div class="kart-baslik">
+            <h3>🗓️ Hafta Sonu Nöbeti</h3>
+        </div>
+        <div class="hafta-sonu-toggle" id="haftaSonuToggle">
+            <div class="aciklama-toggle">
+                <b>Kapalı:</b> Hafta sonu nöbet değişmez, <b>Cuma günkü kişi</b> devam eder.<br>
+                <b>Açık:</b> Hafta sonu nöbet <b>Cumartesi gününe</b> atlar.
+            </div>
+            <label class="hafta-sonu-switch">
+                <input type="checkbox" id="haftaSonuCheck">
+                <span class="hafta-sonu-slider"></span>
+            </label>
+        </div>
+        <div class="hafta-sonu-durum kapali" id="haftaSonuDurum">
+            ✅ Şu an: Cuma günkü kişi hafta sonu da devam ediyor
+        </div>
     </div>
 
     <div class="liste-grid">
@@ -1106,9 +1259,10 @@ const HP_VARSAYILAN = {
 };
 
 /* ================== VERİ KATMANI ================== */
-const STORAGE_KEY = "nobetSistemV10";
+const STORAGE_KEY = "nobetSistemV15";
 const VARSAYILAN = {
   baslangicTarihi: new Date().toISOString().slice(0, 10),
+  haftaSonuAktif: false,
   imam:         ["Ahmet Yılmaz", "Mehmet Demir", "Mustafa Çelik"],
   muezzin:      ["Ali Kaya", "Hasan Şahin", "Osman Aydın"],
   cayci:        ["Bahadır Sapmaz", "Ramazan Koç", "İbrahim Doğan"],
@@ -1131,7 +1285,9 @@ const VARSAYILAN = {
   dersSay2:     [],
   dersEA:       [],
   programlar:   [],
-  haftalikProgram: null
+  haftalikProgram: null,
+  yemekciKuyrugu: [],
+  yemekciKuyrukSonGun: ""
 };
 
 let veri = yukle();
@@ -1147,6 +1303,7 @@ function yukle() {
     const p = JSON.parse(k);
     return {
       baslangicTarihi: p.baslangicTarihi || VARSAYILAN.baslangicTarihi,
+      haftaSonuAktif: !!p.haftaSonuAktif,
       imam:         Array.isArray(p.imam) ? p.imam : [...VARSAYILAN.imam],
       muezzin:      Array.isArray(p.muezzin) ? p.muezzin : [...VARSAYILAN.muezzin],
       cayci:        Array.isArray(p.cayci) ? p.cayci : [...VARSAYILAN.cayci],
@@ -1166,7 +1323,9 @@ function yukle() {
       })) : [],
       haftalikProgram: (p.haftalikProgram && typeof p.haftalikProgram === 'object')
         ? JSON.parse(JSON.stringify(p.haftalikProgram))
-        : JSON.parse(JSON.stringify(HP_VARSAYILAN))
+        : JSON.parse(JSON.stringify(HP_VARSAYILAN)),
+      yemekciKuyrugu: Array.isArray(p.yemekciKuyrugu) ? p.yemekciKuyrugu : [],
+      yemekciKuyrukSonGun: typeof p.yemekciKuyrukSonGun === "string" ? p.yemekciKuyrukSonGun : ""
     };
   } catch (e) {
     const t = JSON.parse(JSON.stringify(VARSAYILAN));
@@ -1191,6 +1350,9 @@ function gunAdi(n) { return GUN_ADLARI[Number(n)] || '?'; }
 function haftaSonuMu(tarih) { const g = tarih.getDay(); return g === 0 || g === 6; }
 
 function isGunuTarihi(tarih) {
+  if (veri.haftaSonuAktif) {
+    return new Date(tarih);
+  }
   const d = new Date(tarih);
   while (haftaSonuMu(d)) d.setDate(d.getDate() - 1);
   return d;
@@ -1200,10 +1362,17 @@ function isGunuFarki(baslangicDate, hedefDate) {
   if (hedefDate < baslangicDate) return 0;
   let sayac = 0;
   const d = new Date(baslangicDate);
-  while (d < hedefDate) {
-    const gun = d.getDay();
-    if (gun !== 0 && gun !== 6) sayac++;
-    d.setDate(d.getDate() + 1);
+  if (veri.haftaSonuAktif) {
+    while (d < hedefDate) {
+      sayac++;
+      d.setDate(d.getDate() + 1);
+    }
+  } else {
+    while (d < hedefDate) {
+      const gun = d.getDay();
+      if (gun !== 0 && gun !== 6) sayac++;
+      d.setDate(d.getDate() + 1);
+    }
   }
   return sayac;
 }
@@ -1222,8 +1391,8 @@ function siradakiIndex(liste, offsetGun) {
   return gun % liste.length;
 }
 
-function yemekciGrupIndeksleri(liste, offsetGun) {
-  if (!liste || liste.length === 0) return [];
+/* ===== TAKVİMSEL GÜN NUMARASI (yemekçi kuyruğu için) ===== */
+function takvimGunNo(offsetGun) {
   const parcalar = veri.baslangicTarihi.split("-");
   const y = Number(parcalar[0]), m = Number(parcalar[1]), d = Number(parcalar[2]);
   let baslangic = new Date(y, m - 1, d);
@@ -1232,13 +1401,143 @@ function yemekciGrupIndeksleri(liste, offsetGun) {
   const bugun = new Date(n.getFullYear(), n.getMonth(), n.getDate());
   bugun.setDate(bugun.getDate() + (offsetGun || 0));
   const hedef = isGunuTarihi(bugun);
-  const gun = isGunuFarki(baslangic, hedef);
+  return isGunuFarki(baslangic, hedef);
+}
+
+/* ===== YEMEKÇİ KUYRUĞU YÖNETİMİ ===== */
+
+/* Kuyruğu bugüne kadar günceller. Atlanan grupları kuyruğa ekler. */
+function yemekciKuyruguGuncelle() {
+  const bugunNo = takvimGunNo(0);
+  if (bugunNo < 0) return;
+
+  // Kuyruk son günü parse et
+  let sonGunNo = -1;
+  if (veri.yemekciKuyrukSonGun) {
+    const p = veri.yemekciKuyrukSonGun.split("-");
+    if (p.length === 3) {
+      let d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+      d = isGunuTarihi(d);
+      const parcalar = veri.baslangicTarihi.split("-");
+      const by = Number(parcalar[0]), bm = Number(parcalar[1]), bd = Number(parcalar[2]);
+      let baslangic = new Date(by, bm - 1, bd);
+      baslangic = isGunuTarihi(baslangic);
+      sonGunNo = isGunuFarki(baslangic, d);
+    }
+  }
+
+  // Zaten bugüne kadar güncellendiyse çık
+  if (sonGunNo === bugunNo) return;
+
+  const grupSayisi = Math.ceil(veri.yemekciler.length / 2);
+  if (grupSayisi === 0) return;
+
+  // Başlangıç günü: eğer sonGunNo < 0 ise, bugünNo'dan başla (geçmişi simüle etme)
+  let baslangicGun = (sonGunNo < 0) ? bugunNo : (sonGunNo + 1);
+
+  for (let gunNo = baslangicGun; gunNo <= bugunNo; gunNo++) {
+    // O günün imam/müezzin/çaycı bilgisini hesapla (takvimsel)
+    const offset = gunNo - bugunNo; // bugünden geriye doğru
+    const imamIdx = siradakiIndex(veri.imam, offset);
+    const muezzinIdx = siradakiIndex(veri.muezzin, offset);
+    const cayciIdx = siradakiIndex(veri.cayci, offset);
+
+    const atanmis = new Set();
+    if (imamIdx >= 0 && veri.imam[imamIdx]) atanmis.add(veri.imam[imamIdx]);
+    if (muezzinIdx >= 0 && veri.muezzin[muezzinIdx]) atanmis.add(veri.muezzin[muezzinIdx]);
+    if (cayciIdx >= 0 && veri.cayci[cayciIdx]) atanmis.add(veri.cayci[cayciIdx]);
+
+    // O günün takvimsel grubundan başla
+    const baslangicGrup = gunNo % grupSayisi;
+
+    // Sıradan başla, çakışmasız ilk grubu bul
+    let bulundu = false;
+    for (let i = 0; i < grupSayisi; i++) {
+      const grup = (baslangicGrup + i) % grupSayisi;
+      const start = grup * 2;
+      const uyeler = [];
+      if (veri.yemekciler[start] !== undefined) uyeler.push(veri.yemekciler[start]);
+      if (veri.yemekciler[start + 1] !== undefined) uyeler.push(veri.yemekciler[start + 1]);
+
+      const cakismaVar = uyeler.some(function(k) { return atanmis.has(k); });
+
+      if (i === 0) {
+        // İlk grup çakışıyorsa kuyruğa ekle
+        if (cakismaVar) {
+          if (veri.yemekciKuyrugu.indexOf(grup) === -1) {
+            veri.yemekciKuyrugu.push(grup);
+          }
+        } else {
+          // İlk grup çakışmıyorsa ve kuyrukta varsa çıkar
+          const kIdx = veri.yemekciKuyrugu.indexOf(grup);
+          if (kIdx !== -1) veri.yemekciKuyrugu.splice(kIdx, 1);
+          bulundu = true;
+          break;
+        }
+      } else {
+        // Sonraki gruplar: çakışmasızsa kullan
+        if (!cakismaVar) {
+          // Bu grup kuyrukta varsa çıkar
+          const kIdx = veri.yemekciKuyrugu.indexOf(grup);
+          if (kIdx !== -1) veri.yemekciKuyrugu.splice(kIdx, 1);
+          bulundu = true;
+          break;
+        }
+      }
+    }
+
+    // Eğer tüm gruplar çakışıyorsa, sıradaki grubu kullan (fallback)
+    // (kuyruk zaten güncellendi)
+  }
+
+  // Son günü kaydet
+  const s = new Date();
+  veri.yemekciKuyrukSonGun = s.getFullYear() + "-" + pad2(s.getMonth() + 1) + "-" + pad2(s.getDate());
+}
+
+/* Bugün için çakışmasız yemekçi grubunu bulur.
+   Önce kuyruktaki grupları dener, sonra takvimsel sıradan devam eder. */
+function cakismayanYemekciGrubu(offset, atanmisKisiler) {
+  const liste = veri.yemekciler;
+  if (!liste || liste.length === 0) return [];
+
   const grupSayisi = Math.ceil(liste.length / 2);
-  const grup = gun % grupSayisi;
-  const start = grup * 2;
+  if (grupSayisi === 0) return [];
+
+  const baslangicGrup = ((takvimGunNo(offset) % grupSayisi) + grupSayisi) % grupSayisi;
+
+  // 1) Önce kuyruktaki grupları dene (FIFO)
+  for (let i = 0; i < veri.yemekciKuyrugu.length; i++) {
+    const grup = veri.yemekciKuyrugu[i];
+    if (grup < 0 || grup >= grupSayisi) continue;
+    const start = grup * 2;
+    const uyeler = [];
+    if (liste[start] !== undefined) uyeler.push(liste[start]);
+    if (liste[start + 1] !== undefined) uyeler.push(liste[start + 1]);
+    const cakismaVar = uyeler.some(function(k) { return atanmisKisiler.has(k); });
+    if (!cakismaVar) {
+      return uyeler;
+    }
+  }
+
+  // 2) Kuyruktakilerin hepsi çakışıyorsa (veya kuyruk boşsa), takvimsel sıradan dene
+  for (let i = 0; i < grupSayisi; i++) {
+    const grup = (baslangicGrup + i) % grupSayisi;
+    const start = grup * 2;
+    const uyeler = [];
+    if (liste[start] !== undefined) uyeler.push(liste[start]);
+    if (liste[start + 1] !== undefined) uyeler.push(liste[start + 1]);
+    const cakismaVar = uyeler.some(function(k) { return atanmisKisiler.has(k); });
+    if (!cakismaVar) {
+      return uyeler;
+    }
+  }
+
+  // 3) Hiçbiri çakışmasız değilse, sıradaki grubu döndür (fallback)
+  const start = baslangicGrup * 2;
   const sonuc = [];
-  if (liste[start] !== undefined) sonuc.push(start);
-  if (liste[start + 1] !== undefined) sonuc.push(start + 1);
+  if (liste[start] !== undefined) sonuc.push(liste[start]);
+  if (liste[start + 1] !== undefined) sonuc.push(liste[start + 1]);
   return sonuc;
 }
 
@@ -1279,24 +1578,6 @@ function hpDersBul(sinif, bugunGun) {
     }
   });
   
-  return { suanki, gelecek };
-}
-
-function dersBulSinif(liste) {
-  const simdi = new Date();
-  const bugunGun = simdi.getDay();
-  if (bugunGun === 0 || bugunGun === 6) return { suanki: null, gelecek: null };
-  const dk = simdi.getHours() * 60 + simdi.getMinutes();
-  const dersler = (liste || []).filter(d => Number(d.gun) === bugunGun).slice().sort((a, b) => saatToDk(a.bas) - saatToDk(b.bas));
-  let suanki = null, gelecek = null;
-  for (let i = 0; i < dersler.length; i++) {
-    const d = dersler[i];
-    const bas = saatToDk(d.bas), bit = saatToDk(d.bit);
-    if (bas !== null && bit !== null) {
-      if (dk >= bas && dk < bit) suanki = d;
-      if (dk < bas && !gelecek) gelecek = d;
-    }
-  }
   return { suanki, gelecek };
 }
 
@@ -1543,7 +1824,182 @@ function hpSifirla() {
   }
 }
 
+/* ============================================================
+   ÇAKIŞMA ÇÖZÜCÜ + YARINA KAYDIRMA
+   ============================================================ */
+
+function hamGorevliler(offset) {
+  const imamIdx    = siradakiIndex(veri.imam, offset);
+  const muezzinIdx = siradakiIndex(veri.muezzin, offset);
+  const cayciIdx   = siradakiIndex(veri.cayci, offset);
+
+  const imam    = imamIdx    >= 0 ? veri.imam[imamIdx]       : '-';
+  const muezzin = muezzinIdx >= 0 ? veri.muezzin[muezzinIdx] : '-';
+  const cayci   = cayciIdx   >= 0 ? veri.cayci[cayciIdx]     : '-';
+
+  // Çakışan kişileri topla (imam, müezzin, çaycı)
+  const atanmisKisiler = new Set();
+  if (imam && imam !== '-')       atanmisKisiler.add(imam);
+  if (muezzin && muezzin !== '-') atanmisKisiler.add(muezzin);
+  if (cayci && cayci !== '-')     atanmisKisiler.add(cayci);
+
+  // Çakışmasız yemekçi grubunu bul (önce kuyruk, sonra takvim)
+  const yemekciGrubu = cakismayanYemekciGrubu(offset, atanmisKisiler);
+
+  return {
+    imam:       imam,
+    muezzin:    muezzin,
+    cayci:      cayci,
+    yemekciler: yemekciGrubu
+  };
+}
+
+function sonrakiUygun(liste, baslangicIdx, atanmis) {
+  if (!liste || liste.length === 0) return '-';
+  for (let i = 1; i <= liste.length; i++) {
+    const idx = (baslangicIdx + i) % liste.length;
+    const aday = liste[idx];
+    if (!atanmis.has(aday)) return aday;
+  }
+  return liste[baslangicIdx] || '-';
+}
+
+function goreveEkle(gunObj, gorev, kisi) {
+  if (!kisi || kisi === '-') return;
+  if (gorev === 'imam')          gunObj.imam = kisi;
+  else if (gorev === 'muezzin')  gunObj.muezzin = kisi;
+  else if (gorev === 'cayci')    gunObj.cayci = kisi;
+  else if (gorev === 'yemekci') {
+    if (gunObj.yemekciler.indexOf(kisi) === -1) gunObj.yemekciler.push(kisi);
+  }
+}
+
+function kisiGorevleri(gunObj, kisi) {
+  const sonuc = [];
+  if (gunObj.imam === kisi)    sonuc.push('imam');
+  if (gunObj.muezzin === kisi) sonuc.push('muezzin');
+  if (gunObj.cayci === kisi)   sonuc.push('cayci');
+  if (gunObj.yemekciler.indexOf(kisi) !== -1) sonuc.push('yemekci');
+  return sonuc;
+}
+
+function gunIcindeCakismaCoz(gunObj, offset) {
+  const gorevOncelik = ['imam', 'muezzin', 'cayci', 'yemekci'];
+  const tasinanlar = [];
+
+  const sabitImam = gunObj.imam;
+
+  const tumKisiler = new Set();
+  if (gunObj.imam && gunObj.imam !== '-')       tumKisiler.add(gunObj.imam);
+  if (gunObj.muezzin && gunObj.muezzin !== '-') tumKisiler.add(gunObj.muezzin);
+  if (gunObj.cayci && gunObj.cayci !== '-')     tumKisiler.add(gunObj.cayci);
+  gunObj.yemekciler.forEach(function(y) { if (y && y !== '-') tumKisiler.add(y); });
+
+  tumKisiler.forEach(function(kisi) {
+    const gorevler = kisiGorevleri(gunObj, kisi);
+    if (gorevler.length <= 1) return;
+
+    let kalanGorev = null;
+    for (let i = 0; i < gorevOncelik.length; i++) {
+      if (gorevler.indexOf(gorevOncelik[i]) !== -1) {
+        kalanGorev = gorevOncelik[i];
+        break;
+      }
+    }
+
+    gorevler.forEach(function(gorev) {
+      if (gorev === kalanGorev) return;
+      if (gorev === 'muezzin' && gunObj.muezzin === kisi) gunObj.muezzin = '-';
+      if (gorev === 'cayci'   && gunObj.cayci === kisi)   gunObj.cayci = '-';
+      if (gorev === 'yemekci') {
+        gunObj.yemekciler = gunObj.yemekciler.filter(function(y) { return y !== kisi; });
+      }
+      tasinanlar.push({ kisi: kisi, gorev: gorev });
+    });
+  });
+
+  gunObj.imam = sabitImam;
+
+  const atanmis = new Set();
+  if (gunObj.imam && gunObj.imam !== '-')       atanmis.add(gunObj.imam);
+  if (gunObj.muezzin && gunObj.muezzin !== '-') atanmis.add(gunObj.muezzin);
+  if (gunObj.cayci && gunObj.cayci !== '-')     atanmis.add(gunObj.cayci);
+  gunObj.yemekciler.forEach(function(y) { if (y && y !== '-') atanmis.add(y); });
+
+  if ((!gunObj.muezzin || gunObj.muezzin === '-') && veri.muezzin.length > 0) {
+    const idx = siradakiIndex(veri.muezzin, offset);
+    const yeni = sonrakiUygun(veri.muezzin, idx, atanmis);
+    gunObj.muezzin = yeni;
+    atanmis.add(yeni);
+  }
+  if ((!gunObj.cayci || gunObj.cayci === '-') && veri.cayci.length > 0) {
+    const idx = siradakiIndex(veri.cayci, offset);
+    const yeni = sonrakiUygun(veri.cayci, idx, atanmis);
+    gunObj.cayci = yeni;
+    atanmis.add(yeni);
+  }
+  // Yemekçiler için tamamlama YOK — çünkü grup çakışmasız seçildi.
+
+  return { duzeltilmisGun: gunObj, tasinanlar: tasinanlar };
+}
+
+function gunlukGorevlerCakismasiz() {
+  const bugunHam = hamGorevliler(0);
+  const yarinHam = hamGorevliler(1);
+
+  const bugunCozum = gunIcindeCakismaCoz({
+    imam: bugunHam.imam,
+    muezzin: bugunHam.muezzin,
+    cayci: bugunHam.cayci,
+    yemekciler: bugunHam.yemekciler.slice()
+  }, 0);
+  const bugunYeni = bugunCozum.duzeltilmisGun;
+  const bugundenYarinaTasinanlar = bugunCozum.tasinanlar;
+
+  const yarinCalisma = {
+    imam: yarinHam.imam,
+    muezzin: yarinHam.muezzin,
+    cayci: yarinHam.cayci,
+    yemekciler: yarinHam.yemekciler.slice()
+  };
+
+  bugundenYarinaTasinanlar.forEach(function(t) {
+    const mevcutGorevler = kisiGorevleri(yarinCalisma, t.kisi);
+    if (mevcutGorevler.length === 0) {
+      goreveEkle(yarinCalisma, t.gorev, t.kisi);
+    } else {
+      const gorevOncelik = ['imam', 'muezzin', 'cayci', 'yemekci'];
+      const mevcutOncelik = mevcutGorevler.reduce(function(min, g) {
+        const i = gorevOncelik.indexOf(g);
+        return i < min ? i : min;
+      }, 999);
+      const yeniOncelik = gorevOncelik.indexOf(t.gorev);
+      if (yeniOncelik < mevcutOncelik) {
+        if (yarinCalisma.imam === t.kisi)    yarinCalisma.imam = '-';
+        if (yarinCalisma.muezzin === t.kisi) yarinCalisma.muezzin = '-';
+        if (yarinCalisma.cayci === t.kisi)   yarinCalisma.cayci = '-';
+        yarinCalisma.yemekciler = yarinCalisma.yemekciler.filter(function(y) { return y !== t.kisi; });
+        goreveEkle(yarinCalisma, t.gorev, t.kisi);
+      }
+    }
+  });
+
+  const yarinCozum = gunIcindeCakismaCoz({
+    imam: yarinCalisma.imam,
+    muezzin: yarinCalisma.muezzin,
+    cayci: yarinCalisma.cayci,
+    yemekciler: yarinCalisma.yemekciler.slice()
+  }, 1);
+  const yarinYeni = yarinCozum.duzeltilmisGun;
+
+  return { bugun: bugunYeni, yarin: yarinYeni };
+}
+
+/* ================== SAAT GÜNCELLE ================== */
 function saatGuncelle() {
+  // Kuyruğu güncelle (gün geçişi olduysa)
+  yemekciKuyruguGuncelle();
+
   const simdi = new Date();
   const saatStr = pad2(simdi.getHours()) + ':' + pad2(simdi.getMinutes()) + ':' + pad2(simdi.getSeconds());
   const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
@@ -1555,32 +2011,39 @@ function saatGuncelle() {
   if (elSaat) elSaat.textContent = saatStr;
   if (elTarih) {
     const hs = haftaSonuMu(simdi);
-    elTarih.textContent = tarihStr + (hs ? '  (Hafta Sonu)' : '');
+    let hsNotu = '';
+    if (hs) {
+      hsNotu = veri.haftaSonuAktif ? '  (Hafta Sonu - Aktif)' : '  (Hafta Sonu)';
+    }
+    elTarih.textContent = tarihStr + hsNotu;
   }
 
-  const idxImamBugun = siradakiIndex(veri.imam, 0);
-  const idxImamYarin = siradakiIndex(veri.imam, 1);
-  document.getElementById('gosterImam').textContent = idxImamBugun >= 0 ? veri.imam[idxImamBugun] : '-';
-  document.getElementById('gosterImamYarin').textContent = idxImamYarin >= 0 ? veri.imam[idxImamYarin] : '-';
+  const gorevliler = gunlukGorevlerCakismasiz();
 
-  const idxMuezzinBugun = siradakiIndex(veri.muezzin, 0);
-  const idxMuezzinYarin = siradakiIndex(veri.muezzin, 1);
-  document.getElementById('gosterMuezzin').textContent = idxMuezzinBugun >= 0 ? veri.muezzin[idxMuezzinBugun] : '-';
-  document.getElementById('gosterMuezzinYarin').textContent = idxMuezzinYarin >= 0 ? veri.muezzin[idxMuezzinYarin] : '-';
+  document.getElementById('gosterImam').textContent      = gorevliler.bugun.imam;
+  document.getElementById('gosterImamYarin').textContent = gorevliler.yarin.imam;
 
-  const idxCayciBugun = siradakiIndex(veri.cayci, 0);
-  const idxCayciYarin = siradakiIndex(veri.cayci, 1);
-  document.getElementById('gosterCayci').textContent = idxCayciBugun >= 0 ? veri.cayci[idxCayciBugun] : '-';
-  document.getElementById('gosterCayciYarin').textContent = idxCayciYarin >= 0 ? veri.cayci[idxCayciYarin] : '-';
+  document.getElementById('gosterMuezzin').textContent      = gorevliler.bugun.muezzin;
+  document.getElementById('gosterMuezzinYarin').textContent = gorevliler.yarin.muezzin;
 
-  const yemekciBugun = yemekciGrupIndeksleri(veri.yemekciler, 0).map(i => veri.yemekciler[i]);
-  const yemekciYarin = yemekciGrupIndeksleri(veri.yemekciler, 1).map(i => veri.yemekciler[i]);
-  document.getElementById('gosterYemekciler').innerHTML = yemekciBugun.length > 0 ? yemekciBugun.map(isim => '<span class="kisi-chip">' + escapeHtml(isim) + '</span>').join(' &bull; ') : '-';
-  document.getElementById('gosterYemekcilerYarin').innerHTML = yemekciYarin.length > 0 ? yemekciYarin.map(isim => '<span class="kisi-chip">' + escapeHtml(isim) + '</span>').join(' &bull; ') : '-';
+  document.getElementById('gosterCayci').textContent      = gorevliler.bugun.cayci;
+  document.getElementById('gosterCayciYarin').textContent = gorevliler.yarin.cayci;
+
+  document.getElementById('gosterYemekciler').innerHTML = gorevliler.bugun.yemekciler.length > 0
+    ? gorevliler.bugun.yemekciler.map(function(isim) {
+        return '<span class="kisi-chip">' + escapeHtml(isim) + '</span>';
+      }).join(' &bull; ')
+    : '-';
+
+  document.getElementById('gosterYemekcilerYarin').innerHTML = gorevliler.yarin.yemekciler.length > 0
+    ? gorevliler.yarin.yemekciler.map(function(isim) {
+        return '<span class="kisi-chip">' + escapeHtml(isim) + '</span>';
+      }).join(' &bull; ')
+    : '-';
 
   const idxHadis = siradakiIndex(veri.hadisListesi, 0);
   const gununHadisi = idxHadis >= 0 && veri.hadisListesi[idxHadis] ? veri.hadisListesi[idxHadis] : (veri.hadis || '');
-  document.getElementById('gosterHadis').innerHTML = hadisOlustur(gununHadisi);
+  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(gununHadisi);
 
   const bugunGun = new Date().getDay();
 
@@ -1616,7 +2079,7 @@ function saatGuncelle() {
   dersHucreGuncelleRenkli('suankiEA', dEA.suanki);
   dersHucreGuncelleRenkli('gelecekEA', dEA.gelecek);
 
-  const prog = programBul(4);
+  const prog = programBul(7);
   const kutuAd = document.getElementById('aktifProgramAd');
   const kutuBas = document.getElementById('aktifProgramBas');
   const kutuBit = document.getElementById('aktifProgramBit');
@@ -1656,8 +2119,7 @@ function saatGuncelle() {
   }
 }
 
-function hadisOlustur(metin) { return hadisHtmlOlustur(metin); }
-
+/* ================== OLAY DİNLEYİCİLERİ ================== */
 document.getElementById('saatTikla').addEventListener('click', function() {
   window.__sifreModalAc();
 });
@@ -1696,9 +2158,50 @@ document.querySelectorAll('.gun-sekme-btn').forEach(function(btn) {
 document.getElementById('inpBaslangic').addEventListener('change', function(e) {
   if (!e.target.value) { e.target.value = veri.baslangicTarihi; return; }
   veri.baslangicTarihi = e.target.value;
+  // Kuyruğu sıfırla, yeniden hesaplanacak
+  veri.yemekciKuyrugu = [];
+  veri.yemekciKuyrukSonGun = "";
   kaydet();
+  yemekciKuyruguGuncelle();
   bildirimGoster('Başlangıç tarihi güncellendi.');
 });
+
+(function haftaSonuBtnKur() {
+  const check = document.getElementById('haftaSonuCheck');
+  const toggle = document.getElementById('haftaSonuToggle');
+  const durum = document.getElementById('haftaSonuDurum');
+  if (!check || !toggle || !durum) return;
+
+  function gorselGuncelle() {
+    if (check.checked) {
+      toggle.classList.add('aktif');
+      durum.classList.remove('kapali');
+      durum.classList.add('acik');
+      durum.innerHTML = '🔥 Şu an: Hafta sonu nöbet <b>Cumartesi gününe</b> atlıyor';
+    } else {
+      toggle.classList.remove('aktif');
+      durum.classList.remove('acik');
+      durum.classList.add('kapali');
+      durum.innerHTML = '✅ Şu an: Cuma günkü kişi hafta sonu da devam ediyor';
+    }
+  }
+
+  function guncelle() {
+    veri.haftaSonuAktif = check.checked;
+    // Kuyruğu sıfırla
+    veri.yemekciKuyrugu = [];
+    veri.yemekciKuyrukSonGun = "";
+    gorselGuncelle();
+    kaydet();
+    yemekciKuyruguGuncelle();
+    saatGuncelle();
+    if (typeof listeleriGuncelle === 'function') listeleriGuncelle();
+  }
+
+  check.addEventListener('change', guncelle);
+  check.checked = !!veri.haftaSonuAktif;
+  gorselGuncelle();
+})();
 
 function listeleriGuncelle() {
   hpGriddenVeriyeAktar();
@@ -1719,21 +2222,77 @@ function listeleriGuncelle() {
 function listeCiz(tur, liste) {
   const container = document.getElementById('liste-' + tur);
   document.getElementById('sayi-' + tur).textContent = liste.length;
-  const siradakiIdx = siradakiIndex(liste, 0);
+
   let html = '';
-  liste.forEach(function(isim, i) {
-    const siradaMi = (i === siradakiIdx);
-    html += '<div class="kisi-satir' + (siradaMi ? ' siradaki' : '') + '">' +
-      '<span class="sira">' + (i + 1) + '</span>' +
-      '<span class="isim">' + escapeHtml(isim) + '</span>' +
-      '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
-    '</div>';
-  });
+
+  if (tur === 'yemekciler') {
+    // Bugünün çakışmasız grubunu bul
+    const bugunHam = hamGorevliler(0);
+    const aktifGrupKisileri = bugunHam.yemekciler;
+    const aktifGrupIdxler = aktifGrupKisileri.map(function(kisi) {
+      return liste.indexOf(kisi);
+    }).filter(function(i) { return i >= 0; });
+    const aktifGrupNo = aktifGrupIdxler.length > 0 ? Math.floor(aktifGrupIdxler[0] / 2) + 1 : -1;
+
+    // Kuyruktaki gruplar (1-indexed)
+    const kuyrukGruplar = veri.yemekciKuyrugu.map(function(g) { return g + 1; });
+
+    for (let i = 0; i < liste.length; i += 2) {
+      const grupNo = Math.floor(i / 2) + 1;
+      const grupAktifMi = (grupNo === aktifGrupNo);
+      const grupKuyruktaMi = kuyrukGruplar.indexOf(grupNo) !== -1;
+
+      let grupSinif = '';
+      if (grupAktifMi) grupSinif = ' siradaki';
+      else if (grupKuyruktaMi) grupSinif = ' kuyrukta';
+
+      // Grup başlığı (aktifse sarı, kuyruktaysa turuncu)
+      html += '<div class="yemekci-grup-baslik' + grupSinif + '">' +
+                grupNo + '. Grup' +
+                (grupKuyruktaMi ? ' ⏳' : '') +
+              '</div>';
+
+      // 1. kişi
+      const siradaMi1 = (i === aktifGrupIdxler[0]);
+      html += '<div class="kisi-satir' + (siradaMi1 ? ' siradaki' : '') + '">' +
+        '<span class="sira">' + (i + 1) + '</span>' +
+        '<span class="isim">' + escapeHtml(liste[i]) + '</span>' +
+        '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
+      '</div>';
+
+      // 2. kişi (varsa)
+      if (i + 1 < liste.length) {
+        const siradaMi2 = (i + 1 === aktifGrupIdxler[1]);
+        html += '<div class="kisi-satir' + (siradaMi2 ? ' siradaki' : '') + '">' +
+          '<span class="sira">' + (i + 2) + '</span>' +
+          '<span class="isim">' + escapeHtml(liste[i + 1]) + '</span>' +
+          '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + (i + 1) + ')">&times;</button>' +
+        '</div>';
+      }
+    }
+  } else {
+    // Diğer listeler için normal gösterim
+    const siradakiIdx = siradakiIndex(liste, 0);
+    liste.forEach(function(isim, i) {
+      const siradaMi = (i === siradakiIdx);
+      html += '<div class="kisi-satir' + (siradaMi ? ' siradaki' : '') + '">' +
+        '<span class="sira">' + (i + 1) + '</span>' +
+        '<span class="isim">' + escapeHtml(isim) + '</span>' +
+        '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
+      '</div>';
+    });
+  }
+
   container.innerHTML = html;
 }
 
 window.kisiSil = function(tur, index) {
   veri[tur].splice(index, 1);
+  // Yemekçi kuyruğunu sıfırla (grup numaraları değişti)
+  if (tur === 'yemekciler') {
+    veri.yemekciKuyrugu = [];
+    veri.yemekciKuyrukSonGun = "";
+  }
   kaydet();
   listeleriGuncelle();
 };
@@ -1745,6 +2304,11 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
     const isim = input.value.trim();
     if (isim) {
       veri[tur].push(isim);
+      // Yemekçiye eklenmişse kuyruğu sıfırla
+      if (tur === 'yemekciler') {
+        veri.yemekciKuyrugu = [];
+        veri.yemekciKuyrukSonGun = "";
+      }
       input.value = '';
       kaydet();
       listeleriGuncelle();
@@ -1988,13 +2552,15 @@ function temizVeriOlustur() {
   Object.keys(veri).forEach(function(k) {
     const v = veri[k];
     if (v === undefined || v === null) {
-      t[k] = Array.isArray(VARSAYILAN[k]) ? [] : (k === 'haftalikProgram' ? HP_VARSAYILAN : '');
+      t[k] = Array.isArray(VARSAYILAN[k]) ? [] : (k === 'haftalikProgram' ? HP_VARSAYILAN : (k === 'yemekciKuyrukSonGun' ? '' : ''));
     } else {
       t[k] = v;
     }
   });
   if (!t.haftalikProgram) t.haftalikProgram = JSON.parse(JSON.stringify(HP_VARSAYILAN));
   if (!t.hadisListesi || t.hadisListesi.length === 0) t.hadisListesi = [...VARSAYILAN.hadisListesi];
+  if (!Array.isArray(t.yemekciKuyrugu)) t.yemekciKuyrugu = [];
+  if (typeof t.yemekciKuyrukSonGun !== "string") t.yemekciKuyrukSonGun = "";
   return t;
 }
 
@@ -2025,6 +2591,7 @@ function firebaseBaslat() {
         const uzakVeri = docSnap.data();
         veri = {
           baslangicTarihi: uzakVeri.baslangicTarihi || VARSAYILAN.baslangicTarihi,
+          haftaSonuAktif: !!uzakVeri.haftaSonuAktif,
           imam:         Array.isArray(uzakVeri.imam) ? uzakVeri.imam : [...VARSAYILAN.imam],
           muezzin:      Array.isArray(uzakVeri.muezzin) ? uzakVeri.muezzin : [...VARSAYILAN.muezzin],
           cayci:        Array.isArray(uzakVeri.cayci) ? uzakVeri.cayci : [...VARSAYILAN.cayci],
@@ -2044,14 +2611,36 @@ function firebaseBaslat() {
           })) : [],
           haftalikProgram: (uzakVeri.haftalikProgram && typeof uzakVeri.haftalikProgram === 'object')
             ? JSON.parse(JSON.stringify(uzakVeri.haftalikProgram))
-            : JSON.parse(JSON.stringify(HP_VARSAYILAN))
+            : JSON.parse(JSON.stringify(HP_VARSAYILAN)),
+          yemekciKuyrugu: Array.isArray(uzakVeri.yemekciKuyrugu) ? uzakVeri.yemekciKuyrugu : [],
+          yemekciKuyrukSonGun: typeof uzakVeri.yemekciKuyrukSonGun === "string" ? uzakVeri.yemekciKuyrukSonGun : ""
         };
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+        // Kuyruğu güncelle (uzak veriden sonra)
+        yemekciKuyruguGuncelle();
         saatGuncelle();
         hpAnaTabloyuCiz();
+        const chk = document.getElementById('haftaSonuCheck');
+        if (chk) {
+          chk.checked = !!veri.haftaSonuAktif;
+          const tg = document.getElementById('haftaSonuToggle');
+          const dr = document.getElementById('haftaSonuDurum');
+          if (tg && dr) {
+            if (chk.checked) {
+              tg.classList.add('aktif');
+              dr.classList.remove('kapali'); dr.classList.add('acik');
+              dr.innerHTML = '🔥 Şu an: Hafta sonu nöbet <b>Cumartesi gününe</b> atlıyor';
+            } else {
+              tg.classList.remove('aktif');
+              dr.classList.remove('acik'); dr.classList.add('kapali');
+              dr.innerHTML = '✅ Şu an: Cuma günkü kişi hafta sonu da devam ediyor';
+            }
+          }
+        }
         if (document.getElementById('sekme-listeler').classList.contains('aktif')) {
           hpGridCiz();
           hadisListesiCiz();
+          listeCiz('yemekciler', veri.yemekciler);
         }
         senkronDurumGuncelle('ok', 'Senkron ✓');
       } else {
