@@ -38,9 +38,9 @@ body {
 }
 
 .tarih-saat { 
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     backdrop-filter: none;
     border-radius: 14px; 
     display: flex; 
@@ -50,24 +50,50 @@ body {
     padding: 8px 10px; 
     cursor: pointer; 
     transition: all 0.2s;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 .tarih-saat:hover { 
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.08) !important;
     transform: translateY(-1px);
+}
+.tarih-saat:focus,
+.tarih-saat:active,
+.tarih-saat:visited,
+.tarih-saat:focus-visible {
+    background: transparent !important;
+    color: #ffffff !important;
+    outline: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+.tarih-saat * {
+    color: #ffffff !important;
+    text-decoration: none !important;
+    background: transparent !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
 .tarih-saat .saat { 
     font-size: clamp(40px, 4.2vw, 68px); 
     font-weight: 900; 
     font-variant-numeric: tabular-nums; 
     line-height: 1; 
-    color: #ffffff; 
+    color: #ffffff !important; 
     letter-spacing: -2px;
     text-shadow: 0 3px 12px rgba(0,0,0,0.45);
 }
 .tarih-saat .tarih { 
     font-size: clamp(14px, 1.25vw, 20px); 
     font-weight: 800; 
-    color: #ffffff; 
+    color: #ffffff !important; 
     margin-top: 8px;
     text-align: center;
     text-shadow: 0 2px 6px rgba(0,0,0,0.45);
@@ -336,7 +362,7 @@ body {
 .hp-tablo .saat { background: #c5d0e0; font-weight: bold; font-size: 0.95em; color: #1a2942; }
 
 /* ===== DERS RENKLERİ ===== */
-.bos       { background: #ffffff; }
+.bos       { background: #ffffff; color: #1a2942; }
 .mat1      { background: #FF6B6B; color: #fff; }
 .mat2      { background: #4ECDC4; color: #1a1a1a; }
 .fizik     { background: #FFA726; color: #1a1a1a; }
@@ -528,6 +554,11 @@ body {
 @media screen and (min-height: 100vh) {
     body { height: 100vh; }
 }
+
+/* ===== SEÇİM / HIGHLIGHT RENGİNİ ENGELLE ===== */
+::selection { background: transparent; color: inherit; }
+::-moz-selection { background: transparent; color: inherit; }
+::-webkit-selection { background: transparent; color: inherit; }
 </style>
 </head>
 <body>
@@ -913,7 +944,6 @@ body {
     window.__tamEkranKapat = tamEkranKapat;
     window.__tamEkranToggle = tamEkranToggle;
 
-    // 1. İlk kullanıcı etkileşiminde otomatik tam ekran
     var ilkEtkilesimYapildi = false;
     var etkilesimOlaylari = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
     function ilkEtkilesim() {
@@ -930,7 +960,6 @@ body {
         doc.addEventListener(olay, ilkEtkilesim, { passive: true });
     });
 
-    // 2. Klavye kısayolları
     doc.addEventListener('keydown', function(e) {
         var key = e.key;
         var kod = e.keyCode || e.which;
@@ -963,21 +992,18 @@ body {
         }
     }, false);
 
-    // 3. Çift tıklama
     doc.addEventListener('dblclick', function(e) {
         var t = e.target.tagName;
         if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || t === 'BUTTON') return;
         tamEkranToggle();
     });
 
-    // 4. Sayfa yüklendiğinde otomatik dene
     window.addEventListener('load', function() {
         setTimeout(function() {
             if (!tamEkranMi()) tamEkranAc();
         }, 800);
     });
 
-    // 5. Arka plandan dönünce tekrar tam ekran
     doc.addEventListener('visibilitychange', function() {
         if (!doc.hidden && !tamEkranMi()) {
             setTimeout(tamEkranAc, 300);
@@ -1216,6 +1242,46 @@ function yemekciGrupIndeksleri(liste, offsetGun) {
   return sonuc;
 }
 
+/* ===== HAFTALIK PROGRAMDAN ŞUANKİ VE GELECEK DERS BULMA ===== */
+function hpDersBul(sinif, bugunGun) {
+  if (bugunGun === 0 || bugunGun === 6) return { suanki: null, gelecek: null };
+  
+  const hp = veri.haftalikProgram || HP_VARSAYILAN;
+  const gunAdiStr = gunAdi(bugunGun);
+  const simdi = new Date();
+  const dkSimdi = simdi.getHours() * 60 + simdi.getMinutes();
+  
+  let suanki = null;
+  let gelecek = null;
+  
+  HP_SAATLER.forEach(function(saat) {
+    const parcalar = saat.split('-');
+    const bas = saatToDk(parcalar[0]);
+    const bit = saatToDk(parcalar[1]);
+    if (bas === null || bit === null) return;
+    if (!hp[saat] || !hp[saat][gunAdiStr]) return;
+    
+    const dersAdi = hp[saat][gunAdiStr][sinif] || '';
+    if (!dersAdi) return;
+    
+    let renk = hp[saat][gunAdiStr][sinif + '_renk'];
+    if (!renk || renk === 'bos') {
+      renk = dersRengiBul(dersAdi);
+    }
+    
+    const kayit = { ad: dersAdi, renk: renk, bas: parcalar[0], bit: parcalar[1] };
+    
+    if (dkSimdi >= bas && dkSimdi < bit) {
+      suanki = kayit;
+    }
+    if (dkSimdi < bas && !gelecek) {
+      gelecek = kayit;
+    }
+  });
+  
+  return { suanki, gelecek };
+}
+
 function dersBulSinif(liste) {
   const simdi = new Date();
   const bugunGun = simdi.getDay();
@@ -1321,28 +1387,6 @@ function dersRengiBul(dersAdi) {
   if (ad.startsWith('MÜZİK') || ad === 'MUZIK') return 'muzik';
   if (ad.startsWith('BİLGİSAYAR') || ad === 'BILGISAYAR') return 'bilgisayar';
   return 'bos';
-}
-
-function hpRenkBultd(dersAdi, gun) {
-  if (!dersAdi) return '';
-  const hp = veri.haftalikProgram || HP_VARSAYILAN;
-  const gunAdiStr = gunAdi(gun);
-  const aranan = dersAdi.toUpperCase().trim();
-
-  for (let i = 0; i < HP_SAATLER.length; i++) {
-    const saat = HP_SAATLER[i];
-    if (!hp[saat] || !hp[saat][gunAdiStr]) continue;
-    for (let j = 0; j < HP_SINIFLAR.length; j++) {
-      const sinif = HP_SINIFLAR[j];
-      const hpDersAdi = (hp[saat][gunAdiStr][sinif] || '').toUpperCase().trim();
-      if (hpDersAdi && hpDersAdi === aranan) {
-        const kayitliRenk = hp[saat][gunAdiStr][sinif + '_renk'];
-        if (kayitliRenk && kayitliRenk !== 'bos') return kayitliRenk;
-        return dersRengiBul(hpDersAdi);
-      }
-    }
-  }
-  return dersRengiBul(dersAdi);
 }
 
 function hpAnaTabloyuCiz() {
@@ -1536,34 +1580,41 @@ function saatGuncelle() {
 
   const idxHadis = siradakiIndex(veri.hadisListesi, 0);
   const gununHadisi = idxHadis >= 0 && veri.hadisListesi[idxHadis] ? veri.hadisListesi[idxHadis] : (veri.hadis || '');
-  document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(gununHadisi);
+  document.getElementById('gosterHadis').innerHTML = hadisOlustur(gununHadisi);
 
   const bugunGun = new Date().getDay();
 
-  function dersHucreGuncelle(elemanId, dersObj) {
+  function dersHucreGuncelleRenkli(elemanId, kayit) {
     const el = document.getElementById(elemanId);
     if (!el) return;
     el.className = 'hucre';
-    if (dersObj && dersObj.ad) {
-      el.textContent = dersObj.ad;
-      const renk = hpRenkBultd(dersObj.ad, bugunGun);
-      if (renk && renk !== 'bos') el.classList.add(renk);
+    el.style.background = '';
+    el.style.color = '';
+    if (kayit && kayit.ad) {
+      el.textContent = kayit.ad;
+      const renk = kayit.renk || 'bos';
+      el.classList.add(renk);
+      const renkObj = HP_RENKLER.find(function(r) { return r.deger === renk; });
+      if (renkObj) {
+        el.style.background = renkObj.kod;
+        el.style.color = (renkObj.kod === '#ffffff' || renkObj.kod === '#FFF59D') ? '#1a1a1a' : '#fff';
+      }
     } else {
       el.textContent = '-';
     }
   }
 
-  const dSay1 = dersBulSinif(veri.dersSay1);
-  dersHucreGuncelle('suankiSay1', dSay1.suanki);
-  dersHucreGuncelle('gelecekSay1', dSay1.gelecek);
+  const dSay1 = hpDersBul('SAY1', bugunGun);
+  dersHucreGuncelleRenkli('suankiSay1', dSay1.suanki);
+  dersHucreGuncelleRenkli('gelecekSay1', dSay1.gelecek);
 
-  const dSay2 = dersBulSinif(veri.dersSay2);
-  dersHucreGuncelle('suankiSay2', dSay2.suanki);
-  dersHucreGuncelle('gelecekSay2', dSay2.gecek);
+  const dSay2 = hpDersBul('SAY2', bugunGun);
+  dersHucreGuncelleRenkli('suankiSay2', dSay2.suanki);
+  dersHucreGuncelleRenkli('gelecekSay2', dSay2.gelecek);
 
-  const dEA = dersBulSinif(veri.dersEA);
-  dersHucreGuncelle('suankiEA', dEA.suanki);
-  dersHucreGuncelle('gelecekEA', dEA.gelecek);
+  const dEA = hpDersBul('EA', bugunGun);
+  dersHucreGuncelleRenkli('suankiEA', dEA.suanki);
+  dersHucreGuncelleRenkli('gelecekEA', dEA.gelecek);
 
   const prog = programBul(4);
   const kutuAd = document.getElementById('aktifProgramAd');
@@ -1604,6 +1655,8 @@ function saatGuncelle() {
     sonrakilerEl.innerHTML = '<div class="sonraki-bos">Sonraki program yok</div>';
   }
 }
+
+function hadisOlustur(metin) { return hadisHtmlOlustur(metin); }
 
 document.getElementById('saatTikla').addEventListener('click', function() {
   window.__sifreModalAc();
