@@ -3,20 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Nöbet Panosu</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
+html { -webkit-text-size-adjust: 100%; }
 body { 
     font-family: 'Segoe UI', Tahoma, sans-serif; 
     background: linear-gradient(135deg, #4a6fa5 0%, #3d5a80 50%, #2c3e5c 100%);
     background-attachment: fixed;
     padding: 12px; 
-    height: 100dvh; 
+    height: 100vh;
+    height: 100dvh;
     display: flex; 
     flex-direction: column; 
     -webkit-tap-highlight-color: transparent; 
     color: #1a2942;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .sekme-icerik { display: none; flex: 1; min-height: 0; }
@@ -31,7 +37,6 @@ body {
     align-items: stretch; 
 }
 
-/* Tarih-Saat Kutusu (Şeffaf Cam, Büyük) */
 .tarih-saat { 
     background: transparent;
     border: none;
@@ -69,7 +74,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Nöbetçi Kutuları */
 .sutun { 
     background: rgba(255, 255, 255, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.9);
@@ -93,7 +97,6 @@ body {
     letter-spacing: 1.5px;
 }
 
-/* Bugün / Yarın Kutuları */
 .bugun-yarin-yatay { display: flex; flex-direction: column; gap: 6px; width: 100%; flex: 1; justify-content: center; }
 .bugun-yarin-yatay .kutu { 
     display: flex; 
@@ -517,6 +520,14 @@ body {
 .sifre-modal-btnler .tamam-btn:hover { background: #3d5a80; }
 .sifre-modal-hata { color: #c62828; font-size: 13px; font-weight: 700; margin-bottom: 10px; display: none; }
 .sifre-modal-hata.goster { display: block; }
+
+/* ===== TV BOX TAM EKRAN UYUMLULUĞU ===== */
+@supports (height: 100dvh) {
+    body { height: 100dvh; }
+}
+@media screen and (min-height: 100vh) {
+    body { height: 100vh; }
+}
 </style>
 </head>
 <body>
@@ -848,6 +859,132 @@ body {
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<!-- ============ TV BOX TAM EKRAN SCRIPT (Butonsuz) ============ -->
+<script>
+(function() {
+    'use strict';
+    var doc = document;
+    var docEl = doc.documentElement;
+
+    function tamEkranAc() {
+        var el = docEl;
+        if (el.requestFullscreen) {
+            el.requestFullscreen().catch(function(){});
+        } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen();
+        } else if (el.webkitRequestFullScreen) {
+            el.webkitRequestFullScreen();
+        } else if (el.mozRequestFullScreen) {
+            el.mozRequestFullScreen();
+        } else if (el.msRequestFullscreen) {
+            el.msRequestFullscreen();
+        }
+    }
+
+    function tamEkranKapat() {
+        if (doc.exitFullscreen) {
+            doc.exitFullscreen().catch(function(){});
+        } else if (doc.webkitExitFullscreen) {
+            doc.webkitExitFullscreen();
+        } else if (doc.webkitCancelFullScreen) {
+            doc.webkitCancelFullScreen();
+        } else if (doc.mozCancelFullScreen) {
+            doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+            doc.msExitFullscreen();
+        }
+    }
+
+    function tamEkranMi() {
+        return !!(doc.fullscreenElement || doc.webkitFullscreenElement ||
+                  doc.mozFullScreenElement || doc.msFullscreenElement);
+    }
+
+    function tamEkranToggle() {
+        if (tamEkranMi()) {
+            tamEkranKapat();
+        } else {
+            tamEkranAc();
+        }
+    }
+
+    window.__tamEkranAc = tamEkranAc;
+    window.__tamEkranKapat = tamEkranKapat;
+    window.__tamEkranToggle = tamEkranToggle;
+
+    // 1. İlk kullanıcı etkileşiminde otomatik tam ekran
+    var ilkEtkilesimYapildi = false;
+    var etkilesimOlaylari = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
+    function ilkEtkilesim() {
+        if (ilkEtkilesimYapildi) return;
+        ilkEtkilesimYapildi = true;
+        etkilesimOlaylari.forEach(function(olay) {
+            doc.removeEventListener(olay, ilkEtkilesim);
+        });
+        setTimeout(function() {
+            if (!tamEkranMi()) tamEkranAc();
+        }, 50);
+    }
+    etkilesimOlaylari.forEach(function(olay) {
+        doc.addEventListener(olay, ilkEtkilesim, { passive: true });
+    });
+
+    // 2. Klavye kısayolları
+    doc.addEventListener('keydown', function(e) {
+        var key = e.key;
+        var kod = e.keyCode || e.which;
+
+        if (key === 'F11' || kod === 122) {
+            e.preventDefault();
+            tamEkranToggle();
+            return;
+        }
+        if (kod === 70 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            var t = e.target.tagName;
+            if (t !== 'INPUT' && t !== 'TEXTAREA' && t !== 'SELECT') {
+                e.preventDefault();
+                tamEkranToggle();
+                return;
+            }
+        }
+        if ((e.ctrlKey || e.metaKey) && kod === 70) {
+            e.preventDefault();
+            tamEkranToggle();
+            return;
+        }
+        if (kod === 84 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            var t2 = e.target.tagName;
+            if (t2 !== 'INPUT' && t2 !== 'TEXTAREA' && t2 !== 'SELECT') {
+                e.preventDefault();
+                tamEkranToggle();
+                return;
+            }
+        }
+    }, false);
+
+    // 3. Çift tıklama
+    doc.addEventListener('dblclick', function(e) {
+        var t = e.target.tagName;
+        if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || t === 'BUTTON') return;
+        tamEkranToggle();
+    });
+
+    // 4. Sayfa yüklendiğinde otomatik dene
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            if (!tamEkranMi()) tamEkranAc();
+        }, 800);
+    });
+
+    // 5. Arka plandan dönünce tekrar tam ekran
+    doc.addEventListener('visibilitychange', function() {
+        if (!doc.hidden && !tamEkranMi()) {
+            setTimeout(tamEkranAc, 300);
+        }
+    });
+})();
+</script>
 
 <script>
 /* ================== ŞİFRE ================== */
@@ -1422,7 +1559,7 @@ function saatGuncelle() {
 
   const dSay2 = dersBulSinif(veri.dersSay2);
   dersHucreGuncelle('suankiSay2', dSay2.suanki);
-  dersHucreGuncelle('gelecekSay2', dSay2.gelecek);
+  dersHucreGuncelle('gelecekSay2', dSay2.gecek);
 
   const dEA = dersBulSinif(veri.dersEA);
   dersHucreGuncelle('suankiEA', dEA.suanki);
