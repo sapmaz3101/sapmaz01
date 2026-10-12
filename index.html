@@ -8,21 +8,45 @@
 <title>Nöbet Panosu</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 100%; height: 100%; overflow: hidden; }
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background: #2c3e5c;
+}
 html { -webkit-text-size-adjust: 100%; }
-body { 
-    font-family: 'Segoe UI', Tahoma, sans-serif; 
+
+/* ============================================================
+   TV BOX ÖLÇEKLEME KAPSAYICISI
+   1920x1080 sabit tasarım alanı, ekrana göre ölçeklenir.
+   ============================================================ */
+#olcekKapsayici {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
     background: linear-gradient(135deg, #4a6fa5 0%, #3d5a80 50%, #2c3e5c 100%);
-    background-attachment: fixed;
-    padding: 12px; 
-    height: 100vh;
-    height: 100dvh;
-    display: flex; 
-    flex-direction: column; 
-    -webkit-tap-highlight-color: transparent; 
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    -webkit-tap-highlight-color: transparent;
     color: #1a2942;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.panel-icerik {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
 }
 
 .sekme-icerik { display: none; flex: 1; min-height: 0; }
@@ -30,164 +54,146 @@ body {
 .panel { display: grid; grid-template-rows: auto 1fr 1fr; gap: 10px; flex: 1; min-height: 0; }
 
 /* ===== ÜST BAŞLIK ===== */
-.ust-baslik { 
-    display: grid; 
-    grid-template-columns: 280px repeat(4, 1fr); 
-    gap: 10px; 
-    align-items: stretch; 
+.ust-baslik {
+    display: grid;
+    grid-template-columns: 280px repeat(4, 1fr);
+    gap: 10px;
+    align-items: stretch;
 }
 
-.tarih-saat { 
+.tarih-saat {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    backdrop-filter: none;
-    border-radius: 14px; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    padding: 8px 10px; 
-    cursor: pointer; 
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 10px;
+    cursor: pointer;
     transition: all 0.2s;
     color: #ffffff !important;
-    text-decoration: none !important;
     outline: none !important;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
 }
-.tarih-saat:hover { 
+.tarih-saat:hover {
     background: rgba(255, 255, 255, 0.08) !important;
     transform: translateY(-1px);
 }
-.tarih-saat:focus,
-.tarih-saat:active,
-.tarih-saat:visited,
-.tarih-saat:focus-visible {
-    background: transparent !important;
-    color: #ffffff !important;
-    outline: none !important;
-    text-decoration: none !important;
-    box-shadow: none !important;
-    border: none !important;
-}
 .tarih-saat * {
     color: #ffffff !important;
-    text-decoration: none !important;
     background: transparent !important;
     outline: none !important;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
 }
-.tarih-saat .saat { 
-    font-size: clamp(40px, 4.2vw, 68px); 
-    font-weight: 900; 
-    font-variant-numeric: tabular-nums; 
-    line-height: 1; 
-    color: #ffffff !important; 
+.tarih-saat .saat {
+    font-size: 68px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
     letter-spacing: -2px;
     text-shadow: 0 3px 12px rgba(0,0,0,0.45);
 }
-.tarih-saat .tarih { 
-    font-size: clamp(14px, 1.25vw, 20px); 
-    font-weight: 800; 
-    color: #ffffff !important; 
+.tarih-saat .tarih {
+    font-size: 20px;
+    font-weight: 800;
     margin-top: 8px;
     text-align: center;
     text-shadow: 0 2px 6px rgba(0,0,0,0.45);
     letter-spacing: 0.5px;
 }
 
-.sutun { 
+.sutun {
     background: rgba(255, 255, 255, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 20px rgba(30, 50, 90, 0.15), inset 0 1px 0 rgba(255,255,255,0.9);
-    border-radius: 14px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    padding: 10px; 
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
 }
-.sutun h2 { 
-    font-size: clamp(12px, 1.2vw, 17px); 
-    font-weight: 800; 
-    color: #1a2942; 
-    margin-bottom: 8px; 
-    padding-bottom: 6px; 
-    width: 100%; 
+.sutun h2 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #1a2942;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    width: 100%;
     text-align: center;
-    border-bottom: 2px solid rgba(234, 237, 243, 0.3); 
+    border-bottom: 2px solid rgba(234, 237, 243, 0.3);
     text-transform: uppercase;
     letter-spacing: 1.5px;
 }
 
 .bugun-yarin-yatay { display: flex; flex-direction: column; gap: 6px; width: 100%; flex: 1; justify-content: center; }
-.bugun-yarin-yatay .kutu { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    border-radius: 10px; 
-    width: 100%; 
+.bugun-yarin-yatay .kutu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    width: 100%;
     padding: 8px;
     transition: all 0.2s;
 }
-.bugun-yarin-yatay .kutu.bugun { 
+.bugun-yarin-yatay .kutu.bugun {
     background: linear-gradient(135deg, #ffd97a 0%, #ffb84d 100%);
     border: 2px solid #e89a2c;
     box-shadow: 0 3px 12px rgba(232, 154, 44, 0.35), inset 0 1px 0 rgba(255,255,255,0.5);
     order: 1;
 }
-.bugun-yarin-yatay .kutu.yarin { 
+.bugun-yarin-yatay .kutu.yarin {
     background: #e8eef7;
     border: 1px solid #c5d3e8;
     order: 2;
 }
-.bugun-yarin-yatay .etiket-mini { 
-    font-weight: 800; 
-    letter-spacing: 1.5px; 
-    text-transform: uppercase; 
-    margin-bottom: 3px; 
+.bugun-yarin-yatay .etiket-mini {
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
     font-size: 9px;
 }
 .bugun-yarin-yatay .kutu.bugun .etiket-mini { color: #7a3d00; }
 .bugun-yarin-yatay .kutu.yarin .etiket-mini { color: #5a6b85; }
-.bugun-yarin-yatay .isim-bugun { 
-    font-size: clamp(13px, 1.15vw, 19px); 
-    color: #1a2942; 
-    font-weight: 800; 
-    text-align: center; 
-    line-height: 1.2; 
-    width: 100%; 
+.bugun-yarin-yatay .isim-bugun {
+    font-size: 19px;
+    color: #1a2942;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.2;
+    width: 100%;
 }
-.bugun-yarin-yatay .isim-yarin { 
-    font-size: clamp(10px, 0.85vw, 14px); 
-    color: #4a5b78; 
-    font-weight: 700; 
-    text-align: center; 
-    line-height: 1.2; 
-    width: 100%; 
+.bugun-yarin-yatay .isim-yarin {
+    font-size: 14px;
+    color: #4a5b78;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+    width: 100%;
 }
 .yemekci-yanyana { display: flex; flex-direction: row; flex-wrap: wrap; gap: 5px; justify-content: center; align-items: center; width: 100%; }
-.kutu.bugun .yemekci-yanyana .kisi-chip { color: #1a2942; font-size: clamp(12px, 1vw, 17px); font-weight: 800; }
-.kutu.yarin .yemekci-yanyana .kisi-chip { color: #4a5b78; font-size: clamp(10px, 0.8vw, 14px); font-weight: 700; }
+.kutu.bugun .yemekci-yanyana .kisi-chip { color: #1a2942; font-size: 17px; font-weight: 800; }
+.kutu.yarin .yemekci-yanyana .kisi-chip { color: #4a5b78; font-size: 14px; font-weight: 700; }
 
 /* ===== ORTA BÖLÜM ===== */
 .orta { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; min-height: 0; }
 
-.ders-tablo { 
+.ders-tablo {
     background: #d9f2e6;
     border: 2px solid #a8e6d1;
     box-shadow: 0 4px 20px rgba(30, 50, 90, 0.15);
-    border-radius: 18px; 
-    padding: 10px; 
-    display: grid; 
-    grid-template-columns: 22% 26% 26% 26%; 
-    grid-template-rows: 30% 35% 35%; 
-    gap: 4px; 
-    min-height: 0; 
+    border-radius: 18px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 22% 26% 26% 26%;
+    grid-template-rows: 30% 35% 35%;
+    gap: 4px;
+    min-height: 0;
 }
 .ders-tablo .hucre {
     border: 1.5px solid rgba(45, 90, 70, 0.4);
@@ -199,160 +205,160 @@ body {
     padding: 4px;
     text-align: center;
     font-weight: 700;
-    font-size: clamp(13px, 1.25vw, 19px);
+    font-size: 19px;
     line-height: 1.2;
     word-wrap: break-word;
     overflow-wrap: break-word;
     overflow: hidden;
     color: #1a2942;
 }
-.ders-tablo .hucre.baslik-hucre { 
-    font-size: clamp(11px, 1vw, 15px); 
-    font-weight: 800; 
-    background: #b8e6d1; 
+.ders-tablo .hucre.baslik-hucre {
+    font-size: 15px;
+    font-weight: 800;
+    background: #b8e6d1;
     color: #1a4a3a;
     border-color: #7ec9ad;
 }
 .ders-tablo .hucre.bos { border: none; background: transparent; }
 
-.hadis-kutu { 
+.hadis-kutu {
     background: #d5f0ee;
     border: 2px solid #a8e6e0;
     box-shadow: 0 4px 20px rgba(30, 50, 90, 0.15);
-    border-radius: 18px; 
-    padding: 14px; 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 0; 
+    border-radius: 18px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
-.hadis-kutu .hadis-baslik { 
-    text-align: center; 
-    font-size: clamp(12px, 1.1vw, 16px); 
-    font-weight: 800; 
-    margin-bottom: 10px; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    gap: 8px; 
+.hadis-kutu .hadis-baslik {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
     color: #1a5a55;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
-.hadis-yenile-btn { 
-    font-size: 11px; 
-    padding: 3px 8px; 
-    cursor: pointer; 
-    background: #1a5a55; 
-    color: #fff; 
-    border: none; 
-    border-radius: 4px; 
-    font-weight: 700; 
+.hadis-yenile-btn {
+    font-size: 11px;
+    padding: 3px 8px;
+    cursor: pointer;
+    background: #1a5a55;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
 }
 .hadis-yenile-btn:hover { background: #0d3d3a; }
-.hadis-kutu .hadis-metin { 
-    color: #1a2942; 
-    line-height: 1.6; 
-    font-style: italic; 
-    text-align: center; 
-    flex: 1; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    flex-direction: column; 
-    overflow: auto; 
-    padding: 8px; 
-    width: 100%; 
-    word-wrap: break-word; 
-    overflow-wrap: break-word; 
+.hadis-kutu .hadis-metin {
+    color: #1a2942;
+    line-height: 1.6;
+    font-style: italic;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: auto;
+    padding: 8px;
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-.hadis-kutu .hadis-metin .hadis-text { font-size: clamp(15px, 1.4vw, 24px); width: 100%; line-height: 1.5; }
-.hadis-kutu .hadis-metin .hadis-text.uzun { font-size: clamp(13px, 1.2vw, 20px); line-height: 1.45; }
-.hadis-kutu .hadis-metin .hadis-text.cok-uzun { font-size: clamp(11px, 1vw, 17px); line-height: 1.4; }
-.hadis-kutu .hadis-metin .hadis-text.cok-cok-uzun { font-size: clamp(10px, 0.85vw, 14px); line-height: 1.35; }
+.hadis-kutu .hadis-metin .hadis-text { font-size: 24px; width: 100%; line-height: 1.5; }
+.hadis-kutu .hadis-metin .hadis-text.uzun { font-size: 20px; line-height: 1.45; }
+.hadis-kutu .hadis-metin .hadis-text.cok-uzun { font-size: 17px; line-height: 1.4; }
+.hadis-kutu .hadis-metin .hadis-text.cok-cok-uzun { font-size: 14px; line-height: 1.35; }
 .hadis-kutu .hadis-metin .hadis-kaynak { font-size: 0.75em; color: #4a6b78; margin-top: 10px; font-weight: 700; font-style: normal; }
 
 /* ===== ALT BÖLÜM ===== */
 .alt { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; min-height: 0; }
 
-.program-kutu { 
+.program-kutu {
     background: #d5f0ee;
     border: 2px solid #a8e6e0;
     box-shadow: 0 4px 20px rgba(30, 50, 90, 0.15);
-    border-radius: 18px; 
-    padding: 10px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 6px; 
-    min-height: 0; 
-    overflow: hidden; 
+    border-radius: 18px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    overflow: hidden;
 }
-.program-kutu .program-baslik { 
-    text-align: center; 
-    font-size: clamp(11px, 1vw, 15px); 
-    font-weight: 800; 
-    color: #1a5a55; 
-    padding-bottom: 6px; 
-    border-bottom: 2px solid #7ec9c4; 
-    flex-shrink: 0; 
+.program-kutu .program-baslik {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #1a5a55;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #7ec9c4;
+    flex-shrink: 0;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.aktif-program { 
+.aktif-program {
     background: linear-gradient(135deg, #ffd97a 0%, #ffb84d 100%);
     border: 2px solid #e89a2c;
-    border-radius: 12px; 
-    padding: 10px 12px; 
+    border-radius: 12px;
+    padding: 10px 12px;
     box-shadow: 0 3px 12px rgba(232, 154, 44, 0.35);
-    display: grid; 
-    grid-template-columns: 1.4fr 1fr 1fr 1.2fr; 
-    gap: 6px; 
-    align-items: center; 
-    flex-shrink: 0; 
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
 }
 .aktif-program .aktif-etiket { font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #7a3d00; display: block; margin-bottom: 2px; }
-.aktif-program .aktif-ad { font-size: clamp(13px, 1.15vw, 18px); font-weight: 800; color: #1a2942; }
-.aktif-program .aktif-hucre { text-align: center; font-size: clamp(10px, 0.85vw, 13px); font-weight: 700; color: #1a2942; }
+.aktif-program .aktif-ad { font-size: 18px; font-weight: 800; color: #1a2942; }
+.aktif-program .aktif-hucre { text-align: center; font-size: 13px; font-weight: 700; color: #1a2942; }
 .aktif-program .aktif-hucre .kucuk-etiket { display: block; font-size: 8px; font-weight: 800; color: #7a3d00; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-.aktif-program .geri-sayim { font-family: 'Consolas', 'Courier New', monospace; font-size: clamp(13px, 1.1vw, 17px); font-weight: 900; color: #7a3d00; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+.aktif-program .geri-sayim { font-family: 'Consolas', 'Courier New', monospace; font-size: 17px; font-weight: 900; color: #7a3d00; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
 
 .sonraki-programlar { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; min-height: 0; }
-.sonraki-satir { 
-    display: grid; 
-    grid-template-columns: 1.4fr 1fr 1fr 1.2fr; 
-    gap: 6px; 
-    align-items: center; 
-    padding: 6px 10px; 
+.sonraki-satir {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 10px;
     background: #eaf8f6;
     border: 1px solid #c0e5e0;
-    border-radius: 8px; 
-    box-shadow: inset 3px 0 0 #1a5a55; 
-    font-size: clamp(10px, 0.8vw, 12px); 
+    border-radius: 8px;
+    box-shadow: inset 3px 0 0 #1a5a55;
+    font-size: 12px;
 }
 .sonraki-satir .ad { font-weight: 700; color: #1a2942; }
 .sonraki-satir .hucre { text-align: center; color: #4a5b78; font-weight: 700; font-variant-numeric: tabular-nums; }
 .sonraki-bos { text-align: center; color: #7a8a9c; font-style: italic; font-size: 12px; padding: 12px; }
 
-.haftalik-program { 
+.haftalik-program {
     background: #ffffff;
     border: 2px solid #c5d3e8;
     box-shadow: 0 4px 20px rgba(30, 50, 90, 0.15);
-    border-radius: 18px; 
-    padding: 6px; 
-    overflow: auto; 
-    display: flex; 
-    align-items: stretch; 
-    justify-content: center; 
-    min-height: 0; 
+    border-radius: 18px;
+    padding: 6px;
+    overflow: auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    min-height: 0;
 }
-.hp-tablo { width: 100%; height: 100%; border-collapse: collapse; background: #fff; font-size: clamp(6px, 0.5vw, 9px); table-layout: fixed; }
-.hp-tablo th, .hp-tablo td { 
-    border: 1px solid #b8c5d8; 
-    padding: 1px 2px; 
-    text-align: center; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+.hp-tablo { width: 100%; height: 100%; border-collapse: collapse; background: #fff; font-size: 9px; table-layout: fixed; }
+.hp-tablo th, .hp-tablo td {
+    border: 1px solid #b8c5d8;
+    padding: 1px 2px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: #1a2942;
 }
 .hp-tablo thead th { background: #d8e0ec; font-weight: bold; }
@@ -399,15 +405,15 @@ body {
 .ozel5     { background: #CE93D8; color: #1a1a1a; }
 
 /* ===== LİSTELER SEKMESİ ===== */
-.listeler-sekme { 
+.listeler-sekme {
     background: rgba(245, 248, 252, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 8px 32px rgba(30, 50, 90, 0.25);
-    border-radius: 14px; 
-    padding: 20px; 
-    overflow-y: auto; 
-    flex: 1; 
-    min-height: 0; 
+    border-radius: 14px;
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
     color: #1a2942;
 }
 .listeler-sekme h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; padding-bottom: 10px; border-bottom: 2px solid #4a6fa5; color: #1a2942; }
@@ -445,9 +451,7 @@ body {
   margin-top: 6px;
   background: #f5f8fc;
 }
-.yemekci-grup-baslik:first-child {
-  margin-top: 0;
-}
+.yemekci-grup-baslik:first-child { margin-top: 0; }
 .yemekci-grup-baslik.siradaki {
   background: #fff8e1;
   border-left: 4px solid #ffc107;
@@ -478,11 +482,7 @@ body {
     padding-bottom: 8px;
     border-bottom: 1.5px solid #e0e6ee;
 }
-.hafta-sonu-btn-kart .kart-baslik h3 {
-    font-size: 16px;
-    font-weight: 800;
-    color: #1a2942;
-}
+.hafta-sonu-btn-kart .kart-baslik h3 { font-size: 16px; font-weight: 800; color: #1a2942; }
 .hafta-sonu-toggle {
     display: flex;
     align-items: center;
@@ -494,33 +494,11 @@ body {
     border: 2px solid #c5d3e8;
     transition: all 0.2s;
 }
-.hafta-sonu-toggle.aktif {
-    background: #fff8e1;
-    border-color: #ffc107;
-}
-.hafta-sonu-toggle .aciklama-toggle {
-    flex: 1;
-    font-size: 13px;
-    color: #4a5b78;
-    line-height: 1.5;
-    margin: 0;
-}
-.hafta-sonu-toggle.aktif .aciklama-toggle {
-    color: #7a3d00;
-    font-weight: 600;
-}
-.hafta-sonu-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 32px;
-    flex-shrink: 0;
-}
-.hafta-sonu-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+.hafta-sonu-toggle.aktif { background: #fff8e1; border-color: #ffc107; }
+.hafta-sonu-toggle .aciklama-toggle { flex: 1; font-size: 13px; color: #4a5b78; line-height: 1.5; margin: 0; }
+.hafta-sonu-toggle.aktif .aciklama-toggle { color: #7a3d00; font-weight: 600; }
+.hafta-sonu-switch { position: relative; display: inline-block; width: 60px; height: 32px; flex-shrink: 0; }
+.hafta-sonu-switch input { opacity: 0; width: 0; height: 0; }
 .hafta-sonu-slider {
     position: absolute;
     cursor: pointer;
@@ -542,12 +520,8 @@ body {
     transition: 0.3s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-.hafta-sonu-switch input:checked + .hafta-sonu-slider {
-    background: #ffc107;
-}
-.hafta-sonu-switch input:checked + .hafta-sonu-slider:before {
-    transform: translateX(28px);
-}
+.hafta-sonu-switch input:checked + .hafta-sonu-slider { background: #ffc107; }
+.hafta-sonu-switch input:checked + .hafta-sonu-slider:before { transform: translateX(28px); }
 .hafta-sonu-durum {
     font-size: 12px;
     font-weight: 700;
@@ -556,15 +530,8 @@ body {
     border-radius: 6px;
     margin-top: 10px;
 }
-.hafta-sonu-durum.kapali {
-    background: #e3f2fd;
-    color: #0d47a1;
-}
-.hafta-sonu-durum.acik {
-    background: #fff8e1;
-    color: #7a3d00;
-    border: 1px solid #ffc107;
-}
+.hafta-sonu-durum.kapali { background: #e3f2fd; color: #0d47a1; }
+.hafta-sonu-durum.acik { background: #fff8e1; color: #7a3d00; border: 1px solid #ffc107; }
 
 .hadis-liste-kart { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(30, 50, 90, 0.1); border: 1px solid #e0e6ee; display: flex; flex-direction: column; margin-bottom: 20px; }
 .hadis-liste-kart .kart-baslik { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #e0e6ee; }
@@ -638,7 +605,7 @@ body {
 .sifre-degistir-kart .kaydet-btn:hover { background: #b71c1c; }
 .sifre-degistir-bilgi { font-size: 12px; color: #4a5b78; margin-top: 10px; padding: 8px 10px; background: #f5f8fc; border-radius: 6px; border-left: 3px solid #4a6fa5; }
 
-.senkron-durum { position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.9); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 3px 10px rgba(30, 50, 90, 0.2); z-index: 1000; display: flex; align-items: center; gap: 6px; transition: opacity 0.3s; }
+.senkron-durum { position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255,255,255,0.9); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 3px 10px rgba(30, 50, 90, 0.2); z-index: 1000; display: flex; align-items: center; gap: 6px; }
 .senkron-durum.ok { color: #2e7d32; }
 .senkron-durum.yukleniyor { color: #f57c00; }
 .senkron-durum.hata { color: #c62828; }
@@ -663,7 +630,7 @@ body {
 .hp-kaydet-bar .hp-sifirla-btn:hover { background: #424242; }
 .hp-kaydet-bar .hp-bilgi { font-size: 12px; color: #1b5e20; font-weight: 600; }
 
-.sifre-modal { position: fixed; inset: 0; background: rgba(30, 50, 90, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9000; padding: 20px; }
+.sifre-modal { position: absolute; inset: 0; background: rgba(30, 50, 90, 0.5); display: none; align-items: center; justify-content: center; z-index: 9000; padding: 20px; }
 .sifre-modal.acik { display: flex; }
 .sifre-modal-kart { background: #fff; border-radius: 16px; padding: 28px 32px 24px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(30, 50, 90, 0.4); text-align: center; animation: modalIn 0.2s ease-out; }
 @keyframes modalIn { from { transform: translateY(-20px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
@@ -680,377 +647,415 @@ body {
 .sifre-modal-hata { color: #c62828; font-size: 13px; font-weight: 700; margin-bottom: 10px; display: none; }
 .sifre-modal-hata.goster { display: block; }
 
-/* ===== TV BOX TAM EKRAN UYUMLULUĞU ===== */
-@supports (height: 100dvh) {
-    body { height: 100dvh; }
-}
-@media screen and (min-height: 100vh) {
-    body { height: 100vh; }
-}
-
-/* ===== SEÇİM / HIGHLIGHT RENGİNİ ENGELLE ===== */
+/* ===== SEÇİM / HIGHLIGHT ENGELLE ===== */
 ::selection { background: transparent; color: inherit; }
 ::-moz-selection { background: transparent; color: inherit; }
-::-webkit-selection { background: transparent; color: inherit; }
 </style>
 </head>
 <body>
 
-<div class="senkron-durum yukleniyor" id="senkronDurum">
-  <span class="nokta"></span>
-  <span id="senkronYazi">Bağlanıyor...</span>
-</div>
+<!-- ============================================================
+     ÖLÇEKLEME KAPSAYICISI - Tüm içerik bunun içinde
+     ============================================================ -->
+<div id="olcekKapsayici">
 
-<div class="sifre-modal" id="sifreModal">
-  <div class="sifre-modal-kart">
-    <h3>🔒 Liste Erişimi</h3>
-    <p>Nöbet listelerini görüntülemek için şifreyi girin.</p>
-    <div class="sifre-modal-hata" id="sifreModalHata">❌ Şifre hatalı!</div>
-    <input type="password" id="sifreModalInput" placeholder="Şifre" autocomplete="off">
-    <div class="sifre-modal-btnler">
-      <button class="iptal-btn" id="sifreModalIptal">İptal</button>
-      <button class="tamam-btn" id="sifreModalTamam">Giriş</button>
+  <div class="senkron-durum yukleniyor" id="senkronDurum">
+    <span class="nokta"></span>
+    <span id="senkronYazi">Bağlanıyor...</span>
+  </div>
+
+  <div class="sifre-modal" id="sifreModal">
+    <div class="sifre-modal-kart">
+      <h3>🔒 Liste Erişimi</h3>
+      <p>Nöbet listelerini görüntülemek için şifreyi girin.</p>
+      <div class="sifre-modal-hata" id="sifreModalHata">❌ Şifre hatalı!</div>
+      <input type="password" id="sifreModalInput" placeholder="Şifre" autocomplete="off">
+      <div class="sifre-modal-btnler">
+        <button class="iptal-btn" id="sifreModalIptal">İptal</button>
+        <button class="tamam-btn" id="sifreModalTamam">Giriş</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="sekme-icerik aktif" id="sekme-panel">
-  <div class="panel">
-    <div class="ust-baslik">
-      <div class="tarih-saat" id="saatTikla" title="Nöbet Listelerini aç">
-        <div class="saat" id="canliSaat">--:--:--</div>
-        <div class="tarih" id="canliTarih">--</div>
-      </div>
-      <div class="sutun">
-        <h2>İMAM</h2>
-        <div class="bugun-yarin-yatay">
-          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterImam">-</span></div>
-          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterImamYarin">-</span></div>
-        </div>
-      </div>
-      <div class="sutun">
-        <h2>MÜEZZİN</h2>
-        <div class="bugun-yarin-yatay">
-          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterMuezzin">-</span></div>
-          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterMuezzinYarin">-</span></div>
-        </div>
-      </div>
-      <div class="sutun">
-        <h2>ÇAYCI</h2>
-        <div class="bugun-yarin-yatay">
-          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterCayci">-</span></div>
-          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterCayciYarin">-</span></div>
-        </div>
-      </div>
-      <div class="sutun">
-        <h2>YEMEKÇİLER</h2>
-        <div class="bugun-yarin-yatay">
-          <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterYemekciler">-</span></div>
-          <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterYemekcilerYarin">-</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="orta">
-      <div class="ders-tablo">
-        <div class="hucre bos"></div>
-        <div class="hucre baslik-hucre">SAY 1</div>
-        <div class="hucre baslik-hucre">SAY 2</div>
-        <div class="hucre baslik-hucre">EA</div>
-        <div class="hucre baslik-hucre">ŞUANKİ DERS</div>
-        <div class="hucre" id="suankiSay1">-</div>
-        <div class="hucre" id="suankiSay2">-</div>
-        <div class="hucre" id="suankiEA">-</div>
-        <div class="hucre baslik-hucre">GELECEK DERS</div>
-        <div class="hucre" id="gelecekSay1">-</div>
-        <div class="hucre" id="gelecekSay2">-</div>
-        <div class="hucre" id="gelecekEA">-</div>
-      </div>
-      <div class="hadis-kutu">
-        <div class="hadis-baslik">
-          GÜNÜN HADİS-İ ŞERİFİ
-          <button class="hadis-yenile-btn" id="hadisYenileBtn" title="Yenile">🔄</button>
-        </div>
-        <div class="hadis-metin" id="gosterHadis"></div>
-      </div>
-    </div>
-
-    <div class="alt">
-      <div class="program-kutu">
-        <div class="program-baslik">📋 PROGRAM BİLGİLERİ</div>
-        <div class="aktif-program" id="aktifProgramKutu">
-          <div>
-            <span class="aktif-etiket">▶ ŞU ANKİ</span>
-            <span class="aktif-ad" id="aktifProgramAd">Program yok</span>
+  <div class="sekme-icerik aktif" id="sekme-panel">
+    <div class="panel-icerik">
+      <div class="panel">
+        <div class="ust-baslik">
+          <div class="tarih-saat" id="saatTikla" title="Nöbet Listelerini aç">
+            <div class="saat" id="canliSaat">--:--:--</div>
+            <div class="tarih" id="canliTarih">--</div>
           </div>
-          <div class="aktif-hucre"><span class="kucuk-etiket">Başlangıç</span><span id="aktifProgramBas">--:--</span></div>
-          <div class="aktif-hucre"><span class="kucuk-etiket">Bitiş</span><span id="aktifProgramBit">--:--</span></div>
-          <div class="aktif-hucre"><span class="kucuk-etiket">Sonraki Programa</span><span class="geri-sayim" id="aktifProgramKalan">--:--:--</span></div>
-        </div>
-        <div class="sonraki-programlar" id="sonrakiProgramlar">
-          <div class="sonraki-bos">Sonraki program yok</div>
-        </div>
-      </div>
-
-      <div class="haftalik-program">
-        <table class="hp-tablo" id="hpAnaTablo">
-          <thead>
-            <tr>
-              <th rowspan="2">Saat</th>
-              <th colspan="3">PAZARTESİ</th>
-              <th colspan="3">SALI</th>
-              <th colspan="3">ÇARŞAMBA</th>
-              <th colspan="3">PERŞEMBE</th>
-              <th colspan="3">CUMA</th>
-            </tr>
-            <tr>
-              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
-              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
-              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
-              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
-              <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
-            </tr>
-          </thead>
-          <tbody id="hpAnaTbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="sekme-icerik" id="sekme-listeler">
-  <div class="listeler-sekme">
-    <button class="geri-btn" id="geriBtn">← Panele Dön</button>
-    <h2>👥 Nöbet Listeleri</h2>
-    <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> Çakışan gruplar <span style="background:#fff3e0; padding:2px 6px; border-left:4px solid #ff9800;">turuncu</span> ile kuyrukta gösterilir.</p>
-
-    <div class="bilgi-not">
-      📅 <b>Başlangıç tarihi:</b>
-      <input type="date" id="inpBaslangic">
-      <span>— bu tarihte listenin 1. kişisi nöbetçi olur. (Hafta içi bir gün seçin.)</span>
-    </div>
-
-    <!-- ===== HAFTA SONU NÖBETİ BUTONU ===== -->
-    <div class="hafta-sonu-btn-kart">
-        <div class="kart-baslik">
-            <h3>🗓️ Hafta Sonu Nöbeti</h3>
-        </div>
-        <div class="hafta-sonu-toggle" id="haftaSonuToggle">
-            <div class="aciklama-toggle">
-                <b>Kapalı:</b> Hafta sonu nöbet değişmez, <b>Cuma günkü kişi</b> devam eder.<br>
-                <b>Açık:</b> Hafta sonu nöbet <b>Cumartesi gününe</b> atlar.
+          <div class="sutun">
+            <h2>İMAM</h2>
+            <div class="bugun-yarin-yatay">
+              <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterImam">-</span></div>
+              <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterImamYarin">-</span></div>
             </div>
-            <label class="hafta-sonu-switch">
-                <input type="checkbox" id="haftaSonuCheck">
-                <span class="hafta-sonu-slider"></span>
-            </label>
-        </div>
-        <div class="hafta-sonu-durum kapali" id="haftaSonuDurum">
-            ✅ Şu an: Cuma günkü kişi hafta sonu da devam ediyor
-        </div>
-    </div>
-
-    <div class="liste-grid">
-      <div class="liste-kart">
-        <div class="kart-baslik"><h3>İMAM</h3><span class="sayi" id="sayi-imam">0</span></div>
-        <div class="liste" id="liste-imam"></div>
-        <div class="ekle-satir"><input type="text" id="yeni-imam" placeholder="Yeni isim..."><button data-ekle="imam">+ Ekle</button></div>
-      </div>
-      <div class="liste-kart">
-        <div class="kart-baslik"><h3>MÜEZZİN</h3><span class="sayi" id="sayi-muezzin">0</span></div>
-        <div class="liste" id="liste-muezzin"></div>
-        <div class="ekle-satir"><input type="text" id="yeni-muezzin" placeholder="Yeni isim..."><button data-ekle="muezzin">+ Ekle</button></div>
-      </div>
-      <div class="liste-kart">
-        <div class="kart-baslik"><h3>ÇAYCI</h3><span class="sayi" id="sayi-cayci">0</span></div>
-        <div class="liste" id="liste-cayci"></div>
-        <div class="ekle-satir"><input type="text" id="yeni-cayci" placeholder="Yeni isim..."><button data-ekle="cayci">+ Ekle</button></div>
-      </div>
-      <div class="liste-kart">
-        <div class="kart-baslik"><h3>YEMEKÇİLER (2'li grup)</h3><span class="sayi" id="sayi-yemekciler">0</span></div>
-        <div class="liste" id="liste-yemekciler"></div>
-        <div class="ekle-satir"><input type="text" id="yeni-yemekciler" placeholder="Yeni isim..."><button data-ekle="yemekciler">+ Ekle</button></div>
-      </div>
-    </div>
-
-    <div class="hadis-liste-kart">
-      <div class="kart-baslik">
-        <h3>📖 GÜNÜN HADİS-İ ŞERİFİ LİSTESİ</h3>
-        <span class="sayi" id="sayi-hadisListesi">0</span>
-      </div>
-      <p style="font-size:12px; color:#4a5b78; margin-bottom:10px;">
-        Her gün sıradaki hadis otomatik olarak panele yansır. Sıradaki hadis <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır.
-      </p>
-      <div class="hadis-liste" id="liste-hadisListesi"></div>
-      <div class="hadis-ekle-form">
-        <textarea id="yeni-hadis" placeholder="Hadis metnini yazın...&#10;Son satıra kaynak yazabilirsiniz. Örn: (Buhârî)"></textarea>
-        <button data-ekle-hadis>+ Hadis Ekle</button>
-      </div>
-    </div>
-
-    <div class="liste-kart" style="margin-bottom:20px;">
-      <div class="kart-baslik"><h3>📋 GENEL PROGRAMLAR (Namaz, Yemek, Etüt...)</h3><span class="sayi" id="sayi-programlar">0</span></div>
-      <p style="font-size:12px; color:#4a5b78; margin-bottom:12px;">
-        Her günün programını <b>ayrı ayrı</b> ekleyin. Gün sekmelerinden birini seçip o güne ait programları düzenleyin.
-      </p>
-
-      <div class="gun-sekme-baslik" id="gunSekmeleri">
-        <button class="gun-sekme-btn aktif" data-gun="1">Pazartesi <span class="sayi-mini" id="sayiGun-1">0</span></button>
-        <button class="gun-sekme-btn" data-gun="2">Salı <span class="sayi-mini" id="sayiGun-2">0</span></button>
-        <button class="gun-sekme-btn" data-gun="3">Çarşamba <span class="sayi-mini" id="sayiGun-3">0</span></button>
-        <button class="gun-sekme-btn" data-gun="4">Perşembe <span class="sayi-mini" id="sayiGun-4">0</span></button>
-        <button class="gun-sekme-btn" data-gun="5">Cuma <span class="sayi-mini" id="sayiGun-5">0</span></button>
-        <button class="gun-sekme-btn" data-gun="6">Cumartesi <span class="sayi-mini" id="sayiGun-6">0</span></button>
-        <button class="gun-sekme-btn" data-gun="0">Pazar <span class="sayi-mini" id="sayiGun-0">0</span></button>
-      </div>
-
-      <div class="program-form">
-        <div class="alan"><label>Program Adı</label><input type="text" id="programAd" placeholder="Örn: Öğle Namazı"></div>
-        <div class="alan"><label>Başlangıç</label><input type="time" id="programBas"></div>
-        <div class="alan"><label>Bitiş</label><input type="time" id="programBit"></div>
-        <div class="alan"><label>&nbsp;</label><button id="programEkleBtn">+ Ekle</button></div>
-      </div>
-
-      <div class="program-baslik-satir">
-        <span>Program Adı</span><span>Başlangıç</span><span>Bitiş</span><span></span>
-      </div>
-      <div id="programListesi"></div>
-    </div>
-
-    <div class="liste-kart" style="margin-bottom:20px;">
-      <div class="kart-baslik"><h3>📚 DERS PROGRAMLARI</h3></div>
-      <p style="font-size:12px; color:#4a5b78; margin-bottom:14px;">
-        Her sınıf için <b>ayrı ayrı</b> ders ekle. Her derse bir <b>gün</b> seç.
-      </p>
-
-      <div class="ders-sekme-baslik">
-        <button class="ders-sekme-btn aktif" data-sinif="say1">SAY 1</button>
-        <button class="ders-sekme-btn" data-sinif="say2">SAY 2</button>
-        <button class="ders-sekme-btn" data-sinif="ea">EA</button>
-      </div>
-
-      <div class="ders-panel aktif" id="panel-say1">
-        <div class="ders-form">
-          <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-say1" placeholder="Örn: MAT-2"></div>
-          <div class="alan"><label>Gün</label>
-            <select id="dersGun-say1">
-              <option value="1">Pazartesi</option>
-              <option value="2">Salı</option>
-              <option value="3">Çarşamba</option>
-              <option value="4">Perşembe</option>
-              <option value="5">Cuma</option>
-            </select>
           </div>
-          <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-say1"></div>
-          <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-say1"></div>
-          <div class="alan"><label>&nbsp;</label><button data-ders-ekle="say1">+ Ekle</button></div>
-        </div>
-        <div class="ders-baslik-satir">
-          <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
-        </div>
-        <div id="dersListesi-say1"></div>
-      </div>
-
-      <div class="ders-panel" id="panel-say2">
-        <div class="ders-form">
-          <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-say2" placeholder="Örn: MAT-2"></div>
-          <div class="alan"><label>Gün</label>
-            <select id="dersGun-say2">
-              <option value="1">Pazartesi</option>
-              <option value="2">Salı</option>
-              <option value="3">Çarşamba</option>
-              <option value="4">Perşembe</option>
-              <option value="5">Cuma</option>
-            </select>
+          <div class="sutun">
+            <h2>MÜEZZİN</h2>
+            <div class="bugun-yarin-yatay">
+              <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterMuezzin">-</span></div>
+              <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterMuezzinYarin">-</span></div>
+            </div>
           </div>
-          <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-say2"></div>
-          <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-say2"></div>
-          <div class="alan"><label>&nbsp;</label><button data-ders-ekle="say2">+ Ekle</button></div>
-        </div>
-        <div class="ders-baslik-satir">
-          <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
-        </div>
-        <div id="dersListesi-say2"></div>
-      </div>
-
-      <div class="ders-panel" id="panel-ea">
-        <div class="ders-form">
-          <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-ea" placeholder="Örn: GEOMETRİ"></div>
-          <div class="alan"><label>Gün</label>
-            <select id="dersGun-ea">
-              <option value="1">Pazartesi</option>
-              <option value="2">Salı</option>
-              <option value="3">Çarşamba</option>
-              <option value="4">Perşembe</option>
-              <option value="5">Cuma</option>
-            </select>
+          <div class="sutun">
+            <h2>ÇAYCI</h2>
+            <div class="bugun-yarin-yatay">
+              <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterCayci">-</span></div>
+              <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterCayciYarin">-</span></div>
+            </div>
           </div>
-          <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-ea"></div>
-          <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-ea"></div>
-          <div class="alan"><label>&nbsp;</label><button data-ders-ekle="ea">+ Ekle</button></div>
+          <div class="sutun">
+            <h2>YEMEKÇİLER</h2>
+            <div class="bugun-yarin-yatay">
+              <div class="kutu bugun"><span class="etiket-mini">Bugün</span><span class="isim-bugun" id="gosterYemekciler">-</span></div>
+              <div class="kutu yarin"><span class="etiket-mini">Yarın</span><span class="isim-yarin" id="gosterYemekcilerYarin">-</span></div>
+            </div>
+          </div>
         </div>
-        <div class="ders-baslik-satir">
-          <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+
+        <div class="orta">
+          <div class="ders-tablo">
+            <div class="hucre bos"></div>
+            <div class="hucre baslik-hucre">SAY 1</div>
+            <div class="hucre baslik-hucre">SAY 2</div>
+            <div class="hucre baslik-hucre">EA</div>
+            <div class="hucre baslik-hucre">ŞUANKİ DERS</div>
+            <div class="hucre" id="suankiSay1">-</div>
+            <div class="hucre" id="suankiSay2">-</div>
+            <div class="hucre" id="suankiEA">-</div>
+            <div class="hucre baslik-hucre">GELECEK DERS</div>
+            <div class="hucre" id="gelecekSay1">-</div>
+            <div class="hucre" id="gelecekSay2">-</div>
+            <div class="hucre" id="gelecekEA">-</div>
+          </div>
+          <div class="hadis-kutu">
+            <div class="hadis-baslik">
+              GÜNÜN HADİS-İ ŞERİFİ
+              <button class="hadis-yenile-btn" id="hadisYenileBtn" title="Yenile">🔄</button>
+            </div>
+            <div class="hadis-metin" id="gosterHadis"></div>
+          </div>
         </div>
-        <div id="dersListesi-ea"></div>
+
+        <div class="alt">
+          <div class="program-kutu">
+            <div class="program-baslik">📋 PROGRAM BİLGİLERİ</div>
+            <div class="aktif-program" id="aktifProgramKutu">
+              <div>
+                <span class="aktif-etiket">▶ ŞU ANKİ</span>
+                <span class="aktif-ad" id="aktifProgramAd">Program yok</span>
+              </div>
+              <div class="aktif-hucre"><span class="kucuk-etiket">Başlangıç</span><span id="aktifProgramBas">--:--</span></div>
+              <div class="aktif-hucre"><span class="kucuk-etiket">Bitiş</span><span id="aktifProgramBit">--:--</span></div>
+              <div class="aktif-hucre"><span class="kucuk-etiket">Sonraki Programa</span><span class="geri-sayim" id="aktifProgramKalan">--:--:--</span></div>
+            </div>
+            <div class="sonraki-programlar" id="sonrakiProgramlar">
+              <div class="sonraki-bos">Sonraki program yok</div>
+            </div>
+          </div>
+
+          <div class="haftalik-program">
+            <table class="hp-tablo" id="hpAnaTablo">
+              <thead>
+                <tr>
+                  <th rowspan="2">Saat</th>
+                  <th colspan="3">PAZARTESİ</th>
+                  <th colspan="3">SALI</th>
+                  <th colspan="3">ÇARŞAMBA</th>
+                  <th colspan="3">PERŞEMBE</th>
+                  <th colspan="3">CUMA</th>
+                </tr>
+                <tr>
+                  <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+                  <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+                  <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+                  <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+                  <th class="sinif-baslik">SAY1</th><th class="sinif-baslik">SAY2</th><th class="sinif-baslik">EA</th>
+                </tr>
+              </thead>
+              <tbody id="hpAnaTbody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="liste-kart" style="margin-bottom:20px;">
-      <div class="kart-baslik"><h3>🗓️ HAFTALIK DERS PROGRAMI DÜZENLE (Panelde Görünen)</h3></div>
-      <p style="font-size:12px; color:#4a5b78; margin-bottom:14px;">
-        Her hücreye <b>ders adını</b> yazıp <b>rengini</b> seçin. Kaydettiğinizde panelde anında güncellenir.
-      </p>
-
-      <div class="hp-duzenleyici">
-        <div class="hp-grid" id="hpGrid"></div>
-      </div>
-
-      <div class="hp-kaydet-bar">
-        <button class="hp-kaydet-btn" id="hpKaydetBtn">💾 KAYDET ve PANELDE GÖSTER</button>
-        <button class="hp-sifirla-btn" id="hpSifirlaBtn">↺ Varsayılana Dön</button>
-        <span class="hp-bilgi" id="hpBilgi"></span>
-      </div>
-    </div>
-
-    <div class="sifre-degistir-kart">
-      <div class="kart-baslik">
-        <h3>🔐 Şifre Değiştir</h3>
-      </div>
-      <div class="sifre-degistir-form">
-        <div class="alan">
-          <label for="mevcutSifre">Mevcut Şifre</label>
-          <input type="password" id="mevcutSifre" placeholder="Mevcut şifre" autocomplete="off">
-        </div>
-        <div class="alan">
-          <label for="yeniSifre">Yeni Şifre</label>
-          <input type="password" id="yeniSifre" placeholder="Yeni şifre" autocomplete="off">
-        </div>
-        <div class="alan tam-genislik">
-          <label for="yeniSifreTekrar">Yeni Şifre (Tekrar)</label>
-          <input type="password" id="yeniSifreTekrar" placeholder="Yeni şifreyi tekrar girin" autocomplete="off">
-        </div>
-      </div>
-      <button class="kaydet-btn" id="sifreDegistirBtn">ŞİFREYİ GÜNCELLE</button>
-      <div class="sifre-degistir-bilgi">
-        ℹ️ <b>Not:</b> Değiştirdiğiniz şifre, <b>tarayıcınızda</b> saklanır.
-      </div>
-      <div class="bildirim" id="sifreBildirim"></div>
-    </div>
-
   </div>
+
+  <div class="sekme-icerik" id="sekme-listeler">
+    <div class="panel-icerik">
+      <div class="listeler-sekme">
+        <button class="geri-btn" id="geriBtn">← Panele Dön</button>
+        <h2>👥 Nöbet Listeleri</h2>
+        <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> Çakışan gruplar <span style="background:#fff3e0; padding:2px 6px; border-left:4px solid #ff9800;">turuncu</span> ile kuyrukta gösterilir.</p>
+
+        <div class="bilgi-not">
+          📅 <b>Başlangıç tarihi:</b>
+          <input type="date" id="inpBaslangic">
+          <span>— bu tarihte listenin 1. kişisi nöbetçi olur. (Hafta içi bir gün seçin.)</span>
+        </div>
+
+        <div class="hafta-sonu-btn-kart">
+            <div class="kart-baslik">
+                <h3>🗓️ Hafta Sonu Nöbeti</h3>
+            </div>
+            <div class="hafta-sonu-toggle" id="haftaSonuToggle">
+                <div class="aciklama-toggle">
+                    <b>Kapalı:</b> Hafta sonu nöbet değişmez, <b>Cuma günkü kişi</b> devam eder.<br>
+                    <b>Açık:</b> Hafta sonu nöbet <b>Cumartesi gününe</b> atlar.
+                </div>
+                <label class="hafta-sonu-switch">
+                    <input type="checkbox" id="haftaSonuCheck">
+                    <span class="hafta-sonu-slider"></span>
+                </label>
+            </div>
+            <div class="hafta-sonu-durum kapali" id="haftaSonuDurum">
+                ✅ Şu an: Cuma günkü kişi hafta sonu da devam ediyor
+            </div>
+        </div>
+
+        <div class="liste-grid">
+          <div class="liste-kart">
+            <div class="kart-baslik"><h3>İMAM</h3><span class="sayi" id="sayi-imam">0</span></div>
+            <div class="liste" id="liste-imam"></div>
+            <div class="ekle-satir"><input type="text" id="yeni-imam" placeholder="Yeni isim..."><button data-ekle="imam">+ Ekle</button></div>
+          </div>
+          <div class="liste-kart">
+            <div class="kart-baslik"><h3>MÜEZZİN</h3><span class="sayi" id="sayi-muezzin">0</span></div>
+            <div class="liste" id="liste-muezzin"></div>
+            <div class="ekle-satir"><input type="text" id="yeni-muezzin" placeholder="Yeni isim..."><button data-ekle="muezzin">+ Ekle</button></div>
+          </div>
+          <div class="liste-kart">
+            <div class="kart-baslik"><h3>ÇAYCI</h3><span class="sayi" id="sayi-cayci">0</span></div>
+            <div class="liste" id="liste-cayci"></div>
+            <div class="ekle-satir"><input type="text" id="yeni-cayci" placeholder="Yeni isim..."><button data-ekle="cayci">+ Ekle</button></div>
+          </div>
+          <div class="liste-kart">
+            <div class="kart-baslik"><h3>YEMEKÇİLER (2'li grup)</h3><span class="sayi" id="sayi-yemekciler">0</span></div>
+            <div class="liste" id="liste-yemekciler"></div>
+            <div class="ekle-satir"><input type="text" id="yeni-yemekciler" placeholder="Yeni isim..."><button data-ekle="yemekciler">+ Ekle</button></div>
+          </div>
+        </div>
+
+        <div class="hadis-liste-kart">
+          <div class="kart-baslik">
+            <h3>📖 GÜNÜN HADİS-İ ŞERİFİ LİSTESİ</h3>
+            <span class="sayi" id="sayi-hadisListesi">0</span>
+          </div>
+          <p style="font-size:12px; color:#4a5b78; margin-bottom:10px;">
+            Her gün sıradaki hadis otomatik olarak panele yansır. Sıradaki hadis <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır.
+          </p>
+          <div class="hadis-liste" id="liste-hadisListesi"></div>
+          <div class="hadis-ekle-form">
+            <textarea id="yeni-hadis" placeholder="Hadis metnini yazın...&#10;Son satıra kaynak yazabilirsiniz. Örn: (Buhârî)"></textarea>
+            <button data-ekle-hadis>+ Hadis Ekle</button>
+          </div>
+        </div>
+
+        <div class="liste-kart" style="margin-bottom:20px;">
+          <div class="kart-baslik"><h3>📋 GENEL PROGRAMLAR (Namaz, Yemek, Etüt...)</h3><span class="sayi" id="sayi-programlar">0</span></div>
+          <p style="font-size:12px; color:#4a5b78; margin-bottom:12px;">
+            Her günün programını <b>ayrı ayrı</b> ekleyin. Gün sekmelerinden birini seçip o güne ait programları düzenleyin.
+          </p>
+
+          <div class="gun-sekme-baslik" id="gunSekmeleri">
+            <button class="gun-sekme-btn aktif" data-gun="1">Pazartesi <span class="sayi-mini" id="sayiGun-1">0</span></button>
+            <button class="gun-sekme-btn" data-gun="2">Salı <span class="sayi-mini" id="sayiGun-2">0</span></button>
+            <button class="gun-sekme-btn" data-gun="3">Çarşamba <span class="sayi-mini" id="sayiGun-3">0</span></button>
+            <button class="gun-sekme-btn" data-gun="4">Perşembe <span class="sayi-mini" id="sayiGun-4">0</span></button>
+            <button class="gun-sekme-btn" data-gun="5">Cuma <span class="sayi-mini" id="sayiGun-5">0</span></button>
+            <button class="gun-sekme-btn" data-gun="6">Cumartesi <span class="sayi-mini" id="sayiGun-6">0</span></button>
+            <button class="gun-sekme-btn" data-gun="0">Pazar <span class="sayi-mini" id="sayiGun-0">0</span></button>
+          </div>
+
+          <div class="program-form">
+            <div class="alan"><label>Program Adı</label><input type="text" id="programAd" placeholder="Örn: Öğle Namazı"></div>
+            <div class="alan"><label>Başlangıç</label><input type="time" id="programBas"></div>
+            <div class="alan"><label>Bitiş</label><input type="time" id="programBit"></div>
+            <div class="alan"><label>&nbsp;</label><button id="programEkleBtn">+ Ekle</button></div>
+          </div>
+
+          <div class="program-baslik-satir">
+            <span>Program Adı</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+          </div>
+          <div id="programListesi"></div>
+        </div>
+
+        <div class="liste-kart" style="margin-bottom:20px;">
+          <div class="kart-baslik"><h3>📚 DERS PROGRAMLARI</h3></div>
+          <p style="font-size:12px; color:#4a5b78; margin-bottom:14px;">
+            Her sınıf için <b>ayrı ayrı</b> ders ekle. Her derse bir <b>gün</b> seç.
+          </p>
+
+          <div class="ders-sekme-baslik">
+            <button class="ders-sekme-btn aktif" data-sinif="say1">SAY 1</button>
+            <button class="ders-sekme-btn" data-sinif="say2">SAY 2</button>
+            <button class="ders-sekme-btn" data-sinif="ea">EA</button>
+          </div>
+
+          <div class="ders-panel aktif" id="panel-say1">
+            <div class="ders-form">
+              <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-say1" placeholder="Örn: MAT-2"></div>
+              <div class="alan"><label>Gün</label>
+                <select id="dersGun-say1">
+                  <option value="1">Pazartesi</option>
+                  <option value="2">Salı</option>
+                  <option value="3">Çarşamba</option>
+                  <option value="4">Perşembe</option>
+                  <option value="5">Cuma</option>
+                </select>
+              </div>
+              <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-say1"></div>
+              <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-say1"></div>
+              <div class="alan"><label>&nbsp;</label><button data-ders-ekle="say1">+ Ekle</button></div>
+            </div>
+            <div class="ders-baslik-satir">
+              <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+            </div>
+            <div id="dersListesi-say1"></div>
+          </div>
+
+          <div class="ders-panel" id="panel-say2">
+            <div class="ders-form">
+              <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-say2" placeholder="Örn: MAT-2"></div>
+              <div class="alan"><label>Gün</label>
+                <select id="dersGun-say2">
+                  <option value="1">Pazartesi</option>
+                  <option value="2">Salı</option>
+                  <option value="3">Çarşamba</option>
+                  <option value="4">Perşembe</option>
+                  <option value="5">Cuma</option>
+                </select>
+              </div>
+              <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-say2"></div>
+              <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-say2"></div>
+              <div class="alan"><label>&nbsp;</label><button data-ders-ekle="say2">+ Ekle</button></div>
+            </div>
+            <div class="ders-baslik-satir">
+              <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+            </div>
+            <div id="dersListesi-say2"></div>
+          </div>
+
+          <div class="ders-panel" id="panel-ea">
+            <div class="ders-form">
+              <div class="alan"><label>Ders Adı</label><input type="text" id="dersAd-ea" placeholder="Örn: GEOMETRİ"></div>
+              <div class="alan"><label>Gün</label>
+                <select id="dersGun-ea">
+                  <option value="1">Pazartesi</option>
+                  <option value="2">Salı</option>
+                  <option value="3">Çarşamba</option>
+                  <option value="4">Perşembe</option>
+                  <option value="5">Cuma</option>
+                </select>
+              </div>
+              <div class="alan"><label>Başlangıç</label><input type="time" id="dersBas-ea"></div>
+              <div class="alan"><label>Bitiş</label><input type="time" id="dersBit-ea"></div>
+              <div class="alan"><label>&nbsp;</label><button data-ders-ekle="ea">+ Ekle</button></div>
+            </div>
+            <div class="ders-baslik-satir">
+              <span>Ders Adı</span><span>Gün</span><span>Başlangıç</span><span>Bitiş</span><span></span>
+            </div>
+            <div id="dersListesi-ea"></div>
+          </div>
+        </div>
+
+        <div class="liste-kart" style="margin-bottom:20px;">
+          <div class="kart-baslik"><h3>🗓️ HAFTALIK DERS PROGRAMI DÜZENLE (Panelde Görünen)</h3></div>
+          <p style="font-size:12px; color:#4a5b78; margin-bottom:14px;">
+            Her hücreye <b>ders adını</b> yazıp <b>rengini</b> seçin. Kaydettiğinizde panelde anında güncellenir.
+          </p>
+
+          <div class="hp-duzenleyici">
+            <div class="hp-grid" id="hpGrid"></div>
+          </div>
+
+          <div class="hp-kaydet-bar">
+            <button class="hp-kaydet-btn" id="hpKaydetBtn">💾 KAYDET ve PANELDE GÖSTER</button>
+            <button class="hp-sifirla-btn" id="hpSifirlaBtn">↺ Varsayılana Dön</button>
+            <span class="hp-bilgi" id="hpBilgi"></span>
+          </div>
+        </div>
+
+        <div class="sifre-degistir-kart">
+          <div class="kart-baslik">
+            <h3>🔐 Şifre Değiştir</h3>
+          </div>
+          <div class="sifre-degistir-form">
+            <div class="alan">
+              <label for="mevcutSifre">Mevcut Şifre</label>
+              <input type="password" id="mevcutSifre" placeholder="Mevcut şifre" autocomplete="off">
+            </div>
+            <div class="alan">
+              <label for="yeniSifre">Yeni Şifre</label>
+              <input type="password" id="yeniSifre" placeholder="Yeni şifre" autocomplete="off">
+            </div>
+            <div class="alan tam-genislik">
+              <label for="yeniSifreTekrar">Yeni Şifre (Tekrar)</label>
+              <input type="password" id="yeniSifreTekrar" placeholder="Yeni şifreyi tekrar girin" autocomplete="off">
+            </div>
+          </div>
+          <button class="kaydet-btn" id="sifreDegistirBtn">ŞİFREYİ GÜNCELLE</button>
+          <div class="sifre-degistir-bilgi">
+            ℹ️ <b>Not:</b> Değiştirdiğiniz şifre, <b>tarayıcınızda</b> saklanır.
+          </div>
+          <div class="bildirim" id="sifreBildirim"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>
+<!-- ==================== ÖLÇEKLEME KAPSAYICISI SON ==================== -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-<!-- ============ TV BOX TAM EKRAN SCRIPT (Butonsuz) ============ -->
+<!-- ============ TV BOX ÖLÇEKLEME + TAM EKRAN ============ -->
 <script>
 (function() {
     'use strict';
     var doc = document;
     var docEl = doc.documentElement;
 
+    /* ============================================================
+       ÖLÇEKLEME: 1920x1080 tasarım → ekrana sığdır (contain)
+       ============================================================ */
+    var TASARIM_G = 1920;
+    var TASARIM_Y = 1080;
+
+    function olcekGuncelle() {
+        var kapsayici = doc.getElementById('olcekKapsayici');
+        if (!kapsayici) return;
+
+        var ekranG = window.innerWidth;
+        var ekranY = window.innerHeight;
+
+        var olcekX = ekranG / TASARIM_G;
+        var olcekY = ekranY / TASARIM_Y;
+        var olcek = Math.min(olcekX, olcekY);
+
+        kapsayici.style.transform = 'scale(' + olcek + ')';
+
+        var gercekG = TASARIM_G * olcek;
+        var gercekY = TASARIM_Y * olcek;
+        kapsayici.style.left = ((ekranG - gercekG) / 2) + 'px';
+        kapsayici.style.top  = ((ekranY - gercekY) / 2) + 'px';
+    }
+
+    window.addEventListener('resize', olcekGuncelle);
+    window.addEventListener('orientationchange', function() {
+        setTimeout(olcekGuncelle, 250);
+    });
+
+    window.__olcekGuncelle = olcekGuncelle;
+    olcekGuncelle();
+
+    /* ============================================================
+       TAM EKRAN (TV Box)
+       ============================================================ */
     function tamEkranAc() {
         var el = docEl;
         if (el.requestFullscreen) {
@@ -1065,37 +1070,22 @@ body {
             el.msRequestFullscreen();
         }
     }
-
     function tamEkranKapat() {
-        if (doc.exitFullscreen) {
-            doc.exitFullscreen().catch(function(){});
-        } else if (doc.webkitExitFullscreen) {
-            doc.webkitExitFullscreen();
-        } else if (doc.webkitCancelFullScreen) {
-            doc.webkitCancelFullScreen();
-        } else if (doc.mozCancelFullScreen) {
-            doc.mozCancelFullScreen();
-        } else if (doc.msExitFullscreen) {
-            doc.msExitFullscreen();
-        }
+        if (doc.exitFullscreen) doc.exitFullscreen().catch(function(){});
+        else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+        else if (doc.webkitCancelFullScreen) doc.webkitCancelFullScreen();
+        else if (doc.mozCancelFullScreen) doc.mozCancelFullScreen();
+        else if (doc.msExitFullscreen) doc.msExitFullscreen();
     }
-
     function tamEkranMi() {
         return !!(doc.fullscreenElement || doc.webkitFullscreenElement ||
                   doc.mozFullScreenElement || doc.msFullscreenElement);
     }
-
     function tamEkranToggle() {
-        if (tamEkranMi()) {
-            tamEkranKapat();
-        } else {
-            tamEkranAc();
-        }
+        if (tamEkranMi()) tamEkranKapat();
+        else tamEkranAc();
+        setTimeout(olcekGuncelle, 300);
     }
-
-    window.__tamEkranAc = tamEkranAc;
-    window.__tamEkranKapat = tamEkranKapat;
-    window.__tamEkranToggle = tamEkranToggle;
 
     var ilkEtkilesimYapildi = false;
     var etkilesimOlaylari = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
@@ -1153,13 +1143,17 @@ body {
 
     window.addEventListener('load', function() {
         setTimeout(function() {
+            olcekGuncelle();
             if (!tamEkranMi()) tamEkranAc();
         }, 800);
     });
 
     doc.addEventListener('visibilitychange', function() {
-        if (!doc.hidden && !tamEkranMi()) {
-            setTimeout(tamEkranAc, 300);
+        if (!doc.hidden) {
+            setTimeout(function() {
+                olcekGuncelle();
+                if (!tamEkranMi()) tamEkranAc();
+            }, 300);
         }
     });
 })();
@@ -1391,7 +1385,6 @@ function siradakiIndex(liste, offsetGun) {
   return gun % liste.length;
 }
 
-/* ===== TAKVİMSEL GÜN NUMARASI (yemekçi kuyruğu için) ===== */
 function takvimGunNo(offsetGun) {
   const parcalar = veri.baslangicTarihi.split("-");
   const y = Number(parcalar[0]), m = Number(parcalar[1]), d = Number(parcalar[2]);
@@ -1405,13 +1398,10 @@ function takvimGunNo(offsetGun) {
 }
 
 /* ===== YEMEKÇİ KUYRUĞU YÖNETİMİ ===== */
-
-/* Kuyruğu bugüne kadar günceller. Atlanan grupları kuyruğa ekler. */
 function yemekciKuyruguGuncelle() {
   const bugunNo = takvimGunNo(0);
   if (bugunNo < 0) return;
 
-  // Kuyruk son günü parse et
   let sonGunNo = -1;
   if (veri.yemekciKuyrukSonGun) {
     const p = veri.yemekciKuyrukSonGun.split("-");
@@ -1426,18 +1416,15 @@ function yemekciKuyruguGuncelle() {
     }
   }
 
-  // Zaten bugüne kadar güncellendiyse çık
   if (sonGunNo === bugunNo) return;
 
   const grupSayisi = Math.ceil(veri.yemekciler.length / 2);
   if (grupSayisi === 0) return;
 
-  // Başlangıç günü: eğer sonGunNo < 0 ise, bugünNo'dan başla (geçmişi simüle etme)
   let baslangicGun = (sonGunNo < 0) ? bugunNo : (sonGunNo + 1);
 
   for (let gunNo = baslangicGun; gunNo <= bugunNo; gunNo++) {
-    // O günün imam/müezzin/çaycı bilgisini hesapla (takvimsel)
-    const offset = gunNo - bugunNo; // bugünden geriye doğru
+    const offset = gunNo - bugunNo;
     const imamIdx = siradakiIndex(veri.imam, offset);
     const muezzinIdx = siradakiIndex(veri.muezzin, offset);
     const cayciIdx = siradakiIndex(veri.cayci, offset);
@@ -1447,11 +1434,8 @@ function yemekciKuyruguGuncelle() {
     if (muezzinIdx >= 0 && veri.muezzin[muezzinIdx]) atanmis.add(veri.muezzin[muezzinIdx]);
     if (cayciIdx >= 0 && veri.cayci[cayciIdx]) atanmis.add(veri.cayci[cayciIdx]);
 
-    // O günün takvimsel grubundan başla
     const baslangicGrup = gunNo % grupSayisi;
 
-    // Sıradan başla, çakışmasız ilk grubu bul
-    let bulundu = false;
     for (let i = 0; i < grupSayisi; i++) {
       const grup = (baslangicGrup + i) % grupSayisi;
       const start = grup * 2;
@@ -1462,41 +1446,29 @@ function yemekciKuyruguGuncelle() {
       const cakismaVar = uyeler.some(function(k) { return atanmis.has(k); });
 
       if (i === 0) {
-        // İlk grup çakışıyorsa kuyruğa ekle
         if (cakismaVar) {
           if (veri.yemekciKuyrugu.indexOf(grup) === -1) {
             veri.yemekciKuyrugu.push(grup);
           }
         } else {
-          // İlk grup çakışmıyorsa ve kuyrukta varsa çıkar
           const kIdx = veri.yemekciKuyrugu.indexOf(grup);
           if (kIdx !== -1) veri.yemekciKuyrugu.splice(kIdx, 1);
-          bulundu = true;
           break;
         }
       } else {
-        // Sonraki gruplar: çakışmasızsa kullan
         if (!cakismaVar) {
-          // Bu grup kuyrukta varsa çıkar
           const kIdx = veri.yemekciKuyrugu.indexOf(grup);
           if (kIdx !== -1) veri.yemekciKuyrugu.splice(kIdx, 1);
-          bulundu = true;
           break;
         }
       }
     }
-
-    // Eğer tüm gruplar çakışıyorsa, sıradaki grubu kullan (fallback)
-    // (kuyruk zaten güncellendi)
   }
 
-  // Son günü kaydet
   const s = new Date();
   veri.yemekciKuyrukSonGun = s.getFullYear() + "-" + pad2(s.getMonth() + 1) + "-" + pad2(s.getDate());
 }
 
-/* Bugün için çakışmasız yemekçi grubunu bulur.
-   Önce kuyruktaki grupları dener, sonra takvimsel sıradan devam eder. */
 function cakismayanYemekciGrubu(offset, atanmisKisiler) {
   const liste = veri.yemekciler;
   if (!liste || liste.length === 0) return [];
@@ -1506,7 +1478,6 @@ function cakismayanYemekciGrubu(offset, atanmisKisiler) {
 
   const baslangicGrup = ((takvimGunNo(offset) % grupSayisi) + grupSayisi) % grupSayisi;
 
-  // 1) Önce kuyruktaki grupları dene (FIFO)
   for (let i = 0; i < veri.yemekciKuyrugu.length; i++) {
     const grup = veri.yemekciKuyrugu[i];
     if (grup < 0 || grup >= grupSayisi) continue;
@@ -1515,12 +1486,9 @@ function cakismayanYemekciGrubu(offset, atanmisKisiler) {
     if (liste[start] !== undefined) uyeler.push(liste[start]);
     if (liste[start + 1] !== undefined) uyeler.push(liste[start + 1]);
     const cakismaVar = uyeler.some(function(k) { return atanmisKisiler.has(k); });
-    if (!cakismaVar) {
-      return uyeler;
-    }
+    if (!cakismaVar) return uyeler;
   }
 
-  // 2) Kuyruktakilerin hepsi çakışıyorsa (veya kuyruk boşsa), takvimsel sıradan dene
   for (let i = 0; i < grupSayisi; i++) {
     const grup = (baslangicGrup + i) % grupSayisi;
     const start = grup * 2;
@@ -1528,12 +1496,9 @@ function cakismayanYemekciGrubu(offset, atanmisKisiler) {
     if (liste[start] !== undefined) uyeler.push(liste[start]);
     if (liste[start + 1] !== undefined) uyeler.push(liste[start + 1]);
     const cakismaVar = uyeler.some(function(k) { return atanmisKisiler.has(k); });
-    if (!cakismaVar) {
-      return uyeler;
-    }
+    if (!cakismaVar) return uyeler;
   }
 
-  // 3) Hiçbiri çakışmasız değilse, sıradaki grubu döndür (fallback)
   const start = baslangicGrup * 2;
   const sonuc = [];
   if (liste[start] !== undefined) sonuc.push(liste[start]);
@@ -1541,7 +1506,7 @@ function cakismayanYemekciGrubu(offset, atanmisKisiler) {
   return sonuc;
 }
 
-/* ===== HAFTALIK PROGRAMDAN ŞUANKİ VE GELECEK DERS BULMA ===== */
+/* ===== HAFTALIK PROGRAMDAN DERS BULMA ===== */
 function hpDersBul(sinif, bugunGun) {
   if (bugunGun === 0 || bugunGun === 6) return { suanki: null, gelecek: null };
   
@@ -1570,12 +1535,8 @@ function hpDersBul(sinif, bugunGun) {
     
     const kayit = { ad: dersAdi, renk: renk, bas: parcalar[0], bit: parcalar[1] };
     
-    if (dkSimdi >= bas && dkSimdi < bit) {
-      suanki = kayit;
-    }
-    if (dkSimdi < bas && !gelecek) {
-      gelecek = kayit;
-    }
+    if (dkSimdi >= bas && dkSimdi < bit) suanki = kayit;
+    if (dkSimdi < bas && !gelecek) gelecek = kayit;
   });
   
   return { suanki, gelecek };
@@ -1824,10 +1785,7 @@ function hpSifirla() {
   }
 }
 
-/* ============================================================
-   ÇAKIŞMA ÇÖZÜCÜ + YARINA KAYDIRMA
-   ============================================================ */
-
+/* ===== ÇAKIŞMA ÇÖZÜCÜ ===== */
 function hamGorevliler(offset) {
   const imamIdx    = siradakiIndex(veri.imam, offset);
   const muezzinIdx = siradakiIndex(veri.muezzin, offset);
@@ -1837,13 +1795,11 @@ function hamGorevliler(offset) {
   const muezzin = muezzinIdx >= 0 ? veri.muezzin[muezzinIdx] : '-';
   const cayci   = cayciIdx   >= 0 ? veri.cayci[cayciIdx]     : '-';
 
-  // Çakışan kişileri topla (imam, müezzin, çaycı)
   const atanmisKisiler = new Set();
   if (imam && imam !== '-')       atanmisKisiler.add(imam);
   if (muezzin && muezzin !== '-') atanmisKisiler.add(muezzin);
   if (cayci && cayci !== '-')     atanmisKisiler.add(cayci);
 
-  // Çakışmasız yemekçi grubunu bul (önce kuyruk, sonra takvim)
   const yemekciGrubu = cakismayanYemekciGrubu(offset, atanmisKisiler);
 
   return {
@@ -1938,7 +1894,6 @@ function gunIcindeCakismaCoz(gunObj, offset) {
     gunObj.cayci = yeni;
     atanmis.add(yeni);
   }
-  // Yemekçiler için tamamlama YOK — çünkü grup çakışmasız seçildi.
 
   return { duzeltilmisGun: gunObj, tasinanlar: tasinanlar };
 }
@@ -1997,7 +1952,6 @@ function gunlukGorevlerCakismasiz() {
 
 /* ================== SAAT GÜNCELLE ================== */
 function saatGuncelle() {
-  // Kuyruğu güncelle (gün geçişi olduysa)
   yemekciKuyruguGuncelle();
 
   const simdi = new Date();
@@ -2158,7 +2112,6 @@ document.querySelectorAll('.gun-sekme-btn').forEach(function(btn) {
 document.getElementById('inpBaslangic').addEventListener('change', function(e) {
   if (!e.target.value) { e.target.value = veri.baslangicTarihi; return; }
   veri.baslangicTarihi = e.target.value;
-  // Kuyruğu sıfırla, yeniden hesaplanacak
   veri.yemekciKuyrugu = [];
   veri.yemekciKuyrukSonGun = "";
   kaydet();
@@ -2188,7 +2141,6 @@ document.getElementById('inpBaslangic').addEventListener('change', function(e) {
 
   function guncelle() {
     veri.haftaSonuAktif = check.checked;
-    // Kuyruğu sıfırla
     veri.yemekciKuyrugu = [];
     veri.yemekciKuyrukSonGun = "";
     gorselGuncelle();
@@ -2226,7 +2178,6 @@ function listeCiz(tur, liste) {
   let html = '';
 
   if (tur === 'yemekciler') {
-    // Bugünün çakışmasız grubunu bul
     const bugunHam = hamGorevliler(0);
     const aktifGrupKisileri = bugunHam.yemekciler;
     const aktifGrupIdxler = aktifGrupKisileri.map(function(kisi) {
@@ -2234,7 +2185,6 @@ function listeCiz(tur, liste) {
     }).filter(function(i) { return i >= 0; });
     const aktifGrupNo = aktifGrupIdxler.length > 0 ? Math.floor(aktifGrupIdxler[0] / 2) + 1 : -1;
 
-    // Kuyruktaki gruplar (1-indexed)
     const kuyrukGruplar = veri.yemekciKuyrugu.map(function(g) { return g + 1; });
 
     for (let i = 0; i < liste.length; i += 2) {
@@ -2246,13 +2196,11 @@ function listeCiz(tur, liste) {
       if (grupAktifMi) grupSinif = ' siradaki';
       else if (grupKuyruktaMi) grupSinif = ' kuyrukta';
 
-      // Grup başlığı (aktifse sarı, kuyruktaysa turuncu)
       html += '<div class="yemekci-grup-baslik' + grupSinif + '">' +
                 grupNo + '. Grup' +
                 (grupKuyruktaMi ? ' ⏳' : '') +
               '</div>';
 
-      // 1. kişi
       const siradaMi1 = (i === aktifGrupIdxler[0]);
       html += '<div class="kisi-satir' + (siradaMi1 ? ' siradaki' : '') + '">' +
         '<span class="sira">' + (i + 1) + '</span>' +
@@ -2260,7 +2208,6 @@ function listeCiz(tur, liste) {
         '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
       '</div>';
 
-      // 2. kişi (varsa)
       if (i + 1 < liste.length) {
         const siradaMi2 = (i + 1 === aktifGrupIdxler[1]);
         html += '<div class="kisi-satir' + (siradaMi2 ? ' siradaki' : '') + '">' +
@@ -2271,7 +2218,6 @@ function listeCiz(tur, liste) {
       }
     }
   } else {
-    // Diğer listeler için normal gösterim
     const siradakiIdx = siradakiIndex(liste, 0);
     liste.forEach(function(isim, i) {
       const siradaMi = (i === siradakiIdx);
@@ -2288,7 +2234,6 @@ function listeCiz(tur, liste) {
 
 window.kisiSil = function(tur, index) {
   veri[tur].splice(index, 1);
-  // Yemekçi kuyruğunu sıfırla (grup numaraları değişti)
   if (tur === 'yemekciler') {
     veri.yemekciKuyrugu = [];
     veri.yemekciKuyrukSonGun = "";
@@ -2304,7 +2249,6 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
     const isim = input.value.trim();
     if (isim) {
       veri[tur].push(isim);
-      // Yemekçiye eklenmişse kuyruğu sıfırla
       if (tur === 'yemekciler') {
         veri.yemekciKuyrugu = [];
         veri.yemekciKuyrukSonGun = "";
@@ -2523,6 +2467,7 @@ window.addEventListener('load', function() {
     if (kaydetBtn) kaydetBtn.addEventListener('click', hpKaydet);
     const sifirlaBtn = document.getElementById('hpSifirlaBtn');
     if (sifirlaBtn) sifirlaBtn.addEventListener('click', hpSifirla);
+    if (window.__olcekGuncelle) window.__olcekGuncelle();
   }, 150);
 });
 
@@ -2616,7 +2561,6 @@ function firebaseBaslat() {
           yemekciKuyrukSonGun: typeof uzakVeri.yemekciKuyrukSonGun === "string" ? uzakVeri.yemekciKuyrukSonGun : ""
         };
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
-        // Kuyruğu güncelle (uzak veriden sonra)
         yemekciKuyruguGuncelle();
         saatGuncelle();
         hpAnaTabloyuCiz();
