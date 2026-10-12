@@ -1070,7 +1070,7 @@ body {
         <div class="hafta-sonu-toggle" id="haftaSonuToggle">
             <div class="aciklama-toggle">
                 <b>Kapalı:</b> Hafta sonu nöbet değişmez, <b>Cuma günkü kişi</b> devam eder.<br>
-                <b>Açık:</b> Hafta sonu nöbet <b>Cumartesi gününe</b> atlar.
+                <b>Açık:</b> Cumartesi günü nöbet <b>yeni kişiye geçer</b> (imam, müezzin, yemekçi). <b>Çaycı her zaman Cuma'daki kişide kalır.</b> Pazar günü nöbet değişmez.
             </div>
             <label class="hafta-sonu-switch">
                 <input type="checkbox" id="haftaSonuCheck">
@@ -1155,7 +1155,7 @@ body {
             <span class="sayi" id="sayi-toplamDers">0</span>
         </div>
         <p style="font-size:11px; color:#4a5b78; margin-bottom:12px;">
-            Ders eklemek için aşağıdaki formu doldurun. Eklenen dersler güne göre gruplanır.
+            Ders eklemek için aşağıdaki formu doldurun. Eklenen dersler güne göre gruplanır ve <b>otomatik olarak haftalık programa (Şuanki Ders / Gelecek Ders) yansır.</b>
         </p>
 
         <div class="ders-form-ortak">
@@ -1555,11 +1555,20 @@ const GUN_ADLARI = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'C
 function gunAdi(n) { return GUN_ADLARI[Number(n)] || '?'; }
 function haftaSonuMu(tarih) { const g = tarih.getDay(); return g === 0 || g === 6; }
 
+/* ============================================================
+   ÖNEMLİ DEĞİŞİKLİK:
+   - Pazar günü HİÇBİR ZAMAN nöbet değişmez (her durumda Cmt/Cuma'ya çekilir)
+   - Hafta sonu KAPALI: Cmt ve Pazar atlanır, Cuma'daki kişi devam eder
+   - Hafta sonu AÇIK: Cumartesi çalışma günü sayılır, sadece Pazar atlanır
+   ============================================================ */
 function isGunuTarihi(tarih) {
-  if (veri.haftaSonuAktif) {
-    return new Date(tarih);
-  }
   const d = new Date(tarih);
+  if (veri.haftaSonuAktif) {
+    // Sadece Pazar günü geri sarılır (Cumartesi çalışma günü)
+    while (d.getDay() === 0) d.setDate(d.getDate() - 1);
+    return d;
+  }
+  // Hafta sonu kapalı: Cmt + Pazar geri sarılır
   while (haftaSonuMu(d)) d.setDate(d.getDate() - 1);
   return d;
 }
@@ -1569,11 +1578,13 @@ function isGunuFarki(baslangicDate, hedefDate) {
   let sayac = 0;
   const d = new Date(baslangicDate);
   if (veri.haftaSonuAktif) {
+    // Sadece Pazar sayılmaz, Cumartesi sayılır
     while (d < hedefDate) {
-      sayac++;
+      if (d.getDay() !== 0) sayac++;
       d.setDate(d.getDate() + 1);
     }
   } else {
+    // Cmt + Pazar sayılmaz
     while (d < hedefDate) {
       const gun = d.getDay();
       if (gun !== 0 && gun !== 6) sayac++;
@@ -1603,9 +1614,26 @@ function siradakiIndex(liste, offsetGun) {
   return gun % liste.length;
 }
 
+/* ============================================================
+   ÖNEMLİ DEĞİŞİKLİK:
+   Çaycı için: Hafta sonu aktifken Cumartesi günü de Cuma'nın çaycısı gösterilir.
+   Yani çaycı Cumartesi'ye geçmez, Cuma'daki kişide durur.
+   ============================================================ */
 function siradakiIndexGorevli(liste, offsetGun, gorev) {
   if (!liste || liste.length === 0) return -1;
+
   const ek = GOREV_OFSET[gorev] || 0;
+
+  // Çaycı: hafta sonu aktifken Cumartesi günü, Cuma günkü kişide kalsın
+  if (gorev === 'cayci' && veri.haftaSonuAktif) {
+    const hedefTarih = new Date();
+    hedefTarih.setDate(hedefTarih.getDate() + (offsetGun || 0));
+    if (hedefTarih.getDay() === 6) {
+      // Cumartesi -> Cuma'nın offset'ini kullan (1 gün geri)
+      return siradakiIndex(liste, (offsetGun || 0) - 1 + ek);
+    }
+  }
+
   return siradakiIndex(liste, (offsetGun || 0) + ek);
 }
 
@@ -1942,7 +1970,6 @@ function hpGridCiz() {
 
   grid.innerHTML = html;
 
-  // ====== DERS ADI DEĞİŞİNCE RENGİ OTOMATİK AYARLA ======
   grid.querySelectorAll('.hp-ad-input').forEach(function(inp) {
     inp.addEventListener('input', function() {
       const dersAdi = inp.value.trim();
@@ -1951,7 +1978,6 @@ function hpGridCiz() {
       if (secim && renk !== 'bos') secim.value = renk;
       hpOnizlemeGuncelle(inp, secim ? secim.value : renk);
 
-      // Aynı isimli derslerin rengini de güncelle (ders adı değişince)
       if (dersAdi) {
         grid.querySelectorAll('.hp-ad-input').forEach(function(digerInp) {
           if (digerInp !== inp && digerInp.value.trim() === dersAdi) {
@@ -1968,19 +1994,16 @@ function hpGridCiz() {
     });
   });
 
-  // ====== RENK SEÇİLİNCE AYNI İSİMLİ TÜM DERSLERİN RENGİNİ DEĞİŞTİR ======
   grid.querySelectorAll('.hp-renk-select').forEach(function(sel) {
     sel.addEventListener('change', function() {
       const secilenRenk = sel.value;
 
-      // Bu hücrenin ders adını bul
       const buInput = grid.querySelector(
         '.hp-ad-input[data-saat="' + sel.dataset.saat + '"][data-gun="' + sel.dataset.gun + '"][data-sinif="' + sel.dataset.sinif + '"]'
       );
       const dersAdi = buInput ? buInput.value.trim() : '';
 
       if (dersAdi) {
-        // AYNI İSİMLİ TÜM DERSLERİN RENGİNİ GÜNCELLE
         grid.querySelectorAll('.hp-ad-input').forEach(function(inp) {
           if (inp.value.trim() === dersAdi) {
             const ilgiliSel = grid.querySelector(
@@ -1993,15 +2016,12 @@ function hpGridCiz() {
           }
         });
 
-        // veri.dersRenkleri'ne kaydet
         veri.dersRenkleri[dersAdi] = secilenRenk;
 
-        // Ana tabloyu ve paneli anında güncelle
         hpGriddenVeriyeAktar();
         hpAnaTabloyuCiz();
         saatGuncelle();
       } else {
-        // Ders adı boşsa sadece bu hücre
         if (buInput) hpOnizlemeGuncelle(buInput, secilenRenk);
       }
     });
@@ -2313,7 +2333,7 @@ function saatGuncelle() {
     const hs = haftaSonuMu(simdi);
     let hsNotu = '';
     if (hs) {
-      hsNotu = veri.haftaSonuAktif ? '  (Hafta Sonu - Aktif)' : '  (Hafta Sonu - Çaycı Devam Etmez)';
+      hsNotu = veri.haftaSonuAktif ? '  (Hafta Sonu - Aktif)' : '  (Hafta Sonu - Devam)';
     }
     elTarih.textContent = tarihStr + hsNotu;
   }
@@ -2466,7 +2486,7 @@ document.getElementById('inpBaslangic').addEventListener('change', function(e) {
       toggle.classList.add('aktif');
       durum.classList.remove('kapali');
       durum.classList.add('acik');
-      durum.innerHTML = '🔥 Şu an: Hafta sonu nöbet <b>Cumartesi gününe</b> atlıyor';
+      durum.innerHTML = '🔥 Şu an: Cumartesi <b>yeni kişiye geçer</b>, <b>çaycı Cuma\'da kalır</b>, Pazar değişmez';
     } else {
       toggle.classList.remove('aktif');
       durum.classList.remove('acik');
@@ -2755,6 +2775,45 @@ window.dersSilYeni = function(sinif, index) {
     dersListesiCiz();
 };
 
+function haftalikProgramaDersAktar(dersAdi, sinifKod, gunNo, basSaat, bitSaat) {
+    const gunMap = { '1': 'Pazartesi', '2': 'Salı', '3': 'Çarşamba', '4': 'Perşembe', '5': 'Cuma' };
+    const gunAdiStr = gunMap[String(gunNo)];
+    if (!gunAdiStr) return;
+
+    const sinifMap = { 'say1': 'SAY1', 'say2': 'SAY2', 'ea': 'EA' };
+    const hpSinif = sinifMap[sinifKod];
+    if (!hpSinif) return;
+
+    const hedefDk = saatToDk(basSaat);
+    if (hedefDk === null) return;
+
+    let enIyiSaat = null;
+    let enIyiFark = Infinity;
+    HP_SAATLER.forEach(function(saatAraligi) {
+        const basDk = saatToDk(saatAraligi.split('-')[0]);
+        if (basDk === null) return;
+        const fark = Math.abs(basDk - hedefDk);
+        if (fark < enIyiFark) {
+            enIyiFark = fark;
+            enIyiSaat = saatAraligi;
+        }
+    });
+    if (!enIyiSaat) return;
+
+    if (!veri.haftalikProgram) veri.haftalikProgram = JSON.parse(JSON.stringify(HP_VARSAYILAN));
+    const hp = veri.haftalikProgram;
+    if (!hp[enIyiSaat]) hp[enIyiSaat] = {};
+    if (!hp[enIyiSaat][gunAdiStr]) hp[enIyiSaat][gunAdiStr] = {};
+
+    hp[enIyiSaat][gunAdiStr][hpSinif] = dersAdi;
+
+    if (!veri.dersRenkleri) veri.dersRenkleri = {};
+    if (!veri.dersRenkleri[dersAdi]) {
+        veri.dersRenkleri[dersAdi] = dersRengiBul(dersAdi);
+    }
+    hp[enIyiSaat][gunAdiStr][hpSinif + '_renk'] = veri.dersRenkleri[dersAdi];
+}
+
 document.getElementById('dersEkleBtn').addEventListener('click', function() {
     const ad  = document.getElementById('dersAd').value.trim();
     const sinif = document.getElementById('dersSinif').value;
@@ -2770,12 +2829,17 @@ document.getElementById('dersEkleBtn').addEventListener('click', function() {
     const key = sinif === 'say1' ? 'dersSay1' : sinif === 'say2' ? 'dersSay2' : 'dersEA';
     veri[key].push({ ad, gun: Number(gun), bas, bit });
     
+    haftalikProgramaDersAktar(ad, sinif, gun, bas, bit);
+    
     document.getElementById('dersAd').value = '';
     document.getElementById('dersBas').value = '';
     document.getElementById('dersBit').value = '';
     
     kaydet();
     dersListesiCiz();
+    hpAnaTabloyuCiz();
+    hpGridCiz();
+    saatGuncelle();
 });
 
 document.getElementById('hadisYenileBtn').addEventListener('click', function() {
@@ -2958,7 +3022,7 @@ function firebaseBaslat() {
             if (chk.checked) {
               tg.classList.add('aktif');
               dr.classList.remove('kapali'); dr.classList.add('acik');
-              dr.innerHTML = '🔥 Şu an: Hafta sonu nöbet <b>Cumartesi gününe</b> atlıyor';
+              dr.innerHTML = '🔥 Şu an: Cumartesi <b>yeni kişiye geçer</b>, <b>çaycı Cuma\'da kalır</b>, Pazar değişmez';
             } else {
               tg.classList.remove('aktif');
               dr.classList.remove('acik'); dr.classList.add('kapali');
