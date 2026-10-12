@@ -11,11 +11,11 @@
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden !important; /* Kaydırmayı yasakla */
+    overflow: hidden !important;
     margin: 0;
     padding: 0;
     background: #2c3e5c;
-    position: fixed; /* Sabitle */
+    position: fixed;
     top: 0;
     left: 0;
 }
@@ -1026,6 +1026,7 @@ body {
 
     /* ============================================================
        ÖLÇEKLEME: 1920x1080 tasarım → ekrana sığdır (contain)
+       Tüm içerik görünsün, kesilme olmasın.
        ============================================================ */
     var TASARIM_G = 1920;
     var TASARIM_Y = 1080;
@@ -1039,21 +1040,21 @@ body {
 
         var olcekX = ekranG / TASARIM_G;
         var olcekY = ekranY / TASARIM_Y;
-        
-        // === TAM EKRAN (COVER) MANTIĞI ===
-        // Ekranı tamamen doldurmak için büyük olan ölçeği seçiyoruz.
-        var olcek = Math.max(olcekX, olcekY);
-        
-        // TV'lerdeki kenar kesilmesini (overscan) önlemek için %2 güvenlik payı bırakıyoruz.
-        // Eğer hala kenarlardan kesiliyorsa buradaki 0.98 değerini 0.96 yapabilirsiniz.
-        olcek = olcek * 0.98;
+
+        // === TAM EKRAN (CONTAIN) MANTIĞI ===
+        // İçeriğin tamamının görünmesi için küçük olan ölçeği seçiyoruz.
+        var olcek = Math.min(olcekX, olcekY);
+
+        // TV'lerdeki kenar kesilmesini (overscan) önlemek için %5 güvenlik payı.
+        // Eğer hala kenarlardan kesiliyorsa buradaki 0.95 değerini 0.90 yapabilirsiniz.
+        olcek = olcek * 0.95;
 
         kapsayici.style.transform = 'scale(' + olcek + ')';
 
         var gercekG = TASARIM_G * olcek;
         var gercekY = TASARIM_Y * olcek;
-        
-        // Ölçeklenen içeriği ekranın tam ortasına hizalıyoruz.
+
+        // Ölçeklenen içeriği ekranın tam ortasına hizala.
         kapsayici.style.left = ((ekranG - gercekG) / 2) + 'px';
         kapsayici.style.top  = ((ekranY - gercekY) / 2) + 'px';
     }
