@@ -355,10 +355,26 @@ body {
     color: #1a2942;
 }
 .hp-tablo thead th { background: #d8e0ec; font-weight: bold; }
-.hp-tablo thead tr:first-child th { background: #b8c5d8; font-size: 1.1em; letter-spacing: 0.8px; color: #1a2942; }
+.hp-tablo thead tr:first-child th { background: #b8c5d8; font-size: 1.1em; letter-spacing: 0.8px; color: #1a2942; border-bottom: 3px solid #4a6fa5; }
 .hp-tablo thead tr:nth-child(2) th { background: #d0d9e6; }
 .hp-tablo thead tr:nth-child(3) th.sinif-baslik { background: #e85d5d; color: #fff; font-weight: 700; }
 .hp-tablo .saat { background: #c5d0e0; font-weight: bold; font-size: 0.9em; color: #1a2942; }
+
+/* ===== GÜN AYIRICI ÇİZGİLER (KALIN) ===== */
+.hp-tablo th:nth-child(2),
+.hp-tablo th:nth-child(5),
+.hp-tablo th:nth-child(8),
+.hp-tablo th:nth-child(11),
+.hp-tablo th:nth-child(14) {
+    border-left: 3px solid #4a6fa5 !important;
+}
+.hp-tablo td:nth-child(2),
+.hp-tablo td:nth-child(5),
+.hp-tablo td:nth-child(8),
+.hp-tablo td:nth-child(11),
+.hp-tablo td:nth-child(14) {
+    border-left: 3px solid #4a6fa5 !important;
+}
 
 /* ===== DERS RENKLERİ ===== */
 .bos       { background: #ffffff; color: #1a2942; }
@@ -1376,6 +1392,13 @@ function isGunuFarki(baslangicDate, hedefDate) {
   return sayac;
 }
 
+/* ===== GÖREV BAZLI OFSET ===== */
+const GOREV_OFSET = {
+  imam: 0,
+  muezzin: 1,
+  cayci: -1
+};
+
 function siradakiIndex(liste, offsetGun) {
   if (!liste || liste.length === 0) return -1;
   const parcalar = veri.baslangicTarihi.split("-");
@@ -1388,6 +1411,12 @@ function siradakiIndex(liste, offsetGun) {
   const hedef = isGunuTarihi(bugun);
   const gun = isGunuFarki(baslangic, hedef);
   return gun % liste.length;
+}
+
+function siradakiIndexGorevli(liste, offsetGun, gorev) {
+  if (!liste || liste.length === 0) return -1;
+  const ek = GOREV_OFSET[gorev] || 0;
+  return siradakiIndex(liste, (offsetGun || 0) + ek);
 }
 
 /* ===== TAKVİMSEL GÜN NUMARASI (yemekçi kuyruğu için) ===== */
@@ -1432,9 +1461,9 @@ function yemekciKuyruguGuncelle() {
 
   for (let gunNo = baslangicGun; gunNo <= bugunNo; gunNo++) {
     const offset = gunNo - bugunNo;
-    const imamIdx = siradakiIndex(veri.imam, offset);
-    const muezzinIdx = siradakiIndex(veri.muezzin, offset);
-    const cayciIdx = siradakiIndex(veri.cayci, offset);
+    const imamIdx = siradakiIndexGorevli(veri.imam, offset, 'imam');
+    const muezzinIdx = siradakiIndexGorevli(veri.muezzin, offset, 'muezzin');
+    const cayciIdx = siradakiIndexGorevli(veri.cayci, offset, 'cayci');
 
     const atanmis = new Set();
     if (imamIdx >= 0 && veri.imam[imamIdx]) atanmis.add(veri.imam[imamIdx]);
@@ -1808,9 +1837,9 @@ function hpSifirla() {
    ============================================================ */
 
 function hamGorevliler(offset) {
-  const imamIdx    = siradakiIndex(veri.imam, offset);
-  const muezzinIdx = siradakiIndex(veri.muezzin, offset);
-  const cayciIdx   = siradakiIndex(veri.cayci, offset);
+  const imamIdx    = siradakiIndexGorevli(veri.imam, offset, 'imam');
+  const muezzinIdx = siradakiIndexGorevli(veri.muezzin, offset, 'muezzin');
+  const cayciIdx   = siradakiIndexGorevli(veri.cayci, offset, 'cayci');
 
   const imam    = imamIdx    >= 0 ? veri.imam[imamIdx]       : '-';
   const muezzin = muezzinIdx >= 0 ? veri.muezzin[muezzinIdx] : '-';
@@ -1904,13 +1933,13 @@ function gunIcindeCakismaCoz(gunObj, offset) {
   gunObj.yemekciler.forEach(function(y) { if (y && y !== '-') atanmis.add(y); });
 
   if ((!gunObj.muezzin || gunObj.muezzin === '-') && veri.muezzin.length > 0) {
-    const idx = siradakiIndex(veri.muezzin, offset);
+    const idx = siradakiIndexGorevli(veri.muezzin, offset, 'muezzin');
     const yeni = sonrakiUygun(veri.muezzin, idx, atanmis);
     gunObj.muezzin = yeni;
     atanmis.add(yeni);
   }
   if ((!gunObj.cayci || gunObj.cayci === '-') && veri.cayci.length > 0) {
-    const idx = siradakiIndex(veri.cayci, offset);
+    const idx = siradakiIndexGorevli(veri.cayci, offset, 'cayci');
     const yeni = sonrakiUygun(veri.cayci, idx, atanmis);
     gunObj.cayci = yeni;
     atanmis.add(yeni);
@@ -1988,7 +2017,7 @@ function saatGuncelle() {
     const hs = haftaSonuMu(simdi);
     let hsNotu = '';
     if (hs) {
-      hsNotu = veri.haftaSonuAktif ? '  (Hafta Sonu - Aktif)' : '  (Hafta Sonu)';
+      hsNotu = veri.haftaSonuAktif ? '  (Hafta Sonu - Aktif)' : '  (Hafta Sonu - Çaycı Devam Etmez)';
     }
     elTarih.textContent = tarihStr + hsNotu;
   }
@@ -2239,7 +2268,7 @@ function listeCiz(tur, liste) {
       }
     }
   } else {
-    const siradakiIdx = siradakiIndex(liste, 0);
+    const siradakiIdx = siradakiIndexGorevli(liste, 0, tur);
     liste.forEach(function(isim, i) {
       const siradaMi = (i === siradakiIdx);
       html += '<div class="kisi-satir' + (siradaMi ? ' siradaki' : '') + '">' +
