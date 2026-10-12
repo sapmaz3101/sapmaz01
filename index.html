@@ -1025,10 +1025,9 @@ body {
     var docEl = doc.documentElement;
 
     /* ============================================================
-       ÖLÇEKLEME: 1920x1080 tasarım alanı → ekrana sığdır (CONTAIN)
-       - İçerik ekranın tam ortasında durur
-       - Sağ+sol eşit, üst+alt eşit boşluk kalır
-       - Hiçbir yerden kesilme olmaz
+       ÖLÇEKLEME:
+       - Sağ ve sol kenarlara YAPIŞIK (boşluk yok)
+       - Üst ve alttan EŞİT boşluk (dikey ortalanmış)
        ============================================================ */
     var TASARIM_G = 1920;
     var TASARIM_Y = 1080;
@@ -1037,17 +1036,15 @@ body {
         var kapsayici = doc.getElementById('olcekKapsayici');
         if (!kapsayici) return;
 
-        // Tarayıcı zoom'unu sıfırla (bazı TV tarayıcılarında zoom açık kalır)
+        // Tarayıcı zoom'unu sıfırla
         if (doc.body) doc.body.style.zoom = '1';
 
         var ekranG = window.innerWidth;
         var ekranY = window.innerHeight;
 
-        var olcekX = ekranG / TASARIM_G;
-        var olcekY = ekranY / TASARIM_Y;
-
-        // === CONTAIN: Küçük olan ölçeği seç → içerik tam sığar, kesilme yok ===
-        var olcek = Math.min(olcekX, olcekY);
+        // === SADECE GENİŞLİĞE GÖRE ÖLÇEKLE ===
+        // İçerik sağ-sol kenarlara tam oturur
+        var olcek = ekranG / TASARIM_G;
 
         kapsayici.style.transform = 'scale(' + olcek + ')';
         kapsayici.style.transformOrigin = 'top left';
@@ -1056,18 +1053,17 @@ body {
         var gercekG = TASARIM_G * olcek;
         var gercekY = TASARIM_Y * olcek;
 
-        // === İçeriği ekranın TAM ORTASINA hizala ===
-        // Sağ+sol ve üst+alt boşluklar EŞİT olur
-        var boslukYatay = (ekranG - gercekG) / 2;
+        // === YATAY: Sola yapışık (boşluk yok) ===
+        // === DİKEY: Üstten ve alttan EŞİT boşluk ===
         var boslukDikey = (ekranY - gercekY) / 2;
 
-        kapsayici.style.left = boslukYatay + 'px';
+        kapsayici.style.left = '0px';
         kapsayici.style.top  = boslukDikey + 'px';
 
         console.log('[Ölçekleme] Ekran: ' + ekranG + 'x' + ekranY +
                     ' | Ölçek: ' + olcek.toFixed(4) +
                     ' | İçerik: ' + gercekG.toFixed(0) + 'x' + gercekY.toFixed(0) +
-                    ' | Boşluk: Yatay=' + boslukYatay.toFixed(0) + 'px, Dikey=' + boslukDikey.toFixed(0) + 'px');
+                    ' | Üst boşluk: ' + boslukDikey.toFixed(0) + 'px | Alt boşluk: ' + boslukDikey.toFixed(0) + 'px | Sağ-sol boşluk: 0px');
     }
 
     window.addEventListener('resize', olcekGuncelle);
