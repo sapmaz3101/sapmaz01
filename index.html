@@ -502,6 +502,56 @@ body {
 .ekle-satir button { padding: 6px 12px; font-size: 13px; font-weight: 700; border: none; border-radius: 6px; background: #2e7d32; color: #fff; cursor: pointer; }
 .ekle-satir button:hover { background: #1b5e20; }
 
+/* ===== MANUEL GEÇİŞ BUTONU ===== */
+.manuel-gecis-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.manuel-gecis-bar button {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.manuel-gecis-bar .ileri-btn {
+    background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(251, 140, 0, 0.35);
+}
+.manuel-gecis-bar .ileri-btn:hover {
+    background: linear-gradient(135deg, #fb8c00 0%, #ef6c00 100%);
+    transform: translateY(-1px);
+}
+.manuel-gecis-bar .geri-al-btn {
+    background: #e0e6ee;
+    color: #4a5b78;
+    flex: 0 0 auto;
+    min-width: 70px;
+}
+.manuel-gecis-bar .geri-al-btn:hover {
+    background: #c5d3e8;
+}
+.manuel-durum-badge {
+    display: inline-block;
+    background: #ff9800;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.3px;
+}
+
 /* ===== YEMEKÇİ GRUP BAŞLIĞI ===== */
 .yemekci-grup-baslik {
   font-size: 10px;
@@ -1055,7 +1105,7 @@ body {
   <div class="listeler-sekme">
     <button class="geri-btn" id="geriBtn">← Panele Dön</button>
     <h2>👥 Nöbet Listeleri</h2>
-    <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> Çakışan gruplar <span style="background:#fff3e0; padding:2px 6px; border-left:4px solid #ff9800;">turuncu</span> ile kuyrukta gösterilir.</p>
+    <p class="aciklama">Her gün sıradaki kişi otomatik panele yansır. Sıradaki kişi <span style="background:#fff8e1; padding:2px 6px; border-left:4px solid #ffc107;">sarı</span> ile vurgulanır. <b>Yemekçiler 2'li grup halinde döner.</b> Çakışan gruplar <span style="background:#fff3e0; padding:2px 6px; border-left:4px solid #ff9800;">turuncu</span> ile kuyrukta gösterilir. <b>Manuel geçiş</b> butonu ile sıradaki kişiyi ileri alabilirsiniz.</p>
 
     <div class="bilgi-not">
       📅 <b>Başlangıç tarihi:</b>
@@ -1087,21 +1137,37 @@ body {
         <div class="kart-baslik"><h3>İMAM</h3><span class="sayi" id="sayi-imam">0</span></div>
         <div class="liste" id="liste-imam"></div>
         <div class="ekle-satir"><input type="text" id="yeni-imam" placeholder="Yeni isim..."><button data-ekle="imam">+ Ekle</button></div>
+        <div class="manuel-gecis-bar">
+          <button class="ileri-btn" data-manuel-gecis="imam" data-yon="1">⏭️ Sıradakine Geç</button>
+          <button class="geri-al-btn" data-manuel-gecis="imam" data-yon="-1" title="Manuel geçişi geri al">↺</button>
+        </div>
       </div>
       <div class="liste-kart">
         <div class="kart-baslik"><h3>MÜEZZİN</h3><span class="sayi" id="sayi-muezzin">0</span></div>
         <div class="liste" id="liste-muezzin"></div>
         <div class="ekle-satir"><input type="text" id="yeni-muezzin" placeholder="Yeni isim..."><button data-ekle="muezzin">+ Ekle</button></div>
+        <div class="manuel-gecis-bar">
+          <button class="ileri-btn" data-manuel-gecis="muezzin" data-yon="1">⏭️ Sıradakine Geç</button>
+          <button class="geri-al-btn" data-manuel-gecis="muezzin" data-yon="-1" title="Manuel geçişi geri al">↺</button>
+        </div>
       </div>
       <div class="liste-kart">
         <div class="kart-baslik"><h3>ÇAYCI</h3><span class="sayi" id="sayi-cayci">0</span></div>
         <div class="liste" id="liste-cayci"></div>
         <div class="ekle-satir"><input type="text" id="yeni-cayci" placeholder="Yeni isim..."><button data-ekle="cayci">+ Ekle</button></div>
+        <div class="manuel-gecis-bar">
+          <button class="ileri-btn" data-manuel-gecis="cayci" data-yon="1">⏭️ Sıradakine Geç</button>
+          <button class="geri-al-btn" data-manuel-gecis="cayci" data-yon="-1" title="Manuel geçişi geri al">↺</button>
+        </div>
       </div>
       <div class="liste-kart">
         <div class="kart-baslik"><h3>YEMEKÇİLER (2'li grup)</h3><span class="sayi" id="sayi-yemekciler">0</span></div>
         <div class="liste" id="liste-yemekciler"></div>
         <div class="ekle-satir"><input type="text" id="yeni-yemekciler" placeholder="Yeni isim..."><button data-ekle="yemekciler">+ Ekle</button></div>
+        <div class="manuel-gecis-bar">
+          <button class="ileri-btn" data-manuel-gecis="yemekciler" data-yon="1">⏭️ Sıradaki Gruba Geç</button>
+          <button class="geri-al-btn" data-manuel-gecis="yemekciler" data-yon="-1" title="Manuel geçişi geri al">↺</button>
+        </div>
       </div>
     </div>
 
@@ -1490,7 +1556,16 @@ const VARSAYILAN = {
   haftalikProgram: null,
   dersRenkleri: {},
   yemekciKuyrugu: [],
-  yemekciKuyrukSonGun: ""
+  yemekciKuyrukSonGun: "",
+  // Manuel geçiş: her görev için gün cinsinden kaydırma
+  manuelKaydirma: {
+    imam: 0,
+    muezzin: 0,
+    cayci: 0,
+    yemekciler: 0
+  },
+  // Hangi tarihte manuel geçiş yapıldı (o gün geçerli, ertesi gün sıfırlanır)
+  manuelGecisTarihi: ""
 };
 
 let veri = yukle();
@@ -1531,7 +1606,14 @@ function yukle() {
         ? JSON.parse(JSON.stringify(p.dersRenkleri))
         : {},
       yemekciKuyrugu: Array.isArray(p.yemekciKuyrugu) ? p.yemekciKuyrugu : [],
-      yemekciKuyrukSonGun: typeof p.yemekciKuyrukSonGun === "string" ? p.yemekciKuyrukSonGun : ""
+      yemekciKuyrukSonGun: typeof p.yemekciKuyrukSonGun === "string" ? p.yemekciKuyrukSonGun : "",
+      manuelKaydirma: (p.manuelKaydirma && typeof p.manuelKaydirma === 'object') ? {
+        imam: Number(p.manuelKaydirma.imam) || 0,
+        muezzin: Number(p.manuelKaydirma.muezzin) || 0,
+        cayci: Number(p.manuelKaydirma.cayci) || 0,
+        yemekciler: Number(p.manuelKaydirma.yemekciler) || 0
+      } : { imam: 0, muezzin: 0, cayci: 0, yemekciler: 0 },
+      manuelGecisTarihi: typeof p.manuelGecisTarihi === "string" ? p.manuelGecisTarihi : ""
     };
   } catch (e) {
     const t = JSON.parse(JSON.stringify(VARSAYILAN));
@@ -1555,20 +1637,33 @@ const GUN_ADLARI = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'C
 function gunAdi(n) { return GUN_ADLARI[Number(n)] || '?'; }
 function haftaSonuMu(tarih) { const g = tarih.getDay(); return g === 0 || g === 6; }
 
-/* ============================================================
-   ÖNEMLİ DEĞİŞİKLİK:
-   - Pazar günü HİÇBİR ZAMAN nöbet değişmez (her durumda Cmt/Cuma'ya çekilir)
-   - Hafta sonu KAPALI: Cmt ve Pazar atlanır, Cuma'daki kişi devam eder
-   - Hafta sonu AÇIK: Cumartesi çalışma günü sayılır, sadece Pazar atlanır
-   ============================================================ */
+function bugunTarihStr() {
+  const s = new Date();
+  return s.getFullYear() + "-" + pad2(s.getMonth() + 1) + "-" + pad2(s.getDate());
+}
+
+/**
+ * Manuel kaydırmayı kontrol et.
+ * Eğer bugün manuel geçiş yapıldıysa manuelKaydirma değerleri geçerli.
+ * Ertesi gün (farklı tarihte) otomatik sıfırlanır.
+ */
+function manuelKaydirmaKontrol() {
+  const bugun = bugunTarihStr();
+  if (veri.manuelGecisTarihi && veri.manuelGecisTarihi !== bugun) {
+    // Farklı güne geçtik: manuel kaydırmayı sıfırla
+    veri.manuelKaydirma = { imam: 0, muezzin: 0, cayci: 0, yemekciler: 0 };
+    veri.manuelGecisTarihi = "";
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
+    if (typeof window.__firestoreSet === 'function') window.__firestoreSet();
+  }
+}
+
 function isGunuTarihi(tarih) {
   const d = new Date(tarih);
   if (veri.haftaSonuAktif) {
-    // Sadece Pazar günü geri sarılır (Cumartesi çalışma günü)
     while (d.getDay() === 0) d.setDate(d.getDate() - 1);
     return d;
   }
-  // Hafta sonu kapalı: Cmt + Pazar geri sarılır
   while (haftaSonuMu(d)) d.setDate(d.getDate() - 1);
   return d;
 }
@@ -1578,13 +1673,11 @@ function isGunuFarki(baslangicDate, hedefDate) {
   let sayac = 0;
   const d = new Date(baslangicDate);
   if (veri.haftaSonuAktif) {
-    // Sadece Pazar sayılmaz, Cumartesi sayılır
     while (d < hedefDate) {
       if (d.getDay() !== 0) sayac++;
       d.setDate(d.getDate() + 1);
     }
   } else {
-    // Cmt + Pazar sayılmaz
     while (d < hedefDate) {
       const gun = d.getDay();
       if (gun !== 0 && gun !== 6) sayac++;
@@ -1600,7 +1693,15 @@ const GOREV_OFSET = {
   cayci: -1
 };
 
-function siradakiIndex(liste, offsetGun) {
+/**
+ * Sıradaki index — manuel kaydırmayı da hesaba katar.
+ * offsetGun: bugünden kaç gün sonrası (0=bugün, 1=yarın)
+ * gorev: 'imam' | 'muezzin' | 'cayci' | 'yemekciler'
+ *
+ * NOT: Manuel kaydırma SADECE bugün için geçerlidir (offsetGun === 0).
+ * Yarın için otomatik hesaplanır (çünkü yarın manuel geçiş sıfırlanır).
+ */
+function siradakiIndex(liste, offsetGun, gorev) {
   if (!liste || liste.length === 0) return -1;
   const parcalar = veri.baslangicTarihi.split("-");
   const y = Number(parcalar[0]), m = Number(parcalar[1]), d = Number(parcalar[2]);
@@ -1611,30 +1712,29 @@ function siradakiIndex(liste, offsetGun) {
   bugun.setDate(bugun.getDate() + (offsetGun || 0));
   const hedef = isGunuTarihi(bugun);
   const gun = isGunuFarki(baslangic, hedef);
-  return gun % liste.length;
+
+  // Sadece bugün için manuel kaydırmayı uygula
+  let ek = 0;
+  if (offsetGun === 0 && gorev && veri.manuelKaydirma && typeof veri.manuelKaydirma[gorev] === 'number') {
+    ek = veri.manuelKaydirma[gorev];
+  }
+  return (gun + ek) % liste.length;
 }
 
-/* ============================================================
-   ÖNEMLİ DEĞİŞİKLİK:
-   Çaycı için: Hafta sonu aktifken Cumartesi günü de Cuma'nın çaycısı gösterilir.
-   Yani çaycı Cumartesi'ye geçmez, Cuma'daki kişide durur.
-   ============================================================ */
 function siradakiIndexGorevli(liste, offsetGun, gorev) {
   if (!liste || liste.length === 0) return -1;
 
   const ek = GOREV_OFSET[gorev] || 0;
 
-  // Çaycı: hafta sonu aktifken Cumartesi günü, Cuma günkü kişide kalsın
   if (gorev === 'cayci' && veri.haftaSonuAktif) {
     const hedefTarih = new Date();
     hedefTarih.setDate(hedefTarih.getDate() + (offsetGun || 0));
     if (hedefTarih.getDay() === 6) {
-      // Cumartesi -> Cuma'nın offset'ini kullan (1 gün geri)
-      return siradakiIndex(liste, (offsetGun || 0) - 1 + ek);
+      return siradakiIndex(liste, (offsetGun || 0) - 1 + ek, gorev);
     }
   }
 
-  return siradakiIndex(liste, (offsetGun || 0) + ek);
+  return siradakiIndex(liste, (offsetGun || 0) + ek, gorev);
 }
 
 function takvimGunNo(offsetGun) {
@@ -1723,6 +1823,10 @@ function yemekciKuyruguGuncelle() {
   veri.yemekciKuyrukSonGun = s.getFullYear() + "-" + pad2(s.getMonth() + 1) + "-" + pad2(s.getDate());
 }
 
+/**
+ * Çakışmayan yemekçi grubunu bul.
+ * Manuel kaydırma varsa güncel grup numarasına eklenir.
+ */
 function cakismayanYemekciGrubu(offset, atanmisKisiler) {
   const liste = veri.yemekciler;
   if (!liste || liste.length === 0) return [];
@@ -1730,8 +1834,15 @@ function cakismayanYemekciGrubu(offset, atanmisKisiler) {
   const grupSayisi = Math.ceil(liste.length / 2);
   if (grupSayisi === 0) return [];
 
-  const baslangicGrup = ((takvimGunNo(offset) % grupSayisi) + grupSayisi) % grupSayisi;
+  let gunNo = takvimGunNo(offset);
+  // Sadece bugün için manuel kaydırmayı uygula
+  if (offset === 0 && veri.manuelKaydirma && typeof veri.manuelKaydirma.yemekciler === 'number') {
+    gunNo += veri.manuelKaydirma.yemekciler;
+  }
 
+  const baslangicGrup = ((gunNo % grupSayisi) + grupSayisi) % grupSayisi;
+
+  // Önce kuyruktaki grupları dene
   for (let i = 0; i < veri.yemekciKuyrugu.length; i++) {
     const grup = veri.yemekciKuyrugu[i];
     if (grup < 0 || grup >= grupSayisi) continue;
@@ -1745,6 +1856,7 @@ function cakismayanYemekciGrubu(offset, atanmisKisiler) {
     }
   }
 
+  // Sonra sıradaki grupları dene
   for (let i = 0; i < grupSayisi; i++) {
     const grup = (baslangicGrup + i) % grupSayisi;
     const start = grup * 2;
@@ -2318,6 +2430,7 @@ function gunlukGorevlerCakismasiz() {
 }
 
 function saatGuncelle() {
+  manuelKaydirmaKontrol();
   yemekciKuyruguGuncelle();
 
   const simdi = new Date();
@@ -2361,7 +2474,7 @@ function saatGuncelle() {
       }).join(' &bull; ')
     : '-';
 
-  const idxHadis = siradakiIndex(veri.hadisListesi, 0);
+  const idxHadis = siradakiIndex(veri.hadisListesi, 0, null);
   const gununHadisi = idxHadis >= 0 && veri.hadisListesi[idxHadis] ? veri.hadisListesi[idxHadis] : (veri.hadis || '');
   document.getElementById('gosterHadis').innerHTML = hadisHtmlOlustur(gununHadisi);
 
@@ -2614,13 +2727,43 @@ document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
   });
 });
 
+/* ============================================================
+   MANUEL GEÇİŞ BUTONLARI
+   ============================================================ */
+document.querySelectorAll('[data-manuel-gecis]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const tur = btn.getAttribute('data-manuel-gecis');
+    const yon = Number(btn.getAttribute('data-yon')) || 1;
+    if (!tur || !['imam', 'muezzin', 'cayci', 'yemekciler'].includes(tur)) return;
+
+    if (!veri.manuelKaydirma) veri.manuelKaydirma = { imam: 0, muezzin: 0, cayci: 0, yemekciler: 0 };
+    veri.manuelKaydirma[tur] = (veri.manuelKaydirma[tur] || 0) + yon;
+    veri.manuelGecisTarihi = bugunTarihStr();
+
+    if (tur === 'yemekciler') {
+      veri.yemekciKuyrugu = [];
+      veri.yemekciKuyrukSonGun = "";
+    }
+
+    kaydet();
+    yemekciKuyruguGuncelle();
+    listeCiz(tur, veri[tur]);
+    saatGuncelle();
+    hpAnaTabloyuCiz();
+
+    // Butona küçük bir animasyon
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(function() { btn.style.transform = ''; }, 120);
+  });
+});
+
 function hadisListesiCiz() {
   const container = document.getElementById('liste-hadisListesi');
   if (!container) return;
   const sayiEl = document.getElementById('sayi-hadisListesi');
   if (sayiEl) sayiEl.textContent = veri.hadisListesi.length;
 
-  const siradakiIdx = siradakiIndex(veri.hadisListesi, 0);
+  const siradakiIdx = siradakiIndex(veri.hadisListesi, 0, null);
   let html = '';
   veri.hadisListesi.forEach(function(hadis, i) {
     const siradaMi = (i === siradakiIdx);
@@ -2880,7 +3023,8 @@ document.getElementById('sifreDegistirBtn').addEventListener('click', function()
 });
 
 function bildirimGoster(mesaj) {
-  const b = document.getElementById('bildirim');
+  const b = document.getElementById('sifreBildirim');
+  if (!b) return;
   b.textContent = mesaj;
   b.classList.add('goster');
   setTimeout(() => b.classList.remove('goster'), 2500);
@@ -2952,6 +3096,8 @@ function temizVeriOlustur() {
   if (!Array.isArray(t.yemekciKuyrugu)) t.yemekciKuyrugu = [];
   if (typeof t.yemekciKuyrukSonGun !== "string") t.yemekciKuyrukSonGun = "";
   if (!t.dersRenkleri || typeof t.dersRenkleri !== 'object') t.dersRenkleri = {};
+  if (!t.manuelKaydirma || typeof t.manuelKaydirma !== 'object') t.manuelKaydirma = { imam: 0, muezzin: 0, cayci: 0, yemekciler: 0 };
+  if (typeof t.manuelGecisTarihi !== "string") t.manuelGecisTarihi = "";
   return t;
 }
 
@@ -3007,7 +3153,14 @@ function firebaseBaslat() {
             ? JSON.parse(JSON.stringify(uzakVeri.dersRenkleri))
             : {},
           yemekciKuyrugu: Array.isArray(uzakVeri.yemekciKuyrugu) ? uzakVeri.yemekciKuyrugu : [],
-          yemekciKuyrukSonGun: typeof uzakVeri.yemekciKuyrukSonGun === "string" ? uzakVeri.yemekciKuyrukSonGun : ""
+          yemekciKuyrukSonGun: typeof uzakVeri.yemekciKuyrukSonGun === "string" ? uzakVeri.yemekciKuyrukSonGun : "",
+          manuelKaydirma: (uzakVeri.manuelKaydirma && typeof uzakVeri.manuelKaydirma === 'object') ? {
+            imam: Number(uzakVeri.manuelKaydirma.imam) || 0,
+            muezzin: Number(uzakVeri.manuelKaydirma.muezzin) || 0,
+            cayci: Number(uzakVeri.manuelKaydirma.cayci) || 0,
+            yemekciler: Number(uzakVeri.manuelKaydirma.yemekciler) || 0
+          } : { imam: 0, muezzin: 0, cayci: 0, yemekciler: 0 },
+          manuelGecisTarihi: typeof uzakVeri.manuelGecisTarihi === "string" ? uzakVeri.manuelGecisTarihi : ""
         };
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(veri)); } catch(e) {}
         yemekciKuyruguGuncelle();
