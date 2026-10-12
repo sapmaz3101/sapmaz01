@@ -1035,12 +1035,21 @@ body {
 
         var olcekX = ekranG / TASARIM_G;
         var olcekY = ekranY / TASARIM_Y;
-        var olcek = Math.min(olcekX, olcekY);
+        
+        // === TAM EKRAN (COVER) MANTIĞI ===
+        // Ekranı tamamen doldurmak için büyük olan ölçeği seçiyoruz.
+        var olcek = Math.max(olcekX, olcekY);
+        
+        // TV'lerdeki kenar kesilmesini (overscan) önlemek için %2 güvenlik payı bırakıyoruz.
+        // Eğer hala kenarlardan kesiliyorsa buradaki 0.98 değerini 0.96 yapabilirsiniz.
+        olcek = olcek * 0.98;
 
         kapsayici.style.transform = 'scale(' + olcek + ')';
 
         var gercekG = TASARIM_G * olcek;
         var gercekY = TASARIM_Y * olcek;
+        
+        // Ölçeklenen içeriği ekranın tam ortasına hizalıyoruz.
         kapsayici.style.left = ((ekranG - gercekG) / 2) + 'px';
         kapsayici.style.top  = ((ekranY - gercekY) / 2) + 'px';
     }
