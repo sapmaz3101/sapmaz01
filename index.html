@@ -442,6 +442,27 @@ body {
 .kisi-satir .isim { flex: 1; }
 .kisi-satir .sil-btn { background: transparent; border: none; color: #c62828; font-size: 15px; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
 .kisi-satir .sil-btn:hover { background: #ffebee; }
+.kisi-satir .sirala-btn {
+  background: transparent;
+  border: none;
+  color: #4a6fa5;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  font-weight: 700;
+}
+.kisi-satir .sirala-btn:hover {
+  background: #eaf0f9;
+}
+.kisi-satir .sirala-btn:disabled {
+  color: #c5d3e8;
+  cursor: default;
+}
+.kisi-satir .sirala-btn:disabled:hover {
+  background: transparent;
+}
 .ekle-satir { display: flex; gap: 4px; }
 .ekle-satir input { flex: 1; padding: 6px 8px; font-size: 13px; border: 1.5px solid #c5d3e8; border-radius: 6px; font-family: inherit; }
 .ekle-satir input:focus { outline: none; border-color: #4a6fa5; }
@@ -459,6 +480,13 @@ body {
   border-bottom: 1px dashed #c5d3e8;
   margin-top: 4px;
   background: #f5f8fc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.yemekci-grup-baslik .grup-sirala {
+  display: flex;
+  gap: 2px;
 }
 .yemekci-grup-baslik:first-child {
   margin-top: 0;
@@ -1402,7 +1430,7 @@ function isGunuFarki(baslangicDate, hedefDate) {
 /* ===== GÖREV BAZLI OFSET ===== */
 const GOREV_OFSET = {
   imam: 0,
-  muezzin: 0  ,
+  muezzin: 0 ,
   cayci: 0
 };
 
@@ -2087,18 +2115,21 @@ function listeCiz(tur, liste) {
       if (grupAktifMi) grupSinif = ' siradaki';
       else if (grupKuyruktaMi) grupSinif = ' kuyrukta';
 
-      html += '<div class="yemekci-grup-baslik' + grupSinif + '">' +
-                grupNo + '. Grup' +
-                (grupKuyruktaMi ? ' ⏳' : '') +
-              '</div>';
-
+const grupYukariDisabled = (grupNo === 1) ? ' disabled' : '';
+const grupAsagiDisabled  = (i + 2 >= liste.length) ? ' disabled' : '';
+html += '<div class="yemekci-grup-baslik' + grupSinif + '">' +
+          '<span>' + grupNo + '. Grup' + (grupKuyruktaMi ? ' ⏳' : '') + '</span>' +
+          '<span class="grup-sirala">' +
+            '<button class="sirala-btn" onclick="yemekciGrupYukari(' + (grupNo - 1) + ')"' + grupYukariDisabled + ' title="Grubu yukarı taşı">▲</button>' +
+            '<button class="sirala-btn" onclick="yemekciGrupAsagi(' + (grupNo - 1) + ')"' + grupAsagiDisabled + ' title="Grubu aşağı taşı">▼</button>' +
+          '</span>' +
+        '</div>';
       const siradaMi1 = (i === aktifGrupIdxler[0]);
-      html += '<div class="kisi-satir' + (siradaMi1 ? ' siradaki' : '') + '">' +
-        '<span class="sira">' + (i + 1) + '</span>' +
-        '<span class="isim">' + escapeHtml(liste[i]) + '</span>' +
-        '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
-      '</div>';
-
+     html += '<div class="kisi-satir' + (siradaMi1 ? ' siradaki' : '') + '">' +
+  '<span class="sira">' + (i + 1) + '</span>' +
+  '<span class="isim">' + escapeHtml(liste[i]) + '</span>' +
+  '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
+'</div>';
       if (i + 1 < liste.length) {
         const siradaMi2 = (i + 1 === aktifGrupIdxler[1]);
         html += '<div class="kisi-satir' + (siradaMi2 ? ' siradaki' : '') + '">' +
@@ -2135,13 +2166,17 @@ function listeCiz(tur, liste) {
    
    const siradakiIdx = gercekKisi ? liste.indexOf(gercekKisi) : -1;
     liste.forEach(function(isim, i) {
-      const siradaMi = (i === siradakiIdx);
-      html += '<div class="kisi-satir' + (siradaMi ? ' siradaki' : '') + '">' +
-        '<span class="sira">' + (i + 1) + '</span>' +
-        '<span class="isim">' + escapeHtml(isim) + '</span>' +
-        '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
-      '</div>';
-    });
+  const siradaMi = (i === siradakiIdx);
+  const yukariDisabled = (i === 0) ? ' disabled' : '';
+  const asagiDisabled  = (i === liste.length - 1) ? ' disabled' : '';
+  html += '<div class="kisi-satir' + (siradaMi ? ' siradaki' : '') + '">' +
+    '<span class="sira">' + (i + 1) + '</span>' +
+    '<span class="isim">' + escapeHtml(isim) + '</span>' +
+    '<button class="sirala-btn" onclick="kisiYukari(\'' + tur + '\', ' + i + ')"' + yukariDisabled + ' title="Yukarı taşı">▲</button>' +
+    '<button class="sirala-btn" onclick="kisiAsagi(\'' + tur + '\', ' + i + ')"' + asagiDisabled + ' title="Aşağı taşı">▼</button>' +
+    '<button class="sil-btn" onclick="kisiSil(\'' + tur + '\', ' + i + ')">&times;</button>' +
+  '</div>';
+});
   }
 
   container.innerHTML = html;
@@ -2156,7 +2191,57 @@ window.kisiSil = function(tur, index) {
   kaydet();
   listeleriGuncelle();
 };
+window.kisiYukari = function(tur, index) {
+  if (index <= 0) return;
+  const liste = veri[tur];
+  [liste[index - 1], liste[index]] = [liste[index], liste[index - 1]];
+  kaydet();
+  listeleriGuncelle();
+  saatGuncelle();
+};
 
+window.kisiAsagi = function(tur, index) {
+  const liste = veri[tur];
+  if (index >= liste.length - 1) return;
+  [liste[index], liste[index + 1]] = [liste[index + 1], liste[index]];
+  kaydet();
+  listeleriGuncelle();
+  saatGuncelle();
+};
+window.yemekciGrupYukari = function(grupIndex) {
+  if (grupIndex <= 0) return;
+  const l = veri.yemekciler;
+  const i1 = grupIndex * 2;
+  const oncekiGrupBas = (grupIndex - 1) * 2;
+  for (let k = 0; k < 2; k++) {
+    if (l[i1 + k] !== undefined && l[oncekiGrupBas + k] !== undefined) {
+      [l[oncekiGrupBas + k], l[i1 + k]] = [l[i1 + k], l[oncekiGrupBas + k]];
+    }
+  }
+  veri.yemekciKuyrugu = [];
+  veri.yemekciKuyrukSonGun = "";
+  kaydet();
+  listeleriGuncelle();
+  saatGuncelle();
+};
+
+window.yemekciGrupAsagi = function(grupIndex) {
+  const l = veri.yemekciler;
+  const toplamGrup = Math.ceil(l.length / 2);
+  if (grupIndex >= toplamGrup - 1) return;
+  const i1 = grupIndex * 2;
+  const sonrakiGrupBas = (grupIndex + 1) * 2;
+  for (let k = 0; k < 2; k++) {
+    if (l[i1 + k] !== undefined && l[sonrakiGrupBas + k] !== undefined) {
+      [l[i1 + k], l[sonrakiGrupBas + k]] = [l[sonrakiGrupBas + k], l[i1 + k]];
+    }
+  }
+  veri.yemekciKuyrugu = [];
+  veri.yemekciKuyrukSonGun = "";
+  kaydet();
+  listeleriGuncelle();
+  saatGuncelle();
+};
 document.querySelectorAll('.ekle-satir button').forEach(function(btn) {
   btn.addEventListener('click', function() {
     const tur = btn.getAttribute('data-ekle');
